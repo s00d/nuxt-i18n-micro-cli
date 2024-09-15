@@ -160,7 +160,7 @@ function convertToNestedObjects(keys: Set<string>): Record<string, unknown> {
 export default defineCommand({
   meta: {
     name: 'export',
-    description: 'Extract translations and organize them by scope',
+    description: 'Export translations and organize as PO files',
   },
   args: {
     ...sharedArgs,

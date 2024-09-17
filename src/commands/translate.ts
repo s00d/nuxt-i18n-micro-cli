@@ -1,13 +1,13 @@
 // src/commands/translate.ts
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { defineCommand } from 'citty';
-import { resolve } from 'pathe';
-import { loadKit } from '../utils/kit';
-import { loadJsonFile, writeJsonFile } from '../utils/json';
-import consola from 'consola';
-import { translateText } from '../utils/translate';
+import fs from 'node:fs'
+import path from 'node:path'
+import { defineCommand } from 'citty'
+import { resolve } from 'pathe'
+import consola from 'consola'
+import { loadKit } from '../utils/kit'
+import { loadJsonFile, writeJsonFile } from '../utils/json'
+import { translateText } from '../utils/translate'
 
 export default defineCommand({
   meta: {
@@ -40,68 +40,69 @@ export default defineCommand({
       default: false,
     },
   },
-  async run({ args }: { args: { cwd?: string; translationDir?: string; service: string; token: string; options?: string; replace?: boolean } }) {
-    const cwd = resolve((args.cwd || '.').toString());
+  async run({ args }: { args: { cwd?: string, translationDir?: string, service: string, token: string, options?: string, replace?: boolean } }) {
+    const cwd = resolve((args.cwd || '.').toString())
 
-    const kit = await loadKit(cwd);
+    const kit = await loadKit(cwd)
     const nuxt = await kit.loadNuxt({
       cwd,
       dotenv: { cwd },
-    });
+    })
 
-    const locales = (nuxt.options as any).i18n.locales ?? [];
-    const defaultLocale = (nuxt.options as any).i18n.defaultLocale;
+    const locales = (nuxt.options as any).i18n.locales ?? []
+    const defaultLocale = (nuxt.options as any).i18n.defaultLocale
     const translationDir = path.resolve(
       cwd,
-      args.translationDir ?? (nuxt.options as any).i18n.translationDir ?? 'locales'
-    );
+      args.translationDir ?? (nuxt.options as any).i18n.translationDir ?? 'locales',
+    )
 
-    const options = args.options ? parseOptions(args.options) : {};
+    const options = args.options ? parseOptions(args.options) : {}
 
     // Получаем список страниц, сканируя директорию translationDir/pages
-    const pagesDir = path.join(translationDir, 'pages');
-    let pagePaths: string[] = [];
+    const pagesDir = path.join(translationDir, 'pages')
+    const pagePaths: string[] = []
 
     function getAllPagePaths(dir: string, basePath = '') {
       if (fs.existsSync(dir)) {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        const entries = fs.readdirSync(dir, { withFileTypes: true })
         entries.forEach((entry) => {
-          const fullPath = path.join(dir, entry.name);
-          const relativePath = path.join(basePath, entry.name);
+          const fullPath = path.join(dir, entry.name)
+          const relativePath = path.join(basePath, entry.name)
           if (entry.isDirectory()) {
-            getAllPagePaths(fullPath, relativePath);
-          } else if (entry.isFile() && path.extname(entry.name) === '.json') {
-            pagePaths.push(relativePath);
+            getAllPagePaths(fullPath, relativePath)
           }
-        });
+          else if (entry.isFile() && path.extname(entry.name) === '.json') {
+            pagePaths.push(relativePath)
+          }
+        })
       }
     }
 
-    getAllPagePaths(pagesDir);
+    getAllPagePaths(pagesDir)
 
     // Загружаем глобальные переводы для defaultLocale
-    const defaultGlobalTranslations = loadJsonFile(path.join(translationDir, `${defaultLocale}.json`));
+    const defaultGlobalTranslations = loadJsonFile(path.join(translationDir, `${defaultLocale}.json`))
 
     // Загружаем страницы и их переводы для defaultLocale
-    const defaultPageTranslations: { [pagePath: string]: Record<string, unknown> } = {};
+    const defaultPageTranslations: { [pagePath: string]: Record<string, unknown> } = {}
     pagePaths.forEach((relativePath) => {
-      const fullPath = path.join(translationDir, 'pages', relativePath);
-      const translations = loadJsonFile(fullPath);
-      defaultPageTranslations[relativePath] = translations;
-    });
+      const fullPath = path.join(translationDir, 'pages', relativePath)
+      const translations = loadJsonFile(fullPath)
+      defaultPageTranslations[relativePath] = translations
+    })
 
     for (const locale of locales) {
-      const { code } = locale;
-      if (code === defaultLocale) continue;
+      const { code } = locale
+      if (code === defaultLocale) continue
 
       // Загружаем глобальные переводы для текущей локали
-      const globalTranslationsPath = path.join(translationDir, `${code}.json`);
-      let globalTranslations: Record<string, unknown> = {};
+      const globalTranslationsPath = path.join(translationDir, `${code}.json`)
+      let globalTranslations: Record<string, unknown> = {}
       if (fs.existsSync(globalTranslationsPath)) {
-        globalTranslations = loadJsonFile(globalTranslationsPath);
+        globalTranslations = loadJsonFile(globalTranslationsPath)
       }
 
-      consola.info(`Processing file: ${globalTranslationsPath}`);
+      consola.info(`Processing file: ${globalTranslationsPath}`)
 
       // Ищем и переводим ключи для глобальных переводов
       await processTranslations(
@@ -113,20 +114,20 @@ export default defineCommand({
         args.token,
         options,
         globalTranslationsPath,
-        args.replace ?? false
-      );
+        args.replace ?? false,
+      )
 
       // Обрабатываем страницы
       for (const relativePath of pagePaths) {
-        const defaultTranslations = defaultPageTranslations[relativePath];
-        const targetTranslationPath = path.join(translationDir, 'pages', relativePath.replace(`${defaultLocale}.json`, `${code}.json`));
+        const defaultTranslations = defaultPageTranslations[relativePath]
+        const targetTranslationPath = path.join(translationDir, 'pages', relativePath.replace(`${defaultLocale}.json`, `${code}.json`))
 
-        let targetTranslations: Record<string, unknown> = {};
+        let targetTranslations: Record<string, unknown> = {}
         if (fs.existsSync(targetTranslationPath)) {
-          targetTranslations = loadJsonFile(targetTranslationPath);
+          targetTranslations = loadJsonFile(targetTranslationPath)
         }
 
-        consola.info(`Processing file: ${targetTranslationPath}`);
+        consola.info(`Processing file: ${targetTranslationPath}`)
 
         // Ищем и переводим ключи для текущей страницы
         await processTranslations(
@@ -138,14 +139,14 @@ export default defineCommand({
           args.token,
           options,
           targetTranslationPath,
-          args.replace ?? false
-        );
+          args.replace ?? false,
+        )
       }
     }
 
-    consola.success('Translations have been automatically processed.');
+    consola.success('Translations have been automatically processed.')
   },
-});
+})
 
 async function processTranslations(
   defaultTranslations: Record<string, unknown>,
@@ -156,22 +157,22 @@ async function processTranslations(
   token: string,
   options: { [key: string]: any },
   savePath: string,
-  replace: boolean
+  replace: boolean,
 ) {
-  const keysToTranslate = getKeysToTranslate(defaultTranslations, targetTranslations, replace);
+  const keysToTranslate = getKeysToTranslate(defaultTranslations, targetTranslations, replace)
 
   if (keysToTranslate.length === 0) {
-    consola.info(`No translations needed for locale ${targetLocale} in ${savePath}`);
-    return;
+    consola.info(`No translations needed for locale ${targetLocale} in ${savePath}`)
+    return
   }
 
   for (const key of keysToTranslate) {
-    const textToTranslate = getNestedValue(defaultTranslations, key) as string;
+    const textToTranslate = getNestedValue(defaultTranslations, key) as string
 
-    let translatedText: string | null = null;
+    let translatedText: string | null = null
 
     try {
-      consola.info(`Translating key ${key} for locale ${targetLocale}...`);
+      consola.info(`Translating key ${key} for locale ${targetLocale}...`)
 
       translatedText = await translateText(
         textToTranslate,
@@ -179,107 +180,116 @@ async function processTranslations(
         targetLocale,
         service,
         token,
-        options
-      );
+        options,
+      )
 
       if (!translatedText) {
-        consola.error(`Failed to translate key ${key} using ${service}`);
-      } else {
-        consola.info(`Translated key ${key} for locale ${targetLocale} using ${service}, value: ${translatedText}`);
-        setNestedValue(targetTranslations, key, translatedText);
+        consola.error(`Failed to translate key ${key} using ${service}`)
       }
-    } catch (error) {
-      consola.error(`Failed to translate key ${key} using ${service}: ${(error as Error).message}`);
+      else {
+        consola.info(`Translated key ${key} for locale ${targetLocale} using ${service}, value: ${translatedText}`)
+        setNestedValue(targetTranslations, key, translatedText)
+      }
+    }
+    catch (error) {
+      consola.error(`Failed to translate key ${key} using ${service}: ${(error as Error).message}`)
     }
   }
 
   // Сохраняем обновленные переводы
-  writeJsonFile(savePath, targetTranslations);
+  writeJsonFile(savePath, targetTranslations)
 }
 
 function getKeysToTranslate(
   defaultTranslations: Record<string, unknown>,
   targetTranslations: Record<string, unknown>,
   replace: boolean,
-  prefix = ''
+  prefix = '',
 ): string[] {
-  let keys: string[] = [];
+  let keys: string[] = []
   for (const key in defaultTranslations) {
-    const defaultValue = defaultTranslations[key];
-    const targetValue = targetTranslations[key];
-    const newPrefix = prefix ? `${prefix}.${key}` : key;
+    const defaultValue = defaultTranslations[key]
+    const targetValue = targetTranslations[key]
+    const newPrefix = prefix ? `${prefix}.${key}` : key
 
     if (typeof defaultValue === 'object' && defaultValue !== null) {
-      const nestedTargetValue = (typeof targetValue === 'object' && targetValue !== null) ? targetValue as Record<string, unknown> : {};
+      const nestedTargetValue = (typeof targetValue === 'object' && targetValue !== null) ? targetValue as Record<string, unknown> : {}
       keys = keys.concat(
         getKeysToTranslate(
           defaultValue as Record<string, unknown>,
           nestedTargetValue,
           replace,
-          newPrefix
-        )
-      );
-    } else {
+          newPrefix,
+        ),
+      )
+    }
+    else {
       if (replace) {
-        keys.push(newPrefix);
-      } else {
+        keys.push(newPrefix)
+      }
+      else {
         if (targetValue === undefined || targetValue === '') {
-          keys.push(newPrefix);
+          keys.push(newPrefix)
         }
       }
     }
   }
-  return keys;
+  return keys
 }
 
 function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
-  const keys = key.split('.');
-  let result: unknown = obj;
+  const keys = key.split('.')
+  let result: unknown = obj
   for (const k of keys) {
     if (result && typeof result === 'object' && k in result) {
-      result = (result as Record<string, unknown>)[k];
-    } else {
-      return undefined;
+      result = (result as Record<string, unknown>)[k]
+    }
+    else {
+      return undefined
     }
   }
-  return result;
+  return result
 }
 
 function setNestedValue(obj: Record<string, unknown>, key: string, value: unknown): void {
-  const keys = key.split('.');
-  let current = obj;
+  const keys = key.split('.')
+  let current = obj
   keys.forEach((k, index) => {
     if (index === keys.length - 1) {
-      current[k] = value;
-    } else {
-      current[k] = current[k] || {};
-      current = current[k] as Record<string, unknown>;
+      current[k] = value
     }
-  });
+    else {
+      current[k] = current[k] || {}
+      current = current[k] as Record<string, unknown>
+    }
+  })
 }
 
 function parseOptions(optionsStr: string): { [key: string]: any } {
-  const options: { [key: string]: any } = {};
-  const pairs = optionsStr.split(',');
+  const options: { [key: string]: any } = {}
+  const pairs = optionsStr.split(',')
 
   for (const pair of pairs) {
-    const [key, value] = pair.split(':');
+    const [key, value] = pair.split(':')
     if (key && value !== undefined) {
-      const trimmedKey = key.trim();
-      const trimmedValue = value.trim();
+      const trimmedKey = key.trim()
+      const trimmedValue = value.trim()
 
       // Попытка преобразовать значение в число или булево
       if (trimmedValue.toLowerCase() === 'true') {
-        options[trimmedKey] = true;
-      } else if (trimmedValue.toLowerCase() === 'false') {
-        options[trimmedKey] = false;
-      } else if (!isNaN(Number(trimmedValue))) {
-        options[trimmedKey] = Number(trimmedValue);
-      } else {
-        options[trimmedKey] = trimmedValue;
+        options[trimmedKey] = true
+      }
+      else if (trimmedValue.toLowerCase() === 'false') {
+        options[trimmedKey] = false
+      }
+      else if (!Number.isNaN(Number(trimmedValue))) {
+        options[trimmedKey] = Number(trimmedValue)
+      }
+      else {
+        options[trimmedKey] = trimmedValue
       }
     }
   }
 
-  return options;
+  return options
 }

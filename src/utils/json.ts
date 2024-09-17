@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import consola from 'consola'
 import { ensureDirectoryExists } from './dir'
-import consola from "consola";
 
 // Функция для преобразования ключа в объект
 export function keyToNestedObject(key: string, value: unknown = ''): Record<string, unknown> {
@@ -32,10 +32,10 @@ export function writeJsonFile(filePath: string, data: Record<string, unknown>): 
 
 // Функция для преобразования ключей в вложенные объекты
 export function convertToNestedObjects(keys: Set<string>): Record<string, unknown> {
-  const nestedObject: Record<string, unknown> = {};
+  const nestedObject: Record<string, unknown> = {}
   keys.forEach((key) => {
-    const nested = keyToNestedObject(key);
-    Object.assign(nestedObject, nested);
-  });
-  return nestedObject;
+    const nested = keyToNestedObject(key)
+    Object.assign(nestedObject, nested)
+  })
+  return nestedObject
 }

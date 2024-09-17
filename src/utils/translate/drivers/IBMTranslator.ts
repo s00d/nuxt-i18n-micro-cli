@@ -1,32 +1,32 @@
 // src/utils/drivers/IBMTranslator.ts
 
-import axios from 'axios';
-import { TranslatorDriver } from './TranslatorDriver';
+import axios from 'axios'
+import type { TranslatorDriver } from './TranslatorDriver'
 
 interface IBMTranslateResponse {
   translations: Array<{
-    translation: string;
-  }>;
+    translation: string
+  }>
 }
 
 export class IBMTranslator implements TranslatorDriver {
-  private apiKey: string;
-  private url: string;
-  private version: string;
+  private apiKey: string
+  private url: string
+  private version: string
 
   constructor(apiKey: string, options?: { [key: string]: string }) {
-    this.apiKey = apiKey;
-    this.url = options?.url || 'https://api.us-south.language-translator.watson.cloud.ibm.com/instances/your-instance-id';
-    this.version = options?.version || '2022-08-01';
+    this.apiKey = apiKey
+    this.url = options?.url || 'https://api.us-south.language-translator.watson.cloud.ibm.com/instances/your-instance-id'
+    this.version = options?.version || '2022-08-01'
   }
 
   async translate(
     text: string,
     fromLang: string,
     toLang: string,
-    options?: { [key: string]: any }
+    _options?: { [key: string]: any },
   ): Promise<string> {
-    const modelId = `${fromLang}-${toLang}`;
+    const modelId = `${fromLang}-${toLang}`
 
     try {
       const response = await axios.post<IBMTranslateResponse>(
@@ -40,14 +40,15 @@ export class IBMTranslator implements TranslatorDriver {
             username: 'apikey',
             password: this.apiKey,
           },
-        }
-      );
+        },
+      )
 
-      const data = response.data;
+      const data = response.data
 
-      return data.translations[0].translation;
-    } catch (error: any) {
-      throw new Error(`IBM Watson API error: ${error.message}`);
+      return data.translations[0].translation
+    }
+    catch (error: any) {
+      throw new Error(`IBM Watson API error: ${error.message}`)
     }
   }
 }

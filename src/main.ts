@@ -1,7 +1,7 @@
 import { defineCommand } from 'citty'
+import consola from 'consola'
 import pPkg from '../package.json' assert { type: 'json' }
 import { commands } from './commands'
-import consola from "consola";
 
 export const main = defineCommand({
   meta: {

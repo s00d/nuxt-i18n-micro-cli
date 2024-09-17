@@ -1,7 +1,5 @@
-// src/utils/translationApi.ts
-
-import { TranslatorDriver } from './drivers/TranslatorDriver';
-import translatorRegistry from "./TranslatorRegistry";
+import type { TranslatorDriver } from './drivers/TranslatorDriver'
+import translatorRegistry from './TranslatorRegistry'
 
 export async function translateText(
   text: string,
@@ -9,21 +7,39 @@ export async function translateText(
   toLang: string,
   service: string,
   apiKey: string,
-  options?: { [key: string]: any }
+  options?: { [key: string]: any },
 ): Promise<string> {
-  const sourceLang = mapLanguageCode(service, fromLang);
-  const targetLang = mapLanguageCode(service, toLang);
+  const sourceLang = mapLanguageCode(service, fromLang)
+  const targetLang = mapLanguageCode(service, toLang)
 
-  const TranslatorClass = translatorRegistry[service.toLowerCase()];
+  const TranslatorClass = translatorRegistry[service.toLowerCase()]
 
   if (!TranslatorClass) {
-    throw new Error(`Unsupported translation service: ${service}`);
+    throw new Error(`Unsupported translation service: ${service}`)
   }
 
   // Некоторые переводчики не требуют apiKey
-  const translator: TranslatorDriver = new TranslatorClass(apiKey, options);
+  const translator: TranslatorDriver = new TranslatorClass(apiKey, options)
 
-  return translator.translate(text, sourceLang, targetLang, options);
+  return translator.translate(text, sourceLang, targetLang, options)
+}
+
+const deeplLangMap: { [key: string]: string } = {
+  'en': 'EN',
+  'en-us': 'EN-US',
+  'en-gb': 'EN-GB',
+  'de': 'DE',
+  'fr': 'FR',
+  'es': 'ES',
+  'it': 'IT',
+  'nl': 'NL',
+  'pl': 'PL',
+  'pt': 'PT-PT',
+  'pt-br': 'PT-BR',
+  'ru': 'RU',
+  'ja': 'JA',
+  'zh': 'ZH',
+  // Добавьте другие соответствия
 }
 
 function mapLanguageCode(service: string, lang: string): string {
@@ -31,25 +47,8 @@ function mapLanguageCode(service: string, lang: string): string {
   switch (service.toLowerCase()) {
     case 'deepl':
       // Маппинг языковых кодов для DeepL
-      const deeplLangMap: { [key: string]: string } = {
-        'en': 'EN',
-        'en-us': 'EN-US',
-        'en-gb': 'EN-GB',
-        'de': 'DE',
-        'fr': 'FR',
-        'es': 'ES',
-        'it': 'IT',
-        'nl': 'NL',
-        'pl': 'PL',
-        'pt': 'PT-PT',
-        'pt-br': 'PT-BR',
-        'ru': 'RU',
-        'ja': 'JA',
-        'zh': 'ZH',
-        // Добавьте другие соответствия
-      };
-      return deeplLangMap[lang.toLowerCase()] || lang.toUpperCase();
+      return deeplLangMap[lang.toLowerCase()] || lang.toUpperCase()
     default:
-      return lang;
+      return lang
   }
 }

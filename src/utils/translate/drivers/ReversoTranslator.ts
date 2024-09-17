@@ -1,27 +1,25 @@
-// src/utils/drivers/ReversoTranslator.ts
-
-import axios from 'axios';
-import { TranslatorDriver } from './TranslatorDriver';
+import axios from 'axios'
+import type { TranslatorDriver } from './TranslatorDriver'
 
 interface ReversoTranslateResponse {
-  translation: string[];
+  translation: string[]
   // другие поля...
 }
 
 export class ReversoTranslator implements TranslatorDriver {
-  private baseUrl: string;
+  private baseUrl: string
 
   constructor(_apiKey: string, options?: { [key: string]: string }) {
-    this.baseUrl = options?.baseUrl || 'https://api.reverso.net/translate/v1/translation';
+    this.baseUrl = options?.baseUrl || 'https://api.reverso.net/translate/v1/translation'
   }
 
   async translate(
     text: string,
     fromLang: string,
     toLang: string,
-    options?: { [key: string]: any }
+    _options?: { [key: string]: any },
   ): Promise<string> {
-    const url = this.baseUrl;
+    const url = this.baseUrl
 
     const data = {
       input: text,
@@ -32,24 +30,25 @@ export class ReversoTranslator implements TranslatorDriver {
         sentenceSplitter: false,
         origin: 'translation.web',
       },
-    };
+    }
 
     try {
       const response = await axios.post<ReversoTranslateResponse>(url, data, {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      })
 
-      const responseData = response.data;
+      const responseData = response.data
 
       if (!responseData.translation || responseData.translation.length === 0) {
-        throw new Error('Reverso API error: No translation found in response');
+        throw new Error('Reverso API error: No translation found in response')
       }
 
-      return responseData.translation[0];
-    } catch (error: any) {
-      throw new Error(`Reverso API error: ${error.message}`);
+      return responseData.translation[0]
+    }
+    catch (error: any) {
+      throw new Error(`Reverso API error: ${error.message}`)
     }
   }
 }

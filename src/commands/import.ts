@@ -1,10 +1,10 @@
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
+import consola from 'consola'
 import { loadKit } from '../utils/kit'
 import { ensureDirectoryExists } from '../utils/dir'
 import { convertPoToJson } from '../utils/po'
-import { sharedArgs } from "./_shared";
-import consola from "consola";
+import { sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {

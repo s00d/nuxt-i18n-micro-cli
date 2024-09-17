@@ -1,12 +1,12 @@
 // src/commands/stats.ts
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { defineCommand } from 'citty';
-import { resolve } from 'pathe';
-import { loadKit } from '../utils/kit';
-import { loadJsonFile } from '../utils/json';
-import consola from 'consola';
+import fs from 'node:fs'
+import path from 'node:path'
+import { defineCommand } from 'citty'
+import { resolve } from 'pathe'
+import consola from 'consola'
+import { loadKit } from '../utils/kit'
+import { loadJsonFile } from '../utils/json'
 
 export default defineCommand({
   meta: {
@@ -25,129 +25,132 @@ export default defineCommand({
       default: false,
     },
   },
-  async run({ args }: { args: { cwd?: string; translationDir?: string; full?: boolean } }) {
-    const cwd = resolve((args.cwd || '.').toString());
+  async run({ args }: { args: { cwd?: string, translationDir?: string, full?: boolean } }) {
+    const cwd = resolve((args.cwd || '.').toString())
 
-    const kit = await loadKit(cwd);
+    const kit = await loadKit(cwd)
     const nuxt = await kit.loadNuxt({
       cwd,
       dotenv: { cwd },
-    });
+    })
 
-    const locales = (nuxt.options as any).i18n.locales ?? [];
+    const locales = (nuxt.options as any).i18n.locales ?? []
     const translationDir = path.resolve(
       cwd,
-      args.translationDir ?? (nuxt.options as any).i18n.translationDir ?? 'locales'
-    );
+      args.translationDir ?? (nuxt.options as any).i18n.translationDir ?? 'locales',
+    )
 
     // Load reference (default) locale for global translations
-    const referenceLocale = locales[0].code;
+    const referenceLocale = locales[0].code
     const referenceGlobalTranslations = loadJsonFile(
-      path.join(translationDir, `${referenceLocale}.json`)
-    );
-    const referenceGlobalKeys = Object.keys(flattenTranslations(referenceGlobalTranslations));
+      path.join(translationDir, `${referenceLocale}.json`),
+    )
+    const referenceGlobalKeys = Object.keys(flattenTranslations(referenceGlobalTranslations))
 
-    const pagesDir = path.join(translationDir, 'pages');
-    let pagePaths: string[] = [];
+    const pagesDir = path.join(translationDir, 'pages')
+    const pagePaths: string[] = []
 
     // Retrieve all paths for page-specific translations
     function getAllPagePaths(dir: string, basePath = '') {
       if (fs.existsSync(dir)) {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        const entries = fs.readdirSync(dir, { withFileTypes: true })
         entries.forEach((entry) => {
-          const fullPath = path.join(dir, entry.name);
-          const relativePath = path.join(basePath, entry.name);
+          const fullPath = path.join(dir, entry.name)
+          const relativePath = path.join(basePath, entry.name)
           if (entry.isDirectory()) {
-            getAllPagePaths(fullPath, relativePath);
-          } else if (entry.isFile() && path.extname(entry.name) === '.json') {
-            pagePaths.push(relativePath);
+            getAllPagePaths(fullPath, relativePath)
           }
-        });
+          else if (entry.isFile() && path.extname(entry.name) === '.json') {
+            pagePaths.push(relativePath)
+          }
+        })
       }
     }
 
-    getAllPagePaths(pagesDir);
+    getAllPagePaths(pagesDir)
 
     for (const locale of locales) {
-      const { code } = locale;
+      const { code } = locale
 
       // Global translations statistics
-      const globalTranslations = loadJsonFile(path.join(translationDir, `${code}.json`));
-      const globalKeys = Object.keys(flattenTranslations(globalTranslations));
+      const globalTranslations = loadJsonFile(path.join(translationDir, `${code}.json`))
+      const globalKeys = Object.keys(flattenTranslations(globalTranslations))
       const translatedGlobalKeys = globalKeys.filter((key) => {
-        const value = getNestedValue(globalTranslations, key);
-        return value && value !== '';
-      });
+        const value = getNestedValue(globalTranslations, key)
+        return value && value !== ''
+      })
 
-      const globalPercentage = ((translatedGlobalKeys.length / referenceGlobalKeys.length) * 100).toFixed(2);
+      const globalPercentage = ((translatedGlobalKeys.length / referenceGlobalKeys.length) * 100).toFixed(2)
 
-      let totalPageKeys = 0;
-      let totalTranslatedPageKeys = 0;
+      let totalPageKeys = 0
+      let totalTranslatedPageKeys = 0
 
       // Page-specific translations statistics
       for (const relativePath of pagePaths) {
-        const referencePageTranslations = loadJsonFile(path.join(translationDir, 'pages', relativePath.replace(`${referenceLocale}.json`, `${referenceLocale}.json`)));
-        const referencePageKeys = Object.keys(flattenTranslations(referencePageTranslations));
+        const referencePageTranslations = loadJsonFile(path.join(translationDir, 'pages', relativePath.replace(`${referenceLocale}.json`, `${referenceLocale}.json`)))
+        const referencePageKeys = Object.keys(flattenTranslations(referencePageTranslations))
 
-        const pageTranslationPath = path.join(translationDir, 'pages', relativePath.replace(`${referenceLocale}.json`, `${code}.json`));
-        let pageTranslations: Record<string, unknown> = {};
+        const pageTranslationPath = path.join(translationDir, 'pages', relativePath.replace(`${referenceLocale}.json`, `${code}.json`))
+        let pageTranslations: Record<string, unknown> = {}
         if (fs.existsSync(pageTranslationPath)) {
-          pageTranslations = loadJsonFile(pageTranslationPath);
+          pageTranslations = loadJsonFile(pageTranslationPath)
         }
 
-        const pageKeys = Object.keys(flattenTranslations(pageTranslations));
+        const pageKeys = Object.keys(flattenTranslations(pageTranslations))
         const translatedPageKeys = pageKeys.filter((key) => {
-          const value = getNestedValue(pageTranslations, key);
-          return value && value !== '';
-        });
+          const value = getNestedValue(pageTranslations, key)
+          return value && value !== ''
+        })
 
-        const pagePercentage = ((translatedPageKeys.length / referencePageKeys.length) * 100).toFixed(2);
+        const pagePercentage = ((translatedPageKeys.length / referencePageKeys.length) * 100).toFixed(2)
 
         if (args.full) {
-          consola.info(`Page: ${relativePath} - Translated keys: ${translatedPageKeys.length} / ${referencePageKeys.length} (${pagePercentage}%)`);
+          consola.info(`Page: ${relativePath} - Translated keys: ${translatedPageKeys.length} / ${referencePageKeys.length} (${pagePercentage}%)`)
         }
 
-        totalPageKeys += referencePageKeys.length;
-        totalTranslatedPageKeys += translatedPageKeys.length;
+        totalPageKeys += referencePageKeys.length
+        totalTranslatedPageKeys += translatedPageKeys.length
       }
 
       // Combined statistics
-      const totalGlobalAndPageKeys = referenceGlobalKeys.length + totalPageKeys;
-      const totalTranslatedGlobalAndPageKeys = translatedGlobalKeys.length + totalTranslatedPageKeys;
-      const combinedPercentage = ((totalTranslatedGlobalAndPageKeys / totalGlobalAndPageKeys) * 100).toFixed(2);
+      const totalGlobalAndPageKeys = referenceGlobalKeys.length + totalPageKeys
+      const totalTranslatedGlobalAndPageKeys = translatedGlobalKeys.length + totalTranslatedPageKeys
+      const combinedPercentage = ((totalTranslatedGlobalAndPageKeys / totalGlobalAndPageKeys) * 100).toFixed(2)
 
       if (args.full) {
-        consola.info(`Global: ${code} - Total keys: ${globalKeys.length}, Translated keys: ${translatedGlobalKeys.length}, Completion: ${globalPercentage}%`);
+        consola.info(`Global: ${code} - Total keys: ${globalKeys.length}, Translated keys: ${translatedGlobalKeys.length}, Completion: ${globalPercentage}%`)
       }
 
-      consola.info(`Combined translations - Total keys: ${totalGlobalAndPageKeys}, Translated keys: ${totalTranslatedGlobalAndPageKeys}, Completion: ${combinedPercentage}%`);
+      consola.info(`Combined translations - Total keys: ${totalGlobalAndPageKeys}, Translated keys: ${totalTranslatedGlobalAndPageKeys}, Completion: ${combinedPercentage}%`)
     }
   },
-});
+})
 
 function flattenTranslations(translations: Record<string, unknown>, prefix = ''): Record<string, string> {
-  let result: Record<string, string> = {};
+  let result: Record<string, string> = {}
   for (const key in translations) {
-    const value = translations[key];
-    const newPrefix = prefix ? `${prefix}.${key}` : key;
+    const value = translations[key]
+    const newPrefix = prefix ? `${prefix}.${key}` : key
     if (typeof value === 'string') {
-      result[newPrefix] = value;
-    } else if (typeof value === 'object' && value !== null) {
-      result = { ...result, ...flattenTranslations(value as Record<string, unknown>, newPrefix) };
+      result[newPrefix] = value
+    }
+    else if (typeof value === 'object' && value !== null) {
+      result = { ...result, ...flattenTranslations(value as Record<string, unknown>, newPrefix) }
     }
   }
-  return result;
+  return result
 }
 
 function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
   return key.split('.').reduce<unknown>(
     (o: unknown, k: string) => {
       if (o && typeof o === 'object') {
-        return (o as Record<string, unknown>)[k];
-      } else {
-        return undefined;
+        return (o as Record<string, unknown>)[k]
+      }
+      else {
+        return undefined
       }
     },
-    obj
-  );
+    obj,
+  )
 }

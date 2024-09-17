@@ -1,27 +1,27 @@
 // src/utils/drivers/AzureTranslator.ts
 
-import axios from 'axios';
-import { TranslatorDriver } from './TranslatorDriver';
+import axios from 'axios'
+import type { TranslatorDriver } from './TranslatorDriver'
 
 interface AzureTranslateResponseItem {
   translations: Array<{
-    text: string;
-    to: string;
-  }>;
+    text: string
+    to: string
+  }>
 }
 
 interface AzureTranslateError {
   error: {
-    code: string;
-    message: string;
-  };
+    code: string
+    message: string
+  }
 }
 
 export class AzureTranslator implements TranslatorDriver {
-  private apiKey: string;
+  private apiKey: string
 
-  constructor(apiKey: string, _options?:  { [key: string]: string }) {
-    this.apiKey = apiKey;
+  constructor(apiKey: string, _options?: { [key: string]: string }) {
+    this.apiKey = apiKey
   }
 
   async translate(
@@ -29,21 +29,21 @@ export class AzureTranslator implements TranslatorDriver {
     fromLang: string,
     toLang: string,
     options?: {
-      profanityAction?: string;
-      textType?: string;
-    }
+      profanityAction?: string
+      textType?: string
+    },
   ): Promise<string> {
-    const endpoint = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0';
+    const endpoint = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0'
 
     const params = new URLSearchParams({
       from: fromLang,
       to: toLang,
       ...options,
-    });
+    })
 
-    const url = `${endpoint}&${params.toString()}`;
+    const url = `${endpoint}&${params.toString()}`
 
-    const body = [{ Text: text }];
+    const body = [{ Text: text }]
 
     try {
       const response = await axios.post<AzureTranslateResponseItem[] | AzureTranslateError>(
@@ -54,25 +54,29 @@ export class AzureTranslator implements TranslatorDriver {
             'Ocp-Apim-Subscription-Key': this.apiKey,
             'Content-Type': 'application/json',
           },
-        }
-      );
+        },
+      )
 
-      const data = response.data;
+      const data = response.data
 
       if (Array.isArray(data)) {
-        const translatedText = data[0]?.translations[0]?.text;
+        const translatedText = data[0]?.translations[0]?.text
         if (translatedText) {
-          return translatedText;
-        } else {
-          throw new Error('Azure Translator API error: No translation found in response');
+          return translatedText
         }
-      } else if ('error' in data) {
-        throw new Error(`Azure Translator API error: ${data.error.message}`);
-      } else {
-        throw new Error('Azure Translator API error: Unknown response format');
+        else {
+          throw new Error('Azure Translator API error: No translation found in response')
+        }
       }
-    } catch (error: any) {
-      throw new Error(`Azure Translator API error: ${error.message}`);
+      else if ('error' in data) {
+        throw new Error(`Azure Translator API error: ${data.error.message}`)
+      }
+      else {
+        throw new Error('Azure Translator API error: Unknown response format')
+      }
+    }
+    catch (error: any) {
+      throw new Error(`Azure Translator API error: ${error.message}`)
     }
   }
 }

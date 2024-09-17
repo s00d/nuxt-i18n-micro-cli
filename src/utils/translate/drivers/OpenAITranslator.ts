@@ -1,28 +1,28 @@
 // src/utils/drivers/OpenAITranslator.ts
 
-import axios from 'axios';
-import { TranslatorDriver } from './TranslatorDriver';
+import axios from 'axios'
+import type { TranslatorDriver } from './TranslatorDriver'
 
 interface OpenAIChatCompletionResponse {
   choices: Array<{
     message: {
-      content: string;
-      role: string;
-    };
-  }>;
+      content: string
+      role: string
+    }
+  }>
   error?: {
-    message: string;
-    type: string;
-    param: string | null;
-    code: string | null;
-  };
+    message: string
+    type: string
+    param: string | null
+    code: string | null
+  }
 }
 
 export class OpenAITranslator implements TranslatorDriver {
-  private apiKey: string;
+  private apiKey: string
 
   constructor(apiKey: string, _options?: { [key: string]: string }) {
-    this.apiKey = apiKey;
+    this.apiKey = apiKey
   }
 
   async translate(
@@ -30,19 +30,19 @@ export class OpenAITranslator implements TranslatorDriver {
     fromLang: string,
     toLang: string,
     options?: {
-      openaiModel?: string;
-      max_tokens?: number;
-      temperature?: number;
-      top_p?: number;
-      n?: number;
-      stop?: string | string[];
-    }
+      openaiModel?: string
+      max_tokens?: number
+      temperature?: number
+      top_p?: number
+      n?: number
+      stop?: string | string[]
+    },
   ): Promise<string> {
-    const url = 'https://api.openai.com/v1/chat/completions';
+    const url = 'https://api.openai.com/v1/chat/completions'
 
-    const model = options?.openaiModel || 'gpt-3.5-turbo';
-    const maxTokens = options?.max_tokens ?? 1000;
-    const temperature = options?.temperature ?? 0.3;
+    const model = options?.openaiModel || 'gpt-3.5-turbo'
+    const maxTokens = options?.max_tokens ?? 1000
+    const temperature = options?.temperature ?? 0.3
 
     const messages = [
       {
@@ -53,7 +53,7 @@ export class OpenAITranslator implements TranslatorDriver {
         role: 'user',
         content: text,
       },
-    ];
+    ]
 
     const body = {
       model: model,
@@ -61,25 +61,26 @@ export class OpenAITranslator implements TranslatorDriver {
       max_tokens: maxTokens,
       temperature: temperature,
       ...options, // Включаем дополнительные опции
-    };
+    }
 
     try {
       const response = await axios.post<OpenAIChatCompletionResponse>(url, body, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.apiKey}`,
+          'Authorization': `Bearer ${this.apiKey}`,
         },
-      });
+      })
 
-      const data = response.data;
+      const data = response.data
 
       if (data.error) {
-        throw new Error(`OpenAI API error: ${data.error.message}`);
+        throw new Error(`OpenAI API error: ${data.error.message}`)
       }
 
-      return data.choices[0].message.content.trim();
-    } catch (error: any) {
-      throw new Error(`OpenAI API error: ${error.message}`);
+      return data.choices[0].message.content.trim()
+    }
+    catch (error: any) {
+      throw new Error(`OpenAI API error: ${error.message}`)
     }
   }
 }

@@ -6,5 +6,5 @@ export interface TranslatorDriver {
     fromLang: string,
     toLang: string,
     options?: { [key: string]: any }
-  ): Promise<string>;
+  ): Promise<string>
 }

@@ -1,7 +1,4 @@
-import { resolve } from 'node:path'
 import { defineNuxtConfig } from 'nuxt/config'
-import { defineNuxtModule } from '@nuxt/kit'
-import { startSubprocess } from '@nuxt/devtools-kit'
 
 export default defineNuxtConfig({
   modules: [

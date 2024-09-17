@@ -15,5 +15,6 @@ export default createConfigForNuxt({
   rules: {
     'vue/singleline-html-element-content-newline': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'vue/no-v-html': 'off',
   },
 })

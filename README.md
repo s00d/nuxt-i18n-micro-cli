@@ -1,9 +1,6 @@
 # Nuxt i18n CLI
 
 
-
-# 🌐 nuxt-i18n-micro-cli Guide
-
 ## 📖 Introduction
 
 `nuxt-i18n-micro-cli` is a command-line tool designed to streamline the localization and internationalization process in Nuxt.js projects using the `nuxt-i18n` module. It provides utilities to extract translation keys from your codebase, manage translation files, synchronize translations across locales, and automate the translation process using external translation services.

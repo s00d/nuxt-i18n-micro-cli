@@ -28,7 +28,9 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, translationDir?: string, full?: boolean } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir } = await getI18nConfig(cwd)
+    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd)
+
+    const translationDir = args.translationDir || defaultTranslationDir
 
     // Load reference (default) locale for global translations
     const referenceLocale = locales[0].code

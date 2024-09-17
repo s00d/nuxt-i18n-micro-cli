@@ -111,6 +111,16 @@ export default defineCommand({
           return value && value !== ''
         })
 
+        if (args.showMissingKeys) {
+          const missingPageKeys = referencePageKeys.filter(key => !pageKeys.includes(key))
+          if (missingPageKeys.length > 0) {
+            consola.info(`Missing keys for page ${relativePath} in locale ${code}:`)
+            missingPageKeys.forEach((key) => {
+              consola.info(`  - ${key}: ${getNestedValue(referencePageTranslations, key)}`)
+            })
+          }
+        }
+
         const pagePercentage = ((translatedPageKeys.length / referencePageKeys.length) * 100).toFixed(2)
 
         if (args.full) {

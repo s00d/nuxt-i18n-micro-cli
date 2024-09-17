@@ -25,8 +25,6 @@ export default defineCommand({
     },
   },
   async run({ args }: { args: { cwd?: string, potsDir: string, translationDir: string } }) {
-    consola.log('Parsed args:', args)
-
     const cwd = resolve((args.cwd || '.').toString())
     const kit = await loadKit(cwd)
     const nuxt = await kit.loadNuxt({

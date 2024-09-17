@@ -1,6 +1,6 @@
 {
   "name": "nuxt-i18n-micro-cli",
-  "version": "3.13.1",
+  "version": "1.0.0",
   "description": "⚡️ nuxt-i18n-micro-cli CLI Experience",
   "repository": "s00d/nuxt-i18n-micro-cli",
   "license": "MIT",
@@ -11,8 +11,8 @@
   },
   "types": "./dist/index.d.ts",
   "bin": {
-    "i18n": "./bin/i18n.mjs",
-    "i18n-cli": "./bin/i18n.mjs"
+    "i18n-micro": "./bin/i18n.mjs",
+    "i18n-micro-cli": "./bin/i18n.mjs"
   },
   "files": [
     "bin",
@@ -87,7 +87,9 @@
     "node": "^16.10.0 || >=18.0.0"
   },
   "dependencies": {
+    "axios": "^1.7.7",
     "gettext-parser": "^8.0.0",
-    "glob": "^9.3.5"
+    "glob": "^9.3.5",
+    "node-fetch": "^3.3.2"
   }
 }

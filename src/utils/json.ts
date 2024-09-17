@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { ensureDirectoryExists } from './dir'
+import consola from "consola";
 
 // Функция для преобразования ключа в объект
 export function keyToNestedObject(key: string, value: unknown = ''): Record<string, unknown> {
@@ -18,7 +19,7 @@ export function loadJsonFile(filePath: string): Record<string, unknown> {
       return JSON.parse(content)
     }
     catch (error) {
-      console.error(`Error parsing JSON file at ${filePath}:`, error)
+      consola.error(`Error parsing JSON file at ${filePath}:`, error)
     }
   }
   return {}
@@ -27,4 +28,14 @@ export function loadJsonFile(filePath: string): Record<string, unknown> {
 export function writeJsonFile(filePath: string, data: Record<string, unknown>): void {
   ensureDirectoryExists(path.dirname(filePath))
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8')
+}
+
+// Функция для преобразования ключей в вложенные объекты
+export function convertToNestedObjects(keys: Set<string>): Record<string, unknown> {
+  const nestedObject: Record<string, unknown> = {};
+  keys.forEach((key) => {
+    const nested = keyToNestedObject(key);
+    Object.assign(nestedObject, nested);
+  });
+  return nestedObject;
 }

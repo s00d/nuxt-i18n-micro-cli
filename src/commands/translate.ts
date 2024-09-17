@@ -22,7 +22,7 @@ export default defineCommand({
     },
     service: {
       type: 'string',
-      description: 'Translation service to use (e.g., google,deepl,yandex)',
+      description: 'Translation service to use (e.g., google, deepl, yandex)',
       default: 'google',
     },
     token: {
@@ -34,8 +34,13 @@ export default defineCommand({
       type: 'string',
       description: 'Additional options for the translation service in key:value pairs, separated by commas',
     },
+    replace: {
+      type: 'boolean',
+      description: 'Translate all keys, replacing existing translations',
+      default: false,
+    },
   },
-  async run({ args }: { args: { cwd?: string; translationDir?: string; service: string; token: string; options?: string } }) {
+  async run({ args }: { args: { cwd?: string; translationDir?: string; service: string; token: string; options?: string; replace?: boolean } }) {
     const cwd = resolve((args.cwd || '.').toString());
 
     const kit = await loadKit(cwd);
@@ -90,9 +95,15 @@ export default defineCommand({
       if (code === defaultLocale) continue;
 
       // Загружаем глобальные переводы для текущей локали
-      const globalTranslations = loadJsonFile(path.join(translationDir, `${code}.json`));
+      const globalTranslationsPath = path.join(translationDir, `${code}.json`);
+      let globalTranslations: Record<string, unknown> = {};
+      if (fs.existsSync(globalTranslationsPath)) {
+        globalTranslations = loadJsonFile(globalTranslationsPath);
+      }
 
-      // Ищем и переводим отсутствующие глобальные ключи
+      consola.info(`Processing file: ${globalTranslationsPath}`);
+
+      // Ищем и переводим ключи для глобальных переводов
       await processTranslations(
         defaultGlobalTranslations,
         globalTranslations,
@@ -101,7 +112,8 @@ export default defineCommand({
         args.service,
         args.token,
         options,
-        path.join(translationDir, `${code}.json`)
+        globalTranslationsPath,
+        args.replace ?? false
       );
 
       // Обрабатываем страницы
@@ -114,7 +126,9 @@ export default defineCommand({
           targetTranslations = loadJsonFile(targetTranslationPath);
         }
 
-        // Ищем и переводим отсутствующие ключи для текущей страницы
+        consola.info(`Processing file: ${targetTranslationPath}`);
+
+        // Ищем и переводим ключи для текущей страницы
         await processTranslations(
           defaultTranslations,
           targetTranslations,
@@ -123,12 +137,13 @@ export default defineCommand({
           args.service,
           args.token,
           options,
-          targetTranslationPath
+          targetTranslationPath,
+          args.replace ?? false
         );
       }
     }
 
-    consola.success('Missing translations have been automatically translated.');
+    consola.success('Translations have been automatically processed.');
   },
 });
 
@@ -140,16 +155,17 @@ async function processTranslations(
   service: string,
   token: string,
   options: { [key: string]: any },
-  savePath: string
+  savePath: string,
+  replace: boolean
 ) {
-  const missingKeys = findMissingTranslations(defaultTranslations, targetTranslations);
+  const keysToTranslate = getKeysToTranslate(defaultTranslations, targetTranslations, replace);
 
-  if (missingKeys.length === 0) {
-    consola.info(`No missing translations for locale ${targetLocale} in ${savePath}`);
+  if (keysToTranslate.length === 0) {
+    consola.info(`No translations needed for locale ${targetLocale} in ${savePath}`);
     return;
   }
 
-  for (const key of missingKeys) {
+  for (const key of keysToTranslate) {
     const textToTranslate = getNestedValue(defaultTranslations, key) as string;
 
     let translatedText: string | null = null;
@@ -181,38 +197,39 @@ async function processTranslations(
   writeJsonFile(savePath, targetTranslations);
 }
 
-function findMissingTranslations(
+function getKeysToTranslate(
   defaultTranslations: Record<string, unknown>,
   targetTranslations: Record<string, unknown>,
+  replace: boolean,
   prefix = ''
 ): string[] {
-  let missingKeys: string[] = [];
+  let keys: string[] = [];
   for (const key in defaultTranslations) {
     const defaultValue = defaultTranslations[key];
     const targetValue = targetTranslations[key];
     const newPrefix = prefix ? `${prefix}.${key}` : key;
 
     if (typeof defaultValue === 'object' && defaultValue !== null) {
-      if (typeof targetValue === 'object' && targetValue !== null) {
-        missingKeys = missingKeys.concat(
-          findMissingTranslations(
-            defaultValue as Record<string, unknown>,
-            targetValue as Record<string, unknown>,
-            newPrefix
-          )
-        );
-      } else {
-        missingKeys = missingKeys.concat(
-          findMissingTranslations(defaultValue as Record<string, unknown>, {}, newPrefix)
-        );
-      }
+      const nestedTargetValue = (typeof targetValue === 'object' && targetValue !== null) ? targetValue as Record<string, unknown> : {};
+      keys = keys.concat(
+        getKeysToTranslate(
+          defaultValue as Record<string, unknown>,
+          nestedTargetValue,
+          replace,
+          newPrefix
+        )
+      );
     } else {
-      if (targetValue === undefined || targetValue === '') {
-        missingKeys.push(newPrefix);
+      if (replace) {
+        keys.push(newPrefix);
+      } else {
+        if (targetValue === undefined || targetValue === '') {
+          keys.push(newPrefix);
+        }
       }
     }
   }
-  return missingKeys;
+  return keys;
 }
 
 function getNestedValue(obj: Record<string, unknown>, key: string): unknown {

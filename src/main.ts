@@ -1,6 +1,7 @@
 import { defineCommand } from 'citty'
 import pPkg from '../package.json' assert { type: 'json' }
 import { commands } from './commands'
+import consola from "consola";
 
 export const main = defineCommand({
   meta: {
@@ -10,9 +11,9 @@ export const main = defineCommand({
   },
   subCommands: commands,
   setup() {
-    console.log('Setup')
+    consola.info('Setup')
   },
   cleanup() {
-    console.log('Cleanup')
+    consola.info('Cleanup')
   },
 })

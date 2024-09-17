@@ -6,4 +6,9 @@ export const commands = {
   'import': () => import('./import').then(_rDefault),
   'export': () => import('./export').then(_rDefault),
   'extract': () => import('./extract').then(_rDefault),
+  'sync': () => import('./sync').then(_rDefault),
+  'validate': () => import('./validate').then(_rDefault),
+  'stats': () => import('./stats').then(_rDefault),
+  'clean': () => import('./clean').then(_rDefault),
+  'translate': () => import('./translate').then(_rDefault),
 } as const

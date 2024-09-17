@@ -14,7 +14,6 @@ export default createConfigForNuxt({
 }).append({
   rules: {
     'vue/singleline-html-element-content-newline': 'off',
-    // TODO: remove usage of `any` throughout codebase
     '@typescript-eslint/no-explicit-any': 'off',
   },
 })

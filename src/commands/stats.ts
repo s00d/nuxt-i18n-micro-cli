@@ -26,8 +26,13 @@ export default defineCommand({
       description: 'Display only combined translations statistics',
       default: false,
     },
+    showMissingKeys: {
+      type: 'boolean',
+      description: 'Show missing translation keys and their values in the default locale',
+      default: false,
+    },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, full?: boolean, logLevel?: string } }) {
+  async run({ args }: { args: { cwd?: string, translationDir?: string, full?: boolean, showMissingKeys: boolean, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
     const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
@@ -73,6 +78,16 @@ export default defineCommand({
         const value = getNestedValue(globalTranslations, key)
         return value && value !== ''
       })
+
+      if (args.showMissingKeys) {
+        const missingGlobalKeys = referenceGlobalKeys.filter(key => !globalKeys.includes(key))
+        if (missingGlobalKeys.length > 0) {
+          consola.info(`Missing global keys for locale ${code}:`)
+          missingGlobalKeys.forEach((key) => {
+            consola.info(`  - ${key}: ${getNestedValue(referenceGlobalTranslations, key)}`)
+          })
+        }
+      }
 
       const globalPercentage = ((translatedGlobalKeys.length / referenceGlobalKeys.length) * 100).toFixed(2)
 

@@ -3,9 +3,11 @@ import path from 'node:path'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
+import prompts from 'prompts'
 import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { translateText } from '../utils/translate'
 import { getI18nConfig } from '../utils/kit'
+import translatorRegistry from '../utils/translate/TranslatorRegistry'
 
 export default defineCommand({
   meta: {
@@ -21,7 +23,7 @@ export default defineCommand({
     service: {
       type: 'string',
       description: 'Translation service to use (e.g., google, deepl, yandex)',
-      default: 'google',
+      required: false,
     },
     token: {
       type: 'string',
@@ -40,6 +42,28 @@ export default defineCommand({
   },
   async run({ args }: { args: { cwd?: string, translationDir?: string, service: string, token: string, options?: string, replace?: boolean } }) {
     const cwd = resolve((args.cwd || '.').toString())
+
+    let service = args.service
+    if (!service) {
+      const response = await prompts({
+        type: 'select',
+        name: 'service',
+        message: 'Choose a translation service',
+        choices: Object.keys(translatorRegistry).map(key => ({ title: key, value: key })),
+      })
+      service = response.service
+    }
+
+    let token = args.token
+    if (!token) {
+      const response = await prompts({
+        type: 'text',
+        name: 'token',
+        message: `Enter API key for ${service}`,
+        validate: value => value ? true : 'API key is required',
+      })
+      token = response.token
+    }
 
     const { locales, translationDir, defaultLocale } = await getI18nConfig(cwd)
 
@@ -97,8 +121,8 @@ export default defineCommand({
         globalTranslations,
         defaultLocale,
         code,
-        args.service,
-        args.token,
+        service,
+        token,
         options,
         globalTranslationsPath,
         args.replace ?? false,

@@ -23,6 +23,9 @@ importers:
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2
+      prompts:
+        specifier: ^2.4.2
+        version: 2.4.2
     optionalDependencies:
       fsevents:
         specifier: ~2.3.3
@@ -49,6 +52,9 @@ importers:
       '@types/node':
         specifier: ^20.16.5
         version: 20.16.5
+      '@types/prompts':
+        specifier: ^2.4.9
+        version: 2.4.9
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -1389,6 +1395,9 @@ packages:
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
+
+  '@types/prompts@2.4.9':
+    resolution: {integrity: sha512-qTxFi6Buiu8+50/+3DGIWLHM6QuWsEKugJnnP6iv2Mc4ncxE4A/OJkjuVOA+5X0X1S/nq5VJRa8Lu+nwcvbrKA==}
 
   '@types/readable-stream@4.0.15':
     resolution: {integrity: sha512-oAZ3kw+kJFkEqyh7xORZOku1YAKvsFTogRY8kVl4vHpEKiDkfnSA/My8haRE7fvmix5Zyy+1pwzOi7yycGLBJw==}
@@ -5848,6 +5857,11 @@ snapshots:
       undici-types: 6.19.8
 
   '@types/normalize-package-data@2.4.4': {}
+
+  '@types/prompts@2.4.9':
+    dependencies:
+      '@types/node': 20.16.5
+      kleur: 3.0.3
 
   '@types/readable-stream@4.0.15':
     dependencies:

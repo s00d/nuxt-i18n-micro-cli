@@ -111,7 +111,7 @@ export default defineCommand({
         consola.info(`Global: ${code} - Total keys: ${globalKeys.length}, Translated keys: ${translatedGlobalKeys.length}, Completion: ${globalPercentage}%`)
       }
 
-      consola.info(`Combined translations - Total keys: ${totalGlobalAndPageKeys}, Translated keys: ${totalTranslatedGlobalAndPageKeys}, Completion: ${combinedPercentage}%`)
+      consola.info(`Combined translations: ${code} - Total keys: ${totalGlobalAndPageKeys}, Translated keys: ${totalTranslatedGlobalAndPageKeys}, Completion: ${combinedPercentage}%`)
     }
   },
 })

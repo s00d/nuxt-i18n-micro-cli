@@ -4,6 +4,7 @@ import { resolve } from 'pathe'
 import consola from 'consola'
 import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { getI18nConfig } from '../utils/kit'
+import { sharedArgs } from "./_shared";
 
 export default defineCommand({
   meta: {
@@ -11,16 +12,17 @@ export default defineCommand({
     description: 'Synchronize translation files across locales',
   },
   args: {
+    ...sharedArgs,
     translationDir: {
       type: 'string',
       description: 'Directory containing JSON translation files',
       default: 'locales',
     },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string } }) {
+  async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir } = await getI18nConfig(cwd)
+    const { locales, translationDir } = await getI18nConfig(cwd, args.logLevel)
 
     // Эталонная локаль
     const referenceLocale = locales[0].code

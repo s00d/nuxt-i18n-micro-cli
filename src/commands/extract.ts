@@ -32,7 +32,7 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir } = await getI18nConfig(cwd)
+    const { locales, translationDir } = await getI18nConfig(cwd, args.logLevel)
 
     ensureDirectoryExists(translationDir)
 

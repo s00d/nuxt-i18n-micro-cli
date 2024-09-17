@@ -8,6 +8,7 @@ import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { translateText } from '../utils/translate'
 import { getI18nConfig } from '../utils/kit'
 import translatorRegistry from '../utils/translate/TranslatorRegistry'
+import { sharedArgs } from "./_shared";
 
 export default defineCommand({
   meta: {
@@ -15,6 +16,7 @@ export default defineCommand({
     description: 'Automatically translate missing keys using external translation services',
   },
   args: {
+    ...sharedArgs,
     translationDir: {
       type: 'string',
       description: 'Directory containing JSON translation files',
@@ -40,7 +42,7 @@ export default defineCommand({
       default: false,
     },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, service: string, token: string, options?: string, replace?: boolean } }) {
+  async run({ args }: { args: { cwd?: string, translationDir?: string, service: string, token: string, options?: string, replace?: boolean, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
     let service = args.service
@@ -65,7 +67,7 @@ export default defineCommand({
       token = response.token
     }
 
-    const { locales, translationDir, defaultLocale } = await getI18nConfig(cwd)
+    const { locales, translationDir, defaultLocale } = await getI18nConfig(cwd, args.logLevel)
 
     const options = args.options ? parseOptions(args.options) : {}
 

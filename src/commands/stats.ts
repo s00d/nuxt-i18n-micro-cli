@@ -7,6 +7,7 @@ import { resolve } from 'pathe'
 import consola from 'consola'
 import { loadJsonFile } from '../utils/json'
 import { getI18nConfig } from '../utils/kit'
+import {sharedArgs} from "./_shared";
 
 export default defineCommand({
   meta: {
@@ -14,6 +15,7 @@ export default defineCommand({
     description: 'Display translation statistics for each locale',
   },
   args: {
+    ...sharedArgs,
     translationDir: {
       type: 'string',
       description: 'Directory containing JSON translation files',
@@ -25,10 +27,10 @@ export default defineCommand({
       default: false,
     },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, full?: boolean } }) {
+  async run({ args }: { args: { cwd?: string, translationDir?: string, full?: boolean, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd)
+    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
 
     const translationDir = args.translationDir || defaultTranslationDir
 

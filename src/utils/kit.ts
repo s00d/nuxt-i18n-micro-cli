@@ -41,11 +41,17 @@ async function tryResolveNuxt() {
   return null
 }
 
-export async function getI18nConfig(cwd: string): Promise<{ locales: Array<{ code: string }>, translationDir: string, defaultLocale: string }> {
+export async function getI18nConfig(cwd: string, logLevel?: string): Promise<{ locales: Array<{ code: string }>, translationDir: string, defaultLocale: string }> {
   const kit = await loadKit(cwd)
   const nuxt = await kit.loadNuxt({
     cwd,
     dotenv: { cwd },
+    overrides: {
+      logLevel: logLevel as 'silent' | 'info' | 'verbose' | undefined ?? 'silent',
+      vite: {
+        clearScreen: false,
+      },
+    },
   })
 
   const i18n = (nuxt.options as any).i18n

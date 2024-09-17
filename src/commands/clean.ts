@@ -6,6 +6,7 @@ import consola from 'consola'
 import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { extractTranslations } from '../utils/components'
 import { getI18nConfig } from '../utils/kit'
+import { sharedArgs } from "./_shared";
 
 export default defineCommand({
   meta: {
@@ -13,16 +14,17 @@ export default defineCommand({
     description: 'Remove unused translation keys from translation files',
   },
   args: {
+    ...sharedArgs,
     translationDir: {
       type: 'string',
       description: 'Directory containing JSON translation files',
       default: 'locales',
     },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string } }) {
+  async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir } = await getI18nConfig(cwd)
+    const { locales, translationDir } = await getI18nConfig(cwd, args.logLevel)
 
     // Извлекаем используемые ключи из кодовой базы
     const translationData = extractTranslations(cwd)

@@ -4,7 +4,7 @@ import { resolve } from 'pathe'
 import consola from 'consola'
 import { loadJsonFile } from '../utils/json'
 import { getI18nConfig } from '../utils/kit'
-import { sharedArgs } from "./_shared";
+import { sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {

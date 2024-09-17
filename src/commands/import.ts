@@ -24,7 +24,7 @@ export default defineCommand({
       default: 'locales',
     },
   },
-  async run({ args }: { args: { cwd?: string, potsDir: string, translationDir: string, logLevel?: string} }) {
+  async run({ args }: { args: { cwd?: string, potsDir: string, translationDir: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
     const { translationDir } = await getI18nConfig(cwd, args.logLevel)

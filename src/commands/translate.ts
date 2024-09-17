@@ -8,7 +8,7 @@ import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { translateText } from '../utils/translate'
 import { getI18nConfig } from '../utils/kit'
 import translatorRegistry from '../utils/translate/TranslatorRegistry'
-import { sharedArgs } from "./_shared";
+import { sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {

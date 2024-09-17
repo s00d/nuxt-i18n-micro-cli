@@ -6,7 +6,7 @@ import consola from 'consola'
 import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { translateText } from '../utils/translate'
 import { getI18nConfig } from '../utils/kit'
-import { sharedArgs } from "./_shared";
+import { sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {

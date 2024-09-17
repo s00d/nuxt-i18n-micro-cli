@@ -1,6 +1,6 @@
 {
   "name": "nuxt-i18n-micro-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "⚡️ nuxt-i18n-micro-cli CLI Experience",
   "repository": "s00d/nuxt-i18n-micro-cli",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "prepack": "unbuild",
     "release": "pnpm test && changelogen --release && npm publish && git push --follow-tags",
     "test": "pnpm lint && pnpm test:types && pnpm build && pnpm test:dist",
-    "test:dist": "node ./bin/i18n.mjs",
+    "test:dist": "node ./bin/i18n.mjs -h",
     "test:types": "tsc --noEmit"
   },
   "devDependencies": {

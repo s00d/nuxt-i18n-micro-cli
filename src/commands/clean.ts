@@ -1,13 +1,11 @@
-// src/commands/clean.ts
-
 import path from 'node:path'
 import fs from 'node:fs'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
-import { loadKit } from '../utils/kit'
 import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { extractTranslations } from '../utils/components'
+import { getI18nConfig } from '../utils/kit'
 
 export default defineCommand({
   meta: {
@@ -24,17 +22,7 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, translationDir?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const kit = await loadKit(cwd)
-    const nuxt = await kit.loadNuxt({
-      cwd,
-      dotenv: { cwd },
-    })
-
-    const locales = (nuxt.options as any).i18n.locales ?? []
-    const translationDir = path.resolve(
-      cwd,
-      args.translationDir ?? (nuxt.options as any).i18n.translationDir ?? 'locales',
-    )
+    const { locales, translationDir } = await getI18nConfig(cwd)
 
     // Извлекаем используемые ключи из кодовой базы
     const translationData = extractTranslations(cwd)

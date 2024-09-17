@@ -5,8 +5,8 @@ import path from 'node:path'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
-import { loadKit } from '../utils/kit'
 import { loadJsonFile } from '../utils/json'
+import { getI18nConfig } from '../utils/kit'
 
 export default defineCommand({
   meta: {
@@ -28,17 +28,7 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, translationDir?: string, full?: boolean } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const kit = await loadKit(cwd)
-    const nuxt = await kit.loadNuxt({
-      cwd,
-      dotenv: { cwd },
-    })
-
-    const locales = (nuxt.options as any).i18n.locales ?? []
-    const translationDir = path.resolve(
-      cwd,
-      args.translationDir ?? (nuxt.options as any).i18n.translationDir ?? 'locales',
-    )
+    const { locales, translationDir } = await getI18nConfig(cwd)
 
     // Load reference (default) locale for global translations
     const referenceLocale = locales[0].code

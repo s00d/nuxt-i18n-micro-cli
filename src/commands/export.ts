@@ -1,13 +1,11 @@
-// src/commands/translate.ts
-
 import fs from 'node:fs'
 import path from 'node:path'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
-import { loadKit } from '../utils/kit'
 import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { translateText } from '../utils/translate'
+import { getI18nConfig } from '../utils/kit'
 
 export default defineCommand({
   meta: {
@@ -38,18 +36,7 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, translationDir?: string, service: string, token: string, options?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const kit = await loadKit(cwd)
-    const nuxt = await kit.loadNuxt({
-      cwd,
-      dotenv: { cwd },
-    })
-
-    const locales = (nuxt.options as any).i18n.locales ?? []
-    const defaultLocale = (nuxt.options as any).i18n.defaultLocale
-    const translationDir = path.resolve(
-      cwd,
-      args.translationDir ?? (nuxt.options as any).i18n.translationDir ?? 'locales',
-    )
+    const { locales, translationDir, defaultLocale } = await getI18nConfig(cwd)
 
     const options = args.options ? parseOptions(args.options) : {}
 

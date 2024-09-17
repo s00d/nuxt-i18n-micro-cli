@@ -1,9 +1,9 @@
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
-import { loadKit } from '../utils/kit'
 import { ensureDirectoryExists } from '../utils/dir'
 import { convertPoToJson } from '../utils/po'
+import { getI18nConfig } from '../utils/kit'
 import { sharedArgs } from './_shared'
 
 export default defineCommand({
@@ -26,13 +26,9 @@ export default defineCommand({
   },
   async run({ args }: { args: { cwd?: string, potsDir: string, translationDir: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
-    const kit = await loadKit(cwd)
-    const nuxt = await kit.loadNuxt({
-      cwd,
-      dotenv: { cwd },
-    }) as any
 
-    const translationDir = resolve(args.translationDir || nuxt.options.i18n.translationDir || 'locales')
+    const { translationDir } = await getI18nConfig(cwd)
+
     const potsDir = resolve(args.potsDir)
 
     ensureDirectoryExists(translationDir)

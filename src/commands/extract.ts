@@ -3,10 +3,10 @@ import path from 'node:path'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
-import { loadKit } from '../utils/kit'
 import { convertToNestedObjects, loadJsonFile } from '../utils/json'
 import { ensureDirectoryExists } from '../utils/dir'
 import { extractTranslations } from '../utils/components'
+import { getI18nConfig } from '../utils/kit'
 import { sharedArgs } from './_shared'
 
 // Интерфейсы для данных перевода и локалей
@@ -32,15 +32,7 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const kit = await loadKit(cwd)
-    const nuxt = await kit.loadNuxt({
-      cwd,
-      dotenv: { cwd },
-      overrides: { logLevel: args.logLevel as 'silent' | 'info' | 'verbose' },
-    })
-
-    const locales = (nuxt.options as any).i18n.locales ?? []
-    const translationDir = path.resolve(cwd, (nuxt.options as any).i18n.translationDir ?? 'locales')
+    const { locales, translationDir } = await getI18nConfig(cwd)
 
     ensureDirectoryExists(translationDir)
 

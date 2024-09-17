@@ -1,1 +1,0 @@
-import{_ as s,c as r,d as a,a as n,t as o,o as l}from"./Cfp9vfPX.js";const c={};function d(t,e){return l(),r("div",null,[e[0]||(e[0]=a(" index slug dir2 ")),n("p",null,o(t.$t("key2")),1)])}const _=s(c,[["render",d]]);export{_ as default};

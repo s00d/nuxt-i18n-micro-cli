@@ -67,7 +67,9 @@ export default defineCommand({
       token = response.token
     }
 
-    const { locales, translationDir, defaultLocale } = await getI18nConfig(cwd, args.logLevel)
+    const { locales, defaultLocale, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
+
+    const translationDir = args.translationDir || defaultTranslationDir
 
     const options = args.options ? parseOptions(args.options) : {}
 

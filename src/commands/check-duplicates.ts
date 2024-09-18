@@ -59,13 +59,14 @@ export default defineCommand({
         if (locations.size > 1) {
           duplicatesFound = true
           consola.warn(`Duplicate translation value "${value}" found in locale ${code}:`)
-          locations.forEach((location) => consola.info(` - ${location}`))
+          locations.forEach(location => consola.info(` - ${location}`))
         }
       }
 
       if (!duplicatesFound) {
         consola.success(`No duplicate values found for locale ${code}.`)
-      } else {
+      }
+      else {
         consola.warn(`Duplicate values detected for locale ${code}.`)
       }
     }
@@ -75,7 +76,7 @@ export default defineCommand({
 function storeTranslationValues(
   translations: Record<string, string>,
   scope: string,
-  translationValuesMap: Record<string, Set<string>>
+  translationValuesMap: Record<string, Set<string>>,
 ) {
   for (const key in translations) {
     const value = translations[key]

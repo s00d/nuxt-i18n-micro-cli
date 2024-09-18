@@ -15,4 +15,5 @@ export const commands = {
   'import-csv': () => import('./import-csv').then(_rDefault),
   'diff': () => import('./diff').then(_rDefault),
   'check-duplicates': () => import('./check-duplicates').then(_rDefault),
+  'replace-values': () => import('./replace-values').then(_rDefault),
 } as const

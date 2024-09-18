@@ -5,7 +5,7 @@ import path from 'node:path'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
-import { loadJsonFile } from '../utils/json'
+import { flattenTranslations, getNestedValue, loadJsonFile } from '../utils/json'
 import { getI18nConfig } from '../utils/kit'
 import { sharedArgs } from './_shared'
 
@@ -119,32 +119,3 @@ export default defineCommand({
     }
   },
 })
-
-function flattenTranslations(translations: Record<string, unknown>, prefix = ''): Record<string, string> {
-  let result: Record<string, string> = {}
-  for (const key in translations) {
-    const value = translations[key]
-    const newPrefix = prefix ? `${prefix}.${key}` : key
-    if (typeof value === 'string') {
-      result[newPrefix] = value
-    }
-    else if (typeof value === 'object' && value !== null) {
-      result = { ...result, ...flattenTranslations(value as Record<string, unknown>, newPrefix) }
-    }
-  }
-  return result
-}
-
-function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
-  return key.split('.').reduce<unknown>(
-    (o: unknown, k: string) => {
-      if (o && typeof o === 'object') {
-        return (o as Record<string, unknown>)[k]
-      }
-      else {
-        return undefined
-      }
-    },
-    obj,
-  )
-}

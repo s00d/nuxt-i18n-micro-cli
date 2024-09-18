@@ -4,7 +4,7 @@ import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
 import prompts from 'prompts'
-import { loadJsonFile, writeJsonFile } from '../utils/json'
+import { getNestedValue, loadJsonFile, parseOptions, setNestedValue, writeJsonFile } from '../utils/json'
 import { translateText } from '../utils/translate'
 import { getI18nConfig } from '../utils/kit'
 import translatorRegistry from '../utils/translate/TranslatorRegistry'
@@ -250,61 +250,4 @@ function getKeysToTranslate(
     }
   }
   return keys
-}
-
-function getNestedValue(obj: Record<string, unknown>, key: string): unknown {
-  const keys = key.split('.')
-  let result: unknown = obj
-  for (const k of keys) {
-    if (result && typeof result === 'object' && k in result) {
-      result = (result as Record<string, unknown>)[k]
-    }
-    else {
-      return undefined
-    }
-  }
-  return result
-}
-
-function setNestedValue(obj: Record<string, unknown>, key: string, value: unknown): void {
-  const keys = key.split('.')
-  let current = obj
-  keys.forEach((k, index) => {
-    if (index === keys.length - 1) {
-      current[k] = value
-    }
-    else {
-      current[k] = current[k] || {}
-      current = current[k] as Record<string, unknown>
-    }
-  })
-}
-
-function parseOptions(optionsStr: string): { [key: string]: any } {
-  const options: { [key: string]: any } = {}
-  const pairs = optionsStr.split(',')
-
-  for (const pair of pairs) {
-    const [key, value] = pair.split(':')
-    if (key && value !== undefined) {
-      const trimmedKey = key.trim()
-      const trimmedValue = value.trim()
-
-      // Попытка преобразовать значение в число или булево
-      if (trimmedValue.toLowerCase() === 'true') {
-        options[trimmedKey] = true
-      }
-      else if (trimmedValue.toLowerCase() === 'false') {
-        options[trimmedKey] = false
-      }
-      else if (!Number.isNaN(Number(trimmedValue))) {
-        options[trimmedKey] = Number(trimmedValue)
-      }
-      else {
-        options[trimmedKey] = trimmedValue
-      }
-    }
-  }
-
-  return options
 }

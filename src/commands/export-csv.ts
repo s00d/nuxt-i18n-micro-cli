@@ -4,7 +4,7 @@ import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
 import { stringify } from 'csv-stringify/sync' // Use csv-stringify for CSV generation
-import { loadJsonFile } from '../utils/json'
+import { flattenTranslations, getAllJsonPaths, loadJsonFile } from '../utils/json'
 import { getI18nConfig } from '../utils/kit'
 import { sharedArgs } from './_shared'
 
@@ -36,13 +36,12 @@ export default defineCommand({
       fs.mkdirSync(csvDir, { recursive: true })
     }
 
-    const jsonPaths = getAllJsonPaths(translationDir)
-
     for (const locale of locales) {
       const { code } = locale
       const localeCsvPath = path.join(csvDir, `${code}.csv`)
       const csvData: Array<[string, string, string]> = [] // Includes file path, key, translation
 
+      const jsonPaths = getAllJsonPaths(translationDir, code)
       for (const jsonPath of jsonPaths) {
         if (jsonPath.endsWith(`${code}.json`)) {
           const translations = loadJsonFile(jsonPath)
@@ -60,36 +59,3 @@ export default defineCommand({
     }
   },
 })
-
-function getAllJsonPaths(dir: string, basePath = ''): string[] {
-  const paths: string[] = []
-  if (fs.existsSync(dir)) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true })
-    entries.forEach((entry) => {
-      const fullPath = path.join(dir, entry.name)
-      const relativePath = path.join(basePath, entry.name)
-      if (entry.isDirectory()) {
-        paths.push(...getAllJsonPaths(fullPath, relativePath))
-      }
-      else if (entry.isFile() && path.extname(entry.name) === '.json') {
-        paths.push(fullPath)
-      }
-    })
-  }
-  return paths
-}
-
-function flattenTranslations(translations: Record<string, unknown>, prefix = ''): Record<string, string> {
-  let result: Record<string, string> = {}
-  for (const key in translations) {
-    const value = translations[key]
-    const newPrefix = prefix ? `${prefix}.${key}` : key
-    if (typeof value === 'string') {
-      result[newPrefix] = value
-    }
-    else if (typeof value === 'object' && value !== null) {
-      result = { ...result, ...flattenTranslations(value as Record<string, unknown>, newPrefix) }
-    }
-  }
-  return result
-}

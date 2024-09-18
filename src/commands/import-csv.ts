@@ -4,7 +4,7 @@ import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
 import { parse } from 'csv-parse/sync' // Use csv-parse for CSV parsing
-import { loadJsonFile, writeJsonFile } from '../utils/json'
+import { loadJsonFile, setNestedValue, writeJsonFile } from '../utils/json'
 import { getI18nConfig } from '../utils/kit'
 import { sharedArgs } from './_shared'
 
@@ -60,17 +60,3 @@ export default defineCommand({
     consola.success('Imported translations and saved to JSON files.')
   },
 })
-
-function setNestedValue(obj: Record<string, unknown>, key: string, value: unknown): void {
-  const keys = key.split('.')
-  let current = obj
-  keys.forEach((k, index) => {
-    if (index === keys.length - 1) {
-      current[k] = value
-    }
-    else {
-      current[k] = current[k] || {}
-      current = current[k] as Record<string, unknown>
-    }
-  })
-}

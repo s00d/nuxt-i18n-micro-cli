@@ -38,7 +38,9 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, translationDir?: string, service: string, token: string, options?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir, defaultLocale } = await getI18nConfig(cwd, args.logLevel)
+    const { locales, translationDir: defaultTranslationDir, defaultLocale } = await getI18nConfig(cwd, args.logLevel)
+
+    const translationDir = args.translationDir || defaultTranslationDir
 
     const options = args.options ? parseOptions(args.options) : {}
 

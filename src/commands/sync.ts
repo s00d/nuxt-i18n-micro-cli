@@ -22,7 +22,9 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir } = await getI18nConfig(cwd, args.logLevel)
+    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
+
+    const translationDir = args.translationDir || defaultTranslationDir
 
     // Эталонная локаль
     const referenceLocale = locales[0].code

@@ -11,7 +11,7 @@ import { sharedArgs } from './_shared'
 export default defineCommand({
   meta: {
     name: 'clean',
-    description: 'Remove unused translation keys from translation files',
+    description: 'Remove unused and empty translation keys from translation files',
   },
   args: {
     ...sharedArgs,
@@ -24,14 +24,16 @@ export default defineCommand({
   async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir } = await getI18nConfig(cwd, args.logLevel)
+    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
+
+    const translationDir = args.translationDir || defaultTranslationDir
 
     // Извлекаем используемые ключи из кодовой базы
     const translationData = extractTranslations(cwd)
     const usedGlobalKeys = translationData.global
     const usedPageSpecificKeys = translationData.pageSpecific
 
-    // Для каждой локали удаляем неиспользуемые ключи
+    // Для каждой локали удаляем неиспользуемые и пустые ключи
     for (const locale of locales) {
       const { code } = locale
 
@@ -59,22 +61,28 @@ export default defineCommand({
       }
     }
 
-    consola.success('Unused translation keys have been removed.')
+    consola.success('Unused and empty translation keys have been removed.')
   },
 })
 
 function cleanTranslations(translations: Record<string, unknown>, usedKeys: Set<string>): Record<string, unknown> {
   const cleanedTranslations: Record<string, unknown> = {}
+
   for (const key in translations) {
     if (usedKeys.has(key)) {
       const value = translations[key]
+
       if (typeof value === 'object' && value !== null) {
-        cleanedTranslations[key] = cleanTranslations(value as Record<string, unknown>, usedKeys)
+        const nestedCleaned = cleanTranslations(value as Record<string, unknown>, usedKeys)
+        if (Object.keys(nestedCleaned).length > 0) {
+          cleanedTranslations[key] = nestedCleaned
+        }
       }
-      else {
+      else if (value !== '' && value !== null && value !== undefined) {
         cleanedTranslations[key] = value
       }
     }
   }
+
   return cleanedTranslations
 }

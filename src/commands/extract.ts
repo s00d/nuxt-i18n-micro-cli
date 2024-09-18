@@ -23,16 +23,23 @@ export default defineCommand({
   },
   args: {
     ...sharedArgs,
+    translationDir: {
+      type: 'string',
+      description: 'Directory containing JSON translation files',
+      default: 'locales',
+    },
     prod: {
       type: 'boolean',
       description: 'production mode',
       alias: 'p',
     },
   },
-  async run({ args }: { args: { cwd?: string, logLevel?: string } }) {
+  async run({ args }: { args: { cwd?: string, logLevel?: string, translationDir?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
-    const { locales, translationDir } = await getI18nConfig(cwd, args.logLevel)
+    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
+
+    const translationDir = args.translationDir || defaultTranslationDir
 
     ensureDirectoryExists(translationDir)
 

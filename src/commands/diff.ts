@@ -20,13 +20,8 @@ export default defineCommand({
   },
   args: {
     ...sharedArgs,
-    output: {
-      type: 'string',
-      description: 'Output format (text, json).',
-      default: 'text',
-    },
   },
-  async run({ args }: { args: { translationDir?: string, output: string, cwd?: string, logLevel?: string } }) {
+  async run({ args }: { args: { translationDir?: string, cwd?: string, logLevel?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
     const { locales, defaultLocale, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
 
@@ -77,22 +72,6 @@ export default defineCommand({
       })
     }
 
-    if (args.output === 'json') {
-      console.log(JSON.stringify(diffResults, null, 2))
-    }
-    else {
-      diffResults.forEach((diff) => {
-        if (diff.missingInLocale?.length) {
-          consola.info(`Missing in file: ${diff.file}`)
-          diff.missingInLocale.forEach(({ key, defaultValue }) => {
-            consola.info(` - Key: ${key} | Default Value: "${defaultValue}"`)
-          })
-        }
-        if (diff.type === 'missing_in_locale') {
-          consola.error(`Missing locale file: ${diff.file}`)
-        }
-        consola.log('')
-      })
-    }
+    console.log(JSON.stringify(diffResults, null, 2))
   },
 })

@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.13
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.0.12...v1.0.13)
+
 ## v1.0.12
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.0.11...v1.0.12)

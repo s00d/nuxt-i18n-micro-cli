@@ -13,4 +13,5 @@ export const commands = {
   'translate': () => import('./translate').then(_rDefault),
   'export-csv': () => import('./export-csv').then(_rDefault),
   'import-csv': () => import('./import-csv').then(_rDefault),
+  'diff': () => import('./diff').then(_rDefault),
 } as const

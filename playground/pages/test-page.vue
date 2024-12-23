@@ -63,6 +63,8 @@
       </blockquote>
     </section>
 
+    <CustomComponent />
+
     <section class="table">
       <h3>Таблица</h3>
       <table border="1">

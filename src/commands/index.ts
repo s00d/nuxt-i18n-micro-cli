@@ -16,4 +16,5 @@ export const commands = {
   'diff': () => import('./diff').then(_rDefault),
   'check-duplicates': () => import('./check-duplicates').then(_rDefault),
   'replace-values': () => import('./replace-values').then(_rDefault),
+  'text-to-i18n': () => import('./text-to-i18n').then(_rDefault),
 } as const

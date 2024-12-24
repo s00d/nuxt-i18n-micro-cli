@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "nuxt": "latest",
-    "nuxt-i18n-micro": "^1.15.4"
+    "nuxt-i18n-micro": "^1.51.0"
   }
 }

@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.1.0
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.0.13...v1.1.0)
+
+### 🚀 Enhancements
+
+- **components:** Add custom component for displaying messages ([4cce67c](https://github.com/s00d/nuxt-i18n-micro-cli/commit/4cce67c))
+- **test-page:** Add CustomComponent to enhance user interface ([c3f4d74](https://github.com/s00d/nuxt-i18n-micro-cli/commit/c3f4d74))
+- **test-page:** Add CustomComponent to enhance user interface ([28e3652](https://github.com/s00d/nuxt-i18n-micro-cli/commit/28e3652))
+
+### ❤️ Contributors
+
+- Pavel Kuzmin ([@s00d](http://github.com/s00d))
+
 ## v1.0.13
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.0.12...v1.0.13)

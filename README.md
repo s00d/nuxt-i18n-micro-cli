@@ -25,6 +25,9 @@ After installing, you can run `i18n-micro` commands in your Nuxt.js project dire
 
 Ensure that your project is set up with `nuxt-i18n` and has the necessary configuration in `nuxt.config.js`.
 
+
+For detailed documentation and further configuration options, visit the [nuxt-i18n-micro CLI guide](https://s00d.github.io/nuxt-i18n-micro/guide/cli).
+
 ## 🗂️ Commands and Usage
 
 `nuxt-i18n-micro-cli` provides several commands to help manage your translations:
@@ -37,6 +40,7 @@ Ensure that your project is set up with `nuxt-i18n` and has the necessary config
 - [`clean`](#clean): Remove unused translation keys from translation files.
 - [`import`](#import): Convert PO files back to JSON format.
 - [`export`](#export): Export translations to PO files for external translation management.
+- [`text-to-i18n`](#text-to-i18n): Replace text in files with translation references.
 
 Each command can be run using `i18n-micro <command>`.
 
@@ -46,6 +50,16 @@ Each command can be run using `i18n-micro <command>`.
 - `--logLevel`: Set the log level (`silent`, `info`, `verbose`).
 
 ### 📋 Commands
+
+#### text-to-i18n
+
+**Description**: Replace text in files with translation references
+
+**Usage**:
+
+```bash
+i18n-micro text-to-i18n [options]
+```
 
 #### extract
 

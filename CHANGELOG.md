@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.1.1
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.1.0...v1.1.1)
+
+### 📖 Documentation
+
+- **readme:** Update documentation with new command and link to guide ([b84b709](https://github.com/s00d/nuxt-i18n-micro-cli/commit/b84b709))
+
+### ❤️ Contributors
+
+- Pavel Kuzmin ([@s00d](http://github.com/s00d))
+
 ## v1.1.0
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.0.13...v1.1.0)

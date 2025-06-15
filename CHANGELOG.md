@@ -1,5 +1,40 @@
 # Changelog
 
+## v1.2.0
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.1.1...v1.2.0)
+
+### 🚀 Enhancements
+
+- **clean:** Add include, exclude, and backup options to clean command ([bb7c5f3](https://github.com/s00d/nuxt-i18n-micro-cli/commit/bb7c5f3))
+- **extract:** Enhance translation merging for locale objects ([7a097ad](https://github.com/s00d/nuxt-i18n-micro-cli/commit/7a097ad))
+- **sync-remote:** Add command for synchronizing translations with remote storage ([c88285a](https://github.com/s00d/nuxt-i18n-micro-cli/commit/c88285a))
+- **sync:** Check for existence of translation files before syncing ([902ecd1](https://github.com/s00d/nuxt-i18n-micro-cli/commit/902ecd1))
+- **stats:** Check for existence of translation files before analysis ([bd8162c](https://github.com/s00d/nuxt-i18n-micro-cli/commit/bd8162c))
+- **split:** Add command to split large translation files ([6c5baac](https://github.com/s00d/nuxt-i18n-micro-cli/commit/6c5baac))
+- **commands:** Add backup and restore commands for translation files ([a901d5f](https://github.com/s00d/nuxt-i18n-micro-cli/commit/a901d5f))
+- **optimize:** Add command to optimize translation files structure ([3ee1d69](https://github.com/s00d/nuxt-i18n-micro-cli/commit/3ee1d69))
+- **commands:** Add format command for translation file formatting ([1bd254c](https://github.com/s00d/nuxt-i18n-micro-cli/commit/1bd254c))
+- **commands:** Add new commands for format, split, backup, and restore ([1b9f283](https://github.com/s00d/nuxt-i18n-micro-cli/commit/1b9f283))
+- **backup:** Add backup and restore functionality ([c5fa369](https://github.com/s00d/nuxt-i18n-micro-cli/commit/c5fa369))
+- **split:** Add split command for managing translation files ([2478c4e](https://github.com/s00d/nuxt-i18n-micro-cli/commit/2478c4e))
+
+### 🩹 Fixes
+
+- **export-csv:** Handle errors while loading translation files ([2075a94](https://github.com/s00d/nuxt-i18n-micro-cli/commit/2075a94))
+
+### 🏡 Chore
+
+- **build:** Add `archiver` and `extract-zip` dependencies ([71fa627](https://github.com/s00d/nuxt-i18n-micro-cli/commit/71fa627))
+
+### ✅ Tests
+
+- **commands:** Add unit tests ([04d76eb](https://github.com/s00d/nuxt-i18n-micro-cli/commit/04d76eb))
+
+### ❤️ Contributors
+
+- Pavel Kuzmin ([@s00d](http://github.com/s00d))
+
 ## v1.1.1
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.1.0...v1.1.1)

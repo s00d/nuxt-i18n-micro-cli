@@ -7,3 +7,4 @@ nuxt-app
 crowdin.yml
 combined.*
 .output
+.idea

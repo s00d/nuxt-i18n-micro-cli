@@ -41,6 +41,10 @@ For detailed documentation and further configuration options, visit the [nuxt-i1
 - [`import`](#import): Convert PO files back to JSON format.
 - [`export`](#export): Export translations to PO files for external translation management.
 - [`text-to-i18n`](#text-to-i18n): Replace text in files with translation references.
+- [`format`](#format): Format translation files by sorting keys and applying consistent indentation.
+- [`backup`](#backup): Creates password-protected zip archives of translation files for backup purposes.
+- [`restore`](#restore): Restores translation files from a backup archive.
+- [`optimize`](#optimize): Optimize translation file structure for performance and maintainability.
 
 Each command can be run using `i18n-micro <command>`.
 
@@ -242,6 +246,259 @@ i18n-micro export --potsDir pots
 ```
 
 This command converts your JSON translation files to PO files, which can be used with external translation tools.
+
+#### split
+
+**Description**: Splits large translation files into smaller ones based on various criteria.
+
+**Usage**:
+
+```bash
+i18n-micro split [options]
+```
+
+**Options**:
+
+- `--translationDir <dir>`: Directory containing translation files (default: 'locales')
+- `--maxKeys <number>`: Maximum number of keys per file when splitting by key count
+- `--maxDepth <number>`: Maximum nesting depth when splitting by depth
+- `--splitByPrefix`: Split translations by their prefix (e.g., 'common', 'header', etc.)
+- `--outputDir <dir>`: Directory where split files will be saved (default: 'locales/split')
+- `--backup`: Create backup of original files before splitting
+- `--cwd <dir>`: Current working directory
+- `--logLevel <level>`: Logging level (default: 'info')
+
+**Features**:
+
+1. **Split by Key Count**: Divides translations into smaller files based on the maximum number of keys
+2. **Split by Depth**: Separates translations based on their nesting depth
+3. **Split by Prefix**: Groups translations by their prefix (e.g., 'common', 'header', etc.)
+4. **Combined Splitting**: Can combine multiple splitting strategies
+5. **Backup Support**: Creates backup of original files before splitting
+
+**Examples**:
+
+1. Split translations into files with maximum 50 keys each:
+```bash
+i18n-micro split --maxKeys 50
+```
+
+2. Split translations by depth, keeping maximum 2 levels of nesting:
+```bash
+i18n-micro split --maxDepth 2
+```
+
+3. Split translations by their prefixes (e.g., 'common', 'header', etc.):
+```bash
+i18n-micro split --splitByPrefix
+```
+
+4. Combine multiple splitting strategies with backup:
+```bash
+i18n-micro split --maxKeys 50 --maxDepth 2 --splitByPrefix --backup
+```
+
+5. Specify custom output directory:
+```bash
+i18n-micro split --outputDir locales/modules
+```
+
+#### format
+
+**Description**: Formats translation files by sorting keys and applying consistent indentation.
+
+**Usage**:
+
+```bash
+i18n-micro format [options]
+```
+
+**Options**:
+
+- `--translationDir <dir>`: Directory containing translation files (default: 'locales')
+- `--indent <number>`: Number of spaces for indentation (default: 2)
+- `--sortKeys`: Sort translation keys alphabetically (default: true)
+- `--backup`: Create backup before formatting
+- `--cwd <dir>`: Current working directory
+- `--logLevel <level>`: Logging level (default: 'info')
+
+**Features**:
+
+1. **Sort by Key**: Sorts translation keys alphabetically
+2. **Indentation**: Applies consistent indentation
+3. **Backup**: Creates backup before formatting
+4. **Multiple Locales**: Supports multiple locales
+5. **Nested Structure**: Preserves nested translation structures
+
+**Examples**:
+
+1. Format all translation files with default settings:
+```bash
+i18n-micro format
+```
+
+2. Format with custom indentation and create backup:
+```bash
+i18n-micro format --indent 4 --backup
+```
+
+3. Format without sorting keys:
+```bash
+i18n-micro format --sortKeys false
+```
+
+4. Format specific translation directory:
+```bash
+i18n-micro format --translationDir locales/custom
+```
+
+#### backup
+
+**Description**: Creates password-protected zip archives of translation files for backup purposes.
+
+**Usage**:
+
+```bash
+i18n-micro backup [options]
+```
+
+**Options**:
+
+- `--translationDir <dir>`: Directory containing JSON translation files (default: 'locales')
+- `--backupDir <dir>`: Directory to save backup archives (default: 'locales/backups')
+- `--password <string>`: Password for encrypting the backup archive
+- `--comment <string>`: Optional comment to add to backup name
+- `--cwd <dir>`: Current working directory
+- `--logLevel <level>`: Logging level (default: 'info')
+
+**Features**:
+
+1. **Password Protection**: Creates encrypted zip archives for secure backups
+2. **Automatic Naming**: Generates unique backup names using timestamps
+3. **Custom Comments**: Allows adding descriptive comments to backup names
+4. **Directory Structure**: Preserves the complete directory structure of translations
+5. **Compression**: Uses maximum compression to minimize backup size
+
+**Examples**:
+
+1. Create a basic backup:
+```bash
+i18n-micro backup
+```
+
+2. Create an encrypted backup with password:
+```bash
+i18n-micro backup --password "your-secure-password"
+```
+
+3. Create a backup with a descriptive comment:
+```bash
+i18n-micro backup --comment "before-major-update"
+```
+
+4. Specify custom backup directory:
+```bash
+i18n-micro backup --backupDir "backups/translations"
+```
+
+#### restore
+
+**Description**: Restores translation files from a backup archive.
+
+**Usage**:
+
+```bash
+i18n-micro restore [options]
+```
+
+**Options**:
+
+- `--translationDir <dir>`: Directory to restore translation files to (default: 'locales')
+- `--backupDir <dir>`: Directory containing backup archives (default: 'locales/backups')
+- `--backup <name>`: Name of the backup to restore (optional)
+- `--password <string>`: Password for decrypting the backup archive
+- `--force`: Skip confirmation prompt
+- `--cwd <dir>`: Current working directory
+- `--logLevel <level>`: Logging level (default: 'info')
+
+**Features**:
+
+1. **Password Protection**: Supports restoring from encrypted backups
+2. **Interactive Selection**: Lists available backups if none specified
+3. **Confirmation**: Requires confirmation before restoring (can be skipped with --force)
+4. **Directory Structure**: Preserves the complete directory structure of translations
+5. **Cleanup**: Automatically cleans up temporary files after restoration
+
+**Examples**:
+
+1. List available backups:
+```bash
+i18n-micro restore
+```
+
+2. Restore from a specific backup:
+```bash
+i18n-micro restore --backup "2024-03-20T12-00-00"
+```
+
+3. Restore from an encrypted backup:
+```bash
+i18n-micro restore --backup "2024-03-20T12-00-00" --password "your-secure-password"
+```
+
+4. Restore without confirmation:
+```bash
+i18n-micro restore --backup "2024-03-20T12-00-00" --force
+```
+
+#### optimize
+
+**Description**: Optimizes translation file structure for performance and maintainability.
+
+**Usage**:
+
+```bash
+i18n-micro optimize [options]
+```
+
+**Options**:
+
+- `--translationDir`: Directory containing JSON translation files (default: 'locales')
+- `--minSize`: Minimum file size in bytes for optimization (default: 1024)
+- `--maxDepth`: Maximum nesting depth for optimization (default: 3)
+- `--dryRun`: Show recommendations without making changes
+- `--updatePaths`: Update translation paths in Vue and JS files (default: true)
+- `--cwd`: Current working directory
+- `--logLevel`: Logging level
+
+**Features**:
+
+- Analyzes file sizes and splits large files into smaller ones
+- Optimizes deeply nested keys
+- Removes duplicate keys
+- Updates translation paths in Vue and JS files
+- Preserves translation structure
+- Interactive mode with confirmation of changes
+- Dry run mode for preview
+
+**Examples**:
+
+```bash
+# Analyze files without making changes
+i18n-micro optimize --dryRun
+
+# Optimize with minimum file size of 2KB
+i18n-micro optimize --minSize 2048
+
+# Optimize with maximum nesting depth of 2
+i18n-micro optimize --maxDepth 2
+
+# Optimize files in specified directory
+i18n-micro optimize --translationDir custom/locales
+
+# Optimize without updating paths in Vue and JS files
+i18n-micro optimize --updatePaths false
+```
 
 ### 🛠 Examples
 

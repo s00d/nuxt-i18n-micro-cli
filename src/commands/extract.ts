@@ -54,10 +54,23 @@ export default defineCommand({
     const localeObjects = locales.reduce((acc: Record<string, LocaleTranslation>, locale: { code: string }) => {
       const { code } = locale
       const globalTranslations = loadJsonFile(path.join(translationDir, `${code}.json`))
-      const completeGlobalTranslations = {
-        ...convertToNestedObjects(translationData.global),
-        ...globalTranslations,
+      const newTranslations = convertToNestedObjects(translationData.global)
+
+      // Рекурсивно объединяем переводы, сохраняя существующие значения
+      const mergeTranslations = (existing: Record<string, unknown>, new_: Record<string, unknown>): Record<string, unknown> => {
+        const result = { ...existing }
+        for (const [key, value] of Object.entries(new_)) {
+          if (key in result && typeof result[key] === 'object' && typeof value === 'object' && value !== null) {
+            result[key] = mergeTranslations(result[key] as Record<string, unknown>, value as Record<string, unknown>)
+          }
+          else if (!(key in result)) {
+            result[key] = value
+          }
+        }
+        return result
       }
+
+      const completeGlobalTranslations = mergeTranslations(globalTranslations, newTranslations)
 
       acc[code] = {
         global: completeGlobalTranslations,

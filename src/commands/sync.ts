@@ -1,4 +1,5 @@
 import path from 'node:path'
+import fs from 'node:fs'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
 import consola from 'consola'
@@ -34,12 +35,18 @@ export default defineCommand({
       const { code } = locale
       if (code === referenceLocale) continue
 
-      const translations = loadJsonFile(path.join(translationDir, `${code}.json`))
+      const translationFilePath = path.join(translationDir, `${code}.json`)
 
+      // Проверяем существование файла перевода
+      if (!fs.existsSync(translationFilePath)) {
+        consola.warn(`Translation file for locale ${code} does not exist.`)
+        continue
+      }
+
+      const translations = loadJsonFile(translationFilePath)
       const synchronizedTranslations = synchronizeTranslations(referenceTranslations, translations)
 
       // Записываем обратно в файл
-      const translationFilePath = path.join(translationDir, `${code}.json`)
       writeJsonFile(translationFilePath, synchronizedTranslations)
 
       consola.log(`Translations for locale ${code} have been synchronized.`)

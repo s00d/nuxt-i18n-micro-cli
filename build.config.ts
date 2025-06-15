@@ -29,6 +29,8 @@ export default defineBuildConfig({
     'csv-stringify',
     'gettext-parser',
     'fsevents',
+    'archiver',
+    'extract-zip',
     'node:url',
     'node:buffer',
     'node:path',

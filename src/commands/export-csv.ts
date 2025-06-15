@@ -44,16 +44,25 @@ export default defineCommand({
       const jsonPaths = getAllJsonPaths(translationDir, code)
       for (const jsonPath of jsonPaths) {
         if (jsonPath.endsWith(`${code}.json`)) {
-          const translations = loadJsonFile(jsonPath)
-          const flattened = flattenTranslations(translations)
-          const relativePath = path.relative(translationDir, jsonPath)
-          for (const [key, value] of Object.entries(flattened)) {
-            csvData.push([relativePath, key, value])
+          try {
+            const translations = loadJsonFile(jsonPath)
+            const flattened = flattenTranslations(translations)
+            const relativePath = path.relative(translationDir, jsonPath)
+            for (const [key, value] of Object.entries(flattened)) {
+              csvData.push([relativePath, key, value])
+            }
+          }
+          catch (error) {
+            consola.error(`Failed to load translations from ${jsonPath}: ${(error as Error).message}`)
+            throw error
           }
         }
       }
 
-      const csvContent = stringify(csvData, { columns: ['File', 'Key', 'Translation'] })
+      const csvContent = stringify(csvData, {
+        header: true,
+        columns: ['File', 'Key', 'Translation'],
+      })
       fs.writeFileSync(localeCsvPath, csvContent)
       consola.success(`Exported translations for ${code} to ${localeCsvPath}`)
     }

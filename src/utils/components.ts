@@ -5,20 +5,43 @@ import glob from 'glob'
 interface TranslationData {
   pageSpecific: Record<string, Set<string>>
   global: Set<string>
+  components: Record<string, Set<string>>
 }
 
 // Функция для преобразования путей к файлам в формат snake_case
 export function toSnakeCase(name: string): string {
-  return name
-    .replace(/\.vue$/, '') // Удаляем расширение .vue
-    .replace(/\//g, '-') // Заменяем слеши на тире
-    .replace(/\[.*?\]/g, '') // Удаляем квадратные скобки и их содержимое
-    .replace(/[^\w\s-]/g, '') // Удаляем все символы, кроме букв, цифр, тире и пробелов
-    .replace(/\s+/g, '_') // Заменяем пробелы на подчёркивания
-    .replace(/-{2,}/g, '-') // Объединяем несколько тире в одно
-    .replace(/-$|^-/g, '') // Удаляем тире в начале и в конце
-    .replace(/-index/g, '') // Удаляем тире в начале и в конце
-    .toLowerCase() // Преобразуем в нижний регистр
+  const fileName = path.basename(name, '.vue')
+  const dirPath = path.dirname(name)
+  const dirName = path.basename(dirPath)
+
+  // Если это index.vue, используем имя родительской директории
+  if (fileName === 'index') {
+    return dirName.replace(/[^\w\s-]/g, '').replace(/\s+/g, '_').replace(/-/g, '_').toLowerCase()
+  }
+
+  // Для файлов в директориях pages и components используем только имя файла
+  if (dirName === 'pages' || dirName === 'components') {
+    return fileName
+      .replace(/\[.*?\]/g, '')
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '_')
+      .replace(/-/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '')
+      .toLowerCase()
+  }
+
+  // Для остальных файлов используем имя директории и файла
+  const componentName = fileName
+    .replace(/\[.*?\]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/-/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '')
+    .toLowerCase()
+
+  return `${dirName.toLowerCase()}_${componentName}`
 }
 
 // Функция для извлечения ключей из содержимого файла
@@ -115,6 +138,7 @@ export function extractTranslations(cwd: string): TranslationData {
   const translationData: TranslationData = {
     pageSpecific: {},
     global: new Set<string>(),
+    components: {},
   }
 
   // Сканируем папки для переводов

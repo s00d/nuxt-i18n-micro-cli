@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.3.0
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.2.0...v1.3.0)
+
+### 🚀 Enhancements
+
+- **format:** Improve command structure and enhance translation file formatting ([9579af6](https://github.com/s00d/nuxt-i18n-micro-cli/commit/9579af6))
+- **lint:** Add translation quality check command ([f8bd8f5](https://github.com/s00d/nuxt-i18n-micro-cli/commit/f8bd8f5))
+- **info:** Add command to display CLI and project information ([d159693](https://github.com/s00d/nuxt-i18n-micro-cli/commit/d159693))
+- **commands:** Add 'info' and 'lint' commands to command list ([a907f65](https://github.com/s00d/nuxt-i18n-micro-cli/commit/a907f65))
+- **commands:** Add init command to initialize a new Nuxt 3 project ([89276c9](https://github.com/s00d/nuxt-i18n-micro-cli/commit/89276c9))
+
+### 🩹 Fixes
+
+- **main:** Update import statement for package.json to use 'with' ([68f4256](https://github.com/s00d/nuxt-i18n-micro-cli/commit/68f4256))
+
+### 💅 Refactors
+
+- **commands:** Remove backup option from clean command ([7c307fc](https://github.com/s00d/nuxt-i18n-micro-cli/commit/7c307fc))
+- **split:** Remove backup option and related logic from split command ([368549d](https://github.com/s00d/nuxt-i18n-micro-cli/commit/368549d))
+- **sync-remote:** Remove backup functionality from sync command ([71bc1f4](https://github.com/s00d/nuxt-i18n-micro-cli/commit/71bc1f4))
+- **tests:** Remove backup option from command tests ([a63cb5e](https://github.com/s00d/nuxt-i18n-micro-cli/commit/a63cb5e))
+
+### ❤️ Contributors
+
+- Pavel Kuzmin ([@s00d](http://github.com/s00d))
+
 ## v1.2.0
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.1.1...v1.2.0)

@@ -39,11 +39,6 @@ export default defineCommand({
       description: 'Directory to save split translation files',
       default: 'locales/split',
     },
-    backup: {
-      type: 'boolean',
-      description: 'Create backup before splitting',
-      default: false,
-    },
   },
   async run(context) {
     const args = context.args
@@ -53,18 +48,6 @@ export default defineCommand({
     const outputDir = args.outputDir || path.join(translationDir, 'split')
     const maxKeys = Number.parseInt(args.maxKeys || '100', 10)
     const maxDepth = Number.parseInt(args.maxDepth || '2', 10)
-
-    // Функция для создания резервной копии
-    const createBackup = (filePath: string) => {
-      const backupDir = path.join(translationDir, 'backups')
-      if (!fs.existsSync(backupDir)) {
-        fs.mkdirSync(backupDir, { recursive: true })
-      }
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const backupPath = path.join(backupDir, `${path.basename(filePath)}.${timestamp}.bak`)
-      fs.copyFileSync(filePath, backupPath)
-      consola.info(`Created backup at ${backupPath}`)
-    }
 
     // Функция для разделения переводов по количеству ключей
     const splitByKeyCount = (translations: Record<string, unknown>, maxKeys: number): Record<string, Record<string, unknown>> => {
@@ -162,11 +145,6 @@ export default defineCommand({
       if (!fs.existsSync(translationFilePath)) {
         consola.warn(`Translation file for locale ${code} does not exist.`)
         continue
-      }
-
-      // Создаем резервную копию, если указана опция backup
-      if (args.backup) {
-        createBackup(translationFilePath)
       }
 
       const rawTranslations = loadJsonFile(translationFilePath)

@@ -3,6 +3,7 @@ import type { CommandDef } from 'citty'
 const _rDefault = (r: any) => (r.default || r) as Promise<CommandDef>
 
 export const commands = {
+  'info': () => import('./info').then(_rDefault),
   'format': () => import('./format').then(_rDefault),
   'split': () => import('./split').then(_rDefault),
   'import': () => import('./import').then(_rDefault),
@@ -21,4 +22,5 @@ export const commands = {
   'text-to-i18n': () => import('./text-to-i18n').then(_rDefault),
   'backup': () => import('./backup').then(_rDefault),
   'restore': () => import('./restore').then(_rDefault),
+  'lint': () => import('./lint').then(_rDefault),
 } as const

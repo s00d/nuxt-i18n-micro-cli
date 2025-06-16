@@ -1,43 +1,41 @@
 import path from 'node:path'
 import fs from 'node:fs'
+import { defineCommand } from 'citty'
 import consola from 'consola'
 import { loadJsonFile, writeJsonFile } from '../utils/json'
 import { getI18nConfig } from '../utils/kit'
+import { sharedArgs } from './_shared'
 
-interface FormatOptions {
-  translationDir: string
-  indent: number
-  sortKeys: boolean
-  backup: boolean
-  cwd: string
-  logLevel: string
-}
-
-interface CommandContext {
+export default defineCommand({
+  meta: {
+    name: 'format',
+    description: 'Format translation files by sorting keys and applying consistent indentation',
+  },
   args: {
-    _: string[]
-    translationDir?: string
-    indent?: string
-    sortKeys?: boolean
-    backup?: boolean
-    cwd?: string
-    logLevel?: string
-  }
-  rawArgs: string[]
-  cmd: any
-}
-
-const formatCommand = {
-  name: 'format',
-  description: 'Format translation files (sort keys, indentation, etc.)',
-  async run(context: CommandContext) {
-    const options: FormatOptions = {
-      translationDir: context.args.translationDir || 'locales',
-      indent: Number.parseInt(context.args.indent || '2', 10),
-      sortKeys: context.args.sortKeys ?? true,
-      backup: context.args.backup ?? false,
-      cwd: context.args.cwd || process.cwd(),
-      logLevel: context.args.logLevel || 'info',
+    ...sharedArgs,
+    translationDir: {
+      type: 'string',
+      description: 'Directory containing translation files',
+      default: 'locales',
+    },
+    indent: {
+      type: 'string',
+      description: 'Number of spaces for indentation',
+      default: '2',
+    },
+    sortKeys: {
+      type: 'boolean',
+      description: 'Sort translation keys alphabetically',
+      default: true,
+    },
+  },
+  async run({ args }) {
+    const options = {
+      translationDir: args.translationDir || 'locales',
+      indent: Number.parseInt(args.indent || '2', 10),
+      sortKeys: args.sortKeys ?? true,
+      cwd: args.cwd || process.cwd(),
+      logLevel: args.logLevel || 'info',
     }
 
     const translationDir = path.resolve(options.cwd, options.translationDir)
@@ -47,53 +45,7 @@ const formatCommand = {
       throw new Error('Failed to load i18n configuration')
     }
 
-    // Создаем бэкап если указана опция backup
-    if (options.backup) {
-      const backupDir = path.join(translationDir, 'backups')
-      if (!fs.existsSync(backupDir)) {
-        fs.mkdirSync(backupDir, { recursive: true })
-      }
-
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const backupPath = path.join(backupDir, `format-${timestamp}`)
-
-      fs.mkdirSync(backupPath, { recursive: true })
-
-      // Копируем все файлы переводов в бэкап
-      for (const locale of config.locales) {
-        const localePath = path.join(translationDir, `${locale.code}.json`)
-        if (fs.existsSync(localePath)) {
-          fs.copyFileSync(
-            localePath,
-            path.join(backupPath, `${locale.code}.json`),
-          )
-        }
-
-        // Копируем также файлы переводов для страниц
-        const pagesDir = path.join(translationDir, 'pages')
-        if (fs.existsSync(pagesDir)) {
-          const localePagesDir = path.join(pagesDir, locale.code)
-          if (fs.existsSync(localePagesDir)) {
-            const backupPagesDir = path.join(backupPath, 'pages', locale.code)
-            fs.mkdirSync(backupPagesDir, { recursive: true })
-
-            const files = fs.readdirSync(localePagesDir)
-            for (const file of files) {
-              if (file.endsWith('.json')) {
-                fs.copyFileSync(
-                  path.join(localePagesDir, file),
-                  path.join(backupPagesDir, file),
-                )
-              }
-            }
-          }
-        }
-      }
-
-      consola.success('Created backup of translation files')
-    }
-
-    // Функция для сортировки ключей в объекте
+    // Function to sort object keys
     const sortObjectKeys = (obj: Record<string, any>): Record<string, any> => {
       if (typeof obj !== 'object' || obj === null) {
         return obj
@@ -113,7 +65,7 @@ const formatCommand = {
       return sorted
     }
 
-    // Форматируем глобальные переводы
+    // Format global translations
     for (const locale of config.locales) {
       const filePath = path.join(translationDir, `${locale.code}.json`)
       if (!fs.existsSync(filePath)) {
@@ -127,12 +79,12 @@ const formatCommand = {
           throw new Error(`Invalid translation file format for locale ${locale.code}`)
         }
 
-        // Сортируем ключи если указана опция sortKeys
+        // Sort keys if sortKeys option is enabled
         const formattedTranslations = options.sortKeys
           ? sortObjectKeys(translations)
           : translations
 
-        // Записываем отформатированный файл
+        // Write formatted file
         writeJsonFile(filePath, formattedTranslations)
         consola.success(`Formatted translations for locale ${locale.code}`)
       }
@@ -141,7 +93,7 @@ const formatCommand = {
       }
     }
 
-    // Форматируем переводы для страниц
+    // Format page translations
     const pagesDir = path.join(translationDir, 'pages')
     if (fs.existsSync(pagesDir)) {
       for (const locale of config.locales) {
@@ -165,12 +117,12 @@ const formatCommand = {
               )
             }
 
-            // Сортируем ключи если указана опция sortKeys
+            // Sort keys if sortKeys option is enabled
             const formattedTranslations = options.sortKeys
               ? sortObjectKeys(translations)
               : translations
 
-            // Записываем отформатированный файл
+            // Write formatted file
             writeJsonFile(filePath, formattedTranslations)
             consola.success(
               `Formatted translations for locale ${locale.code} in ${file}`,
@@ -186,6 +138,4 @@ const formatCommand = {
       }
     }
   },
-}
-
-export default formatCommand
+})

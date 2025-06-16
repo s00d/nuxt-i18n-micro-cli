@@ -46,7 +46,6 @@ describe('clean command', () => {
       logLevel: 'info',
       include: '',
       exclude: '',
-      backup: false,
       ...args,
     },
     rawArgs: [],

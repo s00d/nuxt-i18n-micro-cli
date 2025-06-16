@@ -68,7 +68,6 @@ describe('format command', () => {
     translationDir?: string
     indent?: string
     sortKeys?: boolean
-    backup?: boolean
     logLevel?: string
   }) => ({
     args: {
@@ -77,7 +76,6 @@ describe('format command', () => {
       translationDir: mockTranslationDir,
       indent: '2',
       sortKeys: true,
-      backup: false,
       logLevel: 'info',
       ...args,
     },
@@ -91,7 +89,6 @@ describe('format command', () => {
       if (typeof path === 'string') {
         if (path === pathMock.join(mockCwd, mockTranslationDir)) return true
         if (path.endsWith('.json')) return true
-        if (path.includes('/backups')) return false
         if (path.includes('/pages')) return true
       }
       return false
@@ -182,32 +179,6 @@ describe('format command', () => {
 
     // Проверяем, что success был вызван для каждого файла (глобальные + страницы)
     expect(consola.success).toHaveBeenCalledTimes(mockLocales.length * 2)
-  })
-
-  it('should create backup files when backup option is enabled', async () => {
-    const command = formatCommand
-    if (!command) throw new Error('Command not found')
-
-    const translations = {
-      key1: 'value1',
-      key2: 'value2',
-    }
-
-    vi.mocked(loadJsonFile).mockReturnValue(translations)
-
-    if (command.run) await command.run(createCommandContext({ backup: true }))
-
-    // Проверяем, что была создана директория для бэкапов
-    expect(fs.mkdirSync).toHaveBeenCalledWith(
-      pathMock.join(mockCwd, mockTranslationDir, 'backups'),
-      { recursive: true },
-    )
-
-    // Проверяем, что были созданы резервные копии для всех файлов
-    expect(fs.copyFileSync).toHaveBeenCalledTimes(mockLocales.length * 2)
-
-    // Проверяем, что writeJsonFile был вызван для обновления файлов
-    expect(writeJsonFile).toHaveBeenCalledTimes(mockLocales.length * 2)
   })
 
   it('should handle missing translation files', async () => {

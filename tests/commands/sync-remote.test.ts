@@ -141,7 +141,6 @@ const createCommandContext = (args: {
   push?: boolean
   force?: boolean
   dryRun?: boolean
-  backup?: boolean
   logLevel?: string
 } = {}) => ({
   args: {
@@ -152,7 +151,6 @@ const createCommandContext = (args: {
     push: false,
     force: false,
     dryRun: false,
-    backup: true,
     logLevel: 'info',
     ...args,
   },
@@ -460,70 +458,5 @@ describe('sync-remote command', () => {
     // Проверяем, что файлы не были записаны
     expect(fs.writeFileSync).not.toHaveBeenCalled()
     expect(consola.info).toHaveBeenCalledWith('Dry run completed. No changes were made.')
-  })
-
-  it('should create backup when requested', async () => {
-    // Мокаем валидную конфигурацию GitHub
-    vi.mocked(fs.existsSync).mockImplementation((path: fsType.PathLike) => {
-      const pathStr = path.toString()
-      if (pathStr === mockTranslationDir) return true
-      if (pathStr.endsWith('.i18n-remote.json')) return true
-      return true
-    })
-    vi.mocked(fs.readFileSync).mockImplementation((path: fsType.PathOrFileDescriptor) => {
-      const pathStr = path.toString()
-      if (pathStr.endsWith('.i18n-remote.json')) {
-        return JSON.stringify({
-          type: 'github',
-          url: 'https://github.com/owner/repo',
-          branch: 'main',
-          path: 'translations',
-          token: 'test-token',
-        })
-      }
-      if (pathStr.endsWith('en.json')) {
-        return JSON.stringify({ hello: 'Hello' })
-      }
-      if (pathStr.endsWith('ru.json')) {
-        return JSON.stringify({ hello: 'Привет' })
-      }
-      return '{}'
-    })
-
-    // Мокаем успешный ответ от GitHub API
-    vi.mocked(mockAxiosInstance.get).mockImplementation((url: string) => {
-      if (url.includes('/contents/')) {
-        return Promise.resolve({
-          data: [
-            {
-              name: 'en.json',
-              path: 'translations/en.json',
-              type: 'file',
-              download_url: 'https://api.github.com/repos/owner/repo/contents/translations/en.json',
-            },
-            {
-              name: 'ru.json',
-              path: 'translations/ru.json',
-              type: 'file',
-              download_url: 'https://api.github.com/repos/owner/repo/contents/translations/ru.json',
-            },
-          ],
-        })
-      }
-      if (url.includes('en.json')) {
-        return Promise.resolve({ data: { hello: 'Hello World' } })
-      }
-      if (url.includes('ru.json')) {
-        return Promise.resolve({ data: { hello: 'Привет Мир' } })
-      }
-      return Promise.resolve({ data: [] })
-    })
-
-    const command = syncRemoteCommand
-    await command.run?.(createCommandContext({ backup: true }))
-
-    // Проверяем, что была создана резервная копия
-    expect(fs.mkdirSync).toHaveBeenCalledWith(expect.stringContaining('backup'), { recursive: true })
-    expect(fs.copyFileSync).toHaveBeenCalled()
   })
 })

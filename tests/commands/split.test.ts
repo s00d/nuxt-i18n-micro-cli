@@ -46,7 +46,6 @@ describe('split command', () => {
     maxDepth?: string
     splitByPrefix?: boolean
     outputDir?: string
-    backup?: boolean
   }) => ({
     args: {
       _: [],
@@ -57,7 +56,6 @@ describe('split command', () => {
       maxDepth: '2',
       splitByPrefix: false,
       outputDir: mockOutputDir,
-      backup: false,
       ...args,
     },
     rawArgs: [],
@@ -71,7 +69,6 @@ describe('split command', () => {
         if (path === mockTranslationDir) return true
         if (path === mockOutputDir) return false
         if (path.endsWith('.json')) return true
-        if (path.includes('/backups')) return false
       }
       return false
     })
@@ -210,29 +207,6 @@ describe('split command', () => {
         'about.content': 'Content',
       },
     )
-  })
-
-  it('should create backup files when backup option is enabled', async () => {
-    const command = splitCommand
-    if (!command) throw new Error('Command not found')
-
-    const translations = {
-      key1: 'value1',
-      key2: 'value2',
-    }
-
-    vi.mocked(loadJsonFile).mockReturnValue(translations)
-
-    if (command.run) await command.run(createCommandContext({ backup: true }))
-
-    // Проверяем, что была создана директория для бэкапов
-    expect(fs.mkdirSync).toHaveBeenCalledWith(
-      `${mockTranslationDir}/backups`,
-      { recursive: true },
-    )
-
-    // Проверяем, что была создана резервная копия
-    expect(fs.copyFileSync).toHaveBeenCalled()
   })
 
   it('should handle missing translation files', async () => {

@@ -39,13 +39,8 @@ export default defineCommand({
       description: 'Regular expression to exclude matching keys',
       required: false,
     },
-    backup: {
-      type: 'boolean',
-      description: 'Create backup before cleaning',
-      default: false,
-    },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string, include?: string, exclude?: string, backup?: boolean } }) {
+  async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string, include?: string, exclude?: string } }) {
     const cwd = resolve((args.cwd || '.').toString())
 
     const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
@@ -79,18 +74,6 @@ export default defineCommand({
       return true
     }
 
-    // Функция для создания резервной копии
-    const createBackup = (filePath: string) => {
-      const backupDir = path.join(translationDir, 'backups')
-      if (!fs.existsSync(backupDir)) {
-        fs.mkdirSync(backupDir, { recursive: true })
-      }
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const backupPath = path.join(backupDir, `${path.basename(filePath)}.${timestamp}.bak`)
-      fs.copyFileSync(filePath, backupPath)
-      consola.info(`Created backup at ${backupPath}`)
-    }
-
     for (const locale of locales) {
       const { code } = locale
       const translationFilePath = path.join(translationDir, `${code}.json`)
@@ -98,11 +81,6 @@ export default defineCommand({
       if (!fs.existsSync(translationFilePath)) {
         consola.warn(`Translation file for locale ${code} does not exist.`)
         continue
-      }
-
-      // Создаем резервную копию, если указана опция backup
-      if (args.backup) {
-        createBackup(translationFilePath)
       }
 
       let translations: Translations

@@ -21,6 +21,7 @@ export default defineBuildConfig({
   entries: ['src/index'],
   externals: [
     '@nuxt/test-utils',
+    '@inquirer/prompts',
     'slugify',
     'prompts',
     'glob',

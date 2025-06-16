@@ -32,17 +32,19 @@
     "release": "pnpm test && changelogen --release && npm publish && git push --follow-tags",
     "test": "pnpm lint && vitest run && pnpm test:types && pnpm build && pnpm test:dist",
     "test:dist": "node ./bin/i18n.mjs -h",
-    "test:types": "tsc --noEmit"
+    "test:types": "tsc --noEmit",
+    "docs": "npx tsx ./scripts/generate-docs.ts"
   },
   "devDependencies": {
+    "@inquirer/prompts": "^7.5.3",
     "@nuxt/eslint-config": "^0.5.5",
     "@nuxt/kit": "^3.13.1",
     "@nuxt/schema": "^3.13.1",
     "@nuxt/test-utils": "^3.15.1",
+    "@types/archiver": "^5.3.2",
     "@types/gettext-parser": "^4.0.4",
     "@types/node": "^20.17.10",
     "@types/prompts": "^2.4.9",
-    "vitest": "^2.1.8",
     "@vitest/coverage-v8": "^2.1.8",
     "changelogen": "^0.5.7",
     "citty": "^0.1.6",
@@ -53,8 +55,8 @@
     "pathe": "^1.1.2",
     "unbuild": "^3.0.1",
     "unplugin-purge-polyfills": "^0.0.7",
-    "vue-tsc": "^2.2.0",
-    "@types/archiver": "^5.3.2"
+    "vitest": "^2.1.8",
+    "vue-tsc": "^2.2.0"
   },
   "optionalDependencies": {
     "fsevents": "~2.3.3"
@@ -67,14 +69,14 @@
     "node": "^16.10.0 || >=18.0.0"
   },
   "dependencies": {
+    "archiver": "^7.0.1",
     "axios": "^1.7.9",
     "csv-parse": "^5.6.0",
     "csv-stringify": "^6.5.2",
+    "extract-zip": "^2.0.1",
     "gettext-parser": "^8.0.0",
     "glob": "^9.3.5",
     "prompts": "^2.4.2",
-    "slugify": "^1.6.6",
-    "archiver": "^7.0.1",
-    "extract-zip": "^2.0.1"
+    "slugify": "^1.6.6"
   }
 }

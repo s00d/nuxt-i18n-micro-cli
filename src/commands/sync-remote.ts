@@ -25,7 +25,6 @@ interface SyncOptions {
   push: boolean // Отправлять переводы в удаленное хранилище
   force: boolean // Принудительная синхронизация (перезапись)
   dryRun: boolean // Пробный запуск без реальных изменений
-  backup: boolean // Создавать резервную копию перед синхронизацией
 }
 
 interface SyncResult {
@@ -50,7 +49,6 @@ interface SyncRemoteArgs {
   push?: boolean
   force?: boolean
   dryRun?: boolean
-  backup?: boolean
   logLevel?: string
 }
 
@@ -337,26 +335,6 @@ async function pushLocalTranslations(
   }
 }
 
-async function createBackup(translationDir: string): Promise<string> {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const backupDir = path.join(path.dirname(translationDir), `.i18n-backup-${timestamp}`)
-
-  consola.info(`Creating backup in ${backupDir}...`)
-  fs.mkdirSync(backupDir, { recursive: true })
-
-  // Копируем все файлы переводов
-  const files = fs.readdirSync(translationDir)
-  for (const file of files) {
-    const sourcePath = path.join(translationDir, file)
-    const targetPath = path.join(backupDir, file)
-    if (fs.statSync(sourcePath).isFile()) {
-      fs.copyFileSync(sourcePath, targetPath)
-    }
-  }
-
-  return backupDir
-}
-
 async function resolveConflicts(
   localTranslations: Record<string, any>,
   remoteTranslations: Record<string, any>,
@@ -430,11 +408,6 @@ export default defineCommand({
       description: 'Perform a dry run without making changes',
       default: false,
     },
-    backup: {
-      type: 'boolean',
-      description: 'Create backup before synchronization',
-      default: true,
-    },
   },
   async run({ args }: { args: SyncRemoteArgs }) {
     const cwd = resolve((args.cwd || '.').toString())
@@ -450,18 +423,11 @@ export default defineCommand({
       push: args.push ?? false,
       force: args.force ?? false,
       dryRun: args.dryRun ?? false,
-      backup: args.backup ?? true,
     }
 
     // Загружаем конфигурацию удаленного хранилища
     const remoteConfig = await loadRemoteConfig(cwd)
     await validateRemoteConfig(remoteConfig)
-
-    // Создаем резервную копию если нужно
-    let backupDir: string | undefined
-    if (options.backup && !options.dryRun) {
-      backupDir = await createBackup(translationDir)
-    }
 
     const result: SyncResult = {
       added: [],
@@ -471,94 +437,79 @@ export default defineCommand({
       errors: [],
     }
 
-    try {
-      // Загружаем локальные переводы
-      const localTranslations: Record<string, any> = {}
-      for (const locale of locales) {
-        const filePath = path.join(translationDir, `${locale.code}.json`)
-        if (fs.existsSync(filePath)) {
+    // Загружаем локальные переводы
+    const localTranslations: Record<string, any> = {}
+    for (const locale of locales) {
+      const filePath = path.join(translationDir, `${locale.code}.json`)
+      if (fs.existsSync(filePath)) {
+        try {
+          localTranslations[locale.code] = loadJsonFile(filePath) || {}
+        }
+        catch (error) {
+          result.errors.push({ file: filePath, error: String(error) })
+        }
+      }
+    }
+
+    if (options.pull) {
+      // Загружаем удаленные переводы
+      const remoteTranslations = await fetchRemoteTranslations(remoteConfig)
+
+      // Разрешаем конфликты
+      const mergedTranslations = await resolveConflicts(
+        localTranslations,
+        remoteTranslations,
+        options,
+      )
+
+      // Сохраняем объединенные переводы
+      if (!options.dryRun) {
+        for (const [locale, translations] of Object.entries(mergedTranslations)) {
+          const filePath = path.join(translationDir, `${locale}.json`)
           try {
-            localTranslations[locale.code] = loadJsonFile(filePath) || {}
+            saveJsonFile(filePath, translations)
+            if (!localTranslations[locale]) {
+              result.added.push(locale)
+            }
+            else {
+              result.updated.push(locale)
+            }
           }
           catch (error) {
             result.errors.push({ file: filePath, error: String(error) })
           }
         }
       }
-
-      if (options.pull) {
-        // Загружаем удаленные переводы
-        const remoteTranslations = await fetchRemoteTranslations(remoteConfig)
-
-        // Разрешаем конфликты
-        const mergedTranslations = await resolveConflicts(
-          localTranslations,
-          remoteTranslations,
-          options,
-        )
-
-        // Сохраняем объединенные переводы
-        if (!options.dryRun) {
-          for (const [locale, translations] of Object.entries(mergedTranslations)) {
-            const filePath = path.join(translationDir, `${locale}.json`)
-            try {
-              saveJsonFile(filePath, translations)
-              if (!localTranslations[locale]) {
-                result.added.push(locale)
-              }
-              else {
-                result.updated.push(locale)
-              }
-            }
-            catch (error) {
-              result.errors.push({ file: filePath, error: String(error) })
-            }
-          }
-        }
-      }
-
-      if (options.push) {
-        // Отправляем локальные переводы в удаленное хранилище
-        await pushLocalTranslations(remoteConfig, localTranslations)
-      }
-
-      // Выводим результаты
-      if (options.dryRun) {
-        consola.info('Dry run completed. No changes were made.')
-      }
-      else {
-        if (result.added.length > 0) {
-          consola.success(`Added ${result.added.length} new locales: ${result.added.join(', ')}`)
-        }
-        if (result.updated.length > 0) {
-          consola.success(`Updated ${result.updated.length} locales: ${result.updated.join(', ')}`)
-        }
-        if (result.deleted.length > 0) {
-          consola.warn(`Deleted ${result.deleted.length} locales: ${result.deleted.join(', ')}`)
-        }
-        if (result.conflicts.length > 0) {
-          consola.warn(`Found ${result.conflicts.length} conflicts`)
-        }
-        if (result.errors.length > 0) {
-          consola.error(`Encountered ${result.errors.length} errors:`)
-          for (const error of result.errors) {
-            consola.error(`  ${error.file}: ${error.error}`)
-          }
-        }
-        if (backupDir) {
-          consola.info(`Backup created in: ${backupDir}`)
-        }
-      }
     }
-    catch (error) {
-      if (backupDir) {
-        consola.error('Synchronization failed. Restoring from backup...')
-        // Восстанавливаем из резервной копии
-        fs.rmSync(translationDir, { recursive: true, force: true })
-        fs.renameSync(backupDir, translationDir)
-        consola.success('Backup restored')
+
+    if (options.push) {
+      // Отправляем локальные переводы в удаленное хранилище
+      await pushLocalTranslations(remoteConfig, localTranslations)
+    }
+
+    // Выводим результаты
+    if (options.dryRun) {
+      consola.info('Dry run completed. No changes were made.')
+    }
+    else {
+      if (result.added.length > 0) {
+        consola.success(`Added ${result.added.length} new locales: ${result.added.join(', ')}`)
       }
-      throw error
+      if (result.updated.length > 0) {
+        consola.success(`Updated ${result.updated.length} locales: ${result.updated.join(', ')}`)
+      }
+      if (result.deleted.length > 0) {
+        consola.warn(`Deleted ${result.deleted.length} locales: ${result.deleted.join(', ')}`)
+      }
+      if (result.conflicts.length > 0) {
+        consola.warn(`Found ${result.conflicts.length} conflicts`)
+      }
+      if (result.errors.length > 0) {
+        consola.error(`Encountered ${result.errors.length} errors:`)
+        for (const error of result.errors) {
+          consola.error(`  ${error.file}: ${error.error}`)
+        }
+      }
     }
   },
 })

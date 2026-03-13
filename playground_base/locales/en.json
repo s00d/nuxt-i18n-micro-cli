@@ -1,0 +1,9 @@
+{
+  "baseRoot": {
+    "title": "Playground Base Layer",
+    "description": "Top-most base layer text that should be available across all extended playground layers."
+  },
+  "layerMeta": {
+    "fromPlaygroundBase": "yes"
+  }
+}

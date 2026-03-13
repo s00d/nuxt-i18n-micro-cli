@@ -1,12 +1,8 @@
-import fs from 'node:fs'
 import path from 'node:path'
 import { defineCommand } from 'citty'
-import { resolve } from 'pathe'
-import consola from 'consola'
-import { stringify } from 'csv-stringify/sync' // Use csv-stringify for CSV generation
-import { flattenTranslations, getAllJsonPaths, loadJsonFile } from '../utils/json'
-import { getI18nConfig } from '../utils/kit'
-import { sharedArgs } from './_shared'
+import { consola } from 'consola'
+import { exportProjectToCsv } from '../core/services/CsvService'
+import { resolveProjectContext, sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {
@@ -26,45 +22,10 @@ export default defineCommand({
       default: 'csv_exports',
     },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, csvDir?: string, logLevel?: string } }) {
-    const cwd = resolve((args.cwd || '.').toString())
-    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
-
-    const translationDir = args.translationDir || defaultTranslationDir
+  async run({ args }) {
+    const { project } = await resolveProjectContext(args)
     const csvDir = path.resolve(args.csvDir || 'csv_exports')
-    if (!fs.existsSync(csvDir)) {
-      fs.mkdirSync(csvDir, { recursive: true })
-    }
-
-    for (const locale of locales) {
-      const { code } = locale
-      const localeCsvPath = path.join(csvDir, `${code}.csv`)
-      const csvData: Array<[string, string, string]> = [] // Includes file path, key, translation
-
-      const jsonPaths = getAllJsonPaths(translationDir, code)
-      for (const jsonPath of jsonPaths) {
-        if (jsonPath.endsWith(`${code}.json`)) {
-          try {
-            const translations = loadJsonFile(jsonPath)
-            const flattened = flattenTranslations(translations)
-            const relativePath = path.relative(translationDir, jsonPath)
-            for (const [key, value] of Object.entries(flattened)) {
-              csvData.push([relativePath, key, value])
-            }
-          }
-          catch (error) {
-            consola.error(`Failed to load translations from ${jsonPath}: ${(error as Error).message}`)
-            throw error
-          }
-        }
-      }
-
-      const csvContent = stringify(csvData, {
-        header: true,
-        columns: ['File', 'Key', 'Translation'],
-      })
-      fs.writeFileSync(localeCsvPath, csvContent)
-      consola.success(`Exported translations for ${code} to ${localeCsvPath}`)
-    }
+    await exportProjectToCsv(project, csvDir)
+    consola.success(`Exported translations to ${csvDir}`)
   },
 })

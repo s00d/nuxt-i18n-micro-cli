@@ -1,0 +1,296 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FileProcessor regular files > processes 200+ lines TSX stress fixture and matches snapshot output 1`] = `
+"enum InternalStatus {
+  Ready = 'ready',
+  Disabled = 'disabled',
+  Archived = 'archived',
+}
+
+const ROUTE_SCHEMA = {
+  dashboard: '/dashboard',
+  profile: '/profile',
+  reports: '/reports',
+  nested: {
+    users: '/users',
+    teams: '/teams',
+    settings: '/settings',
+  },
+} as const
+
+const API_SCHEMA = {
+  baseUrl: '/api/v1',
+  endpoints: {
+    search: '/search',
+    export: '/export',
+    import: '/import',
+  },
+} as const
+
+export function StressDashboard() {
+  const banner = "{{ $t('common.test.weekly-overview-for') }}"
+  const subtitle = "{{ $t('common.test.track-health-metrics') }}"
+  const cta = "{{ $t('common.test.open-detailed-report') }}"
+
+  return (
+    <main>
+      <header>
+        <h1 title="{{ $t('common.test.operations-dashboard') }}">{ $t('common.test.operations-dashboard_1') }</h1>
+        <p>{banner}</p>
+        <p>{subtitle}</p>
+        <button title="{{ $t('common.test.open-detailed-report_1') }}">{cta}</button>
+      </header>
+
+      <section>
+        <h2 title="{{ $t('common.test.team-alpha') }}">{ $t('common.test.team-alpha_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable') }</p>
+        <p>{ $t('common.test.deployment-risk-is') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-beta') }}">{ $t('common.test.team-beta_1') }</h2>
+        <p>{ $t('common.test.velocity-is-recovering') }</p>
+        <p>{ $t('common.test.deployment-risk-is_1') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-gamma') }}">{ $t('common.test.team-gamma_1') }</h2>
+        <p>{ $t('common.test.velocity-is-above') }</p>
+        <p>{ $t('common.test.deployment-risk-is_2') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-delta') }}">{ $t('common.test.team-delta_1') }</h2>
+        <p>{ $t('common.test.velocity-is-below') }</p>
+        <p>{ $t('common.test.deployment-risk-is_3') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-epsilon') }}">{ $t('common.test.team-epsilon_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_1') }</p>
+        <p>{ $t('common.test.deployment-risk-is_4') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-zeta') }}">{ $t('common.test.team-zeta_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_2') }</p>
+        <p>{ $t('common.test.deployment-risk-is_5') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-eta') }}">{ $t('common.test.team-eta_1') }</h2>
+        <p>{ $t('common.test.velocity-is-improving') }</p>
+        <p>{ $t('common.test.deployment-risk-is_6') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-theta') }}">{ $t('common.test.team-theta_1') }</h2>
+        <p>{ $t('common.test.velocity-is-unstable') }</p>
+        <p>{ $t('common.test.deployment-risk-is_7') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-iota') }}">{ $t('common.test.team-iota_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_3') }</p>
+        <p>{ $t('common.test.deployment-risk-is_8') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-kappa') }}">{ $t('common.test.team-kappa_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_4') }</p>
+        <p>{ $t('common.test.deployment-risk-is_9') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-lambda') }}">{ $t('common.test.team-lambda_1') }</h2>
+        <p>{ $t('common.test.velocity-is-above_1') }</p>
+        <p>{ $t('common.test.deployment-risk-is_10') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-mu') }}">{ $t('common.test.team-mu_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_5') }</p>
+        <p>{ $t('common.test.deployment-risk-is_11') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-nu') }}">{ $t('common.test.team-nu_1') }</h2>
+        <p>{ $t('common.test.velocity-is-recovering_1') }</p>
+        <p>{ $t('common.test.deployment-risk-is_12') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-xi') }}">{ $t('common.test.team-xi_1') }</h2>
+        <p>{ $t('common.test.velocity-is-below_1') }</p>
+        <p>{ $t('common.test.deployment-risk-is_13') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-omicron') }}">{ $t('common.test.team-omicron_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_6') }</p>
+        <p>{ $t('common.test.deployment-risk-is_14') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-pi') }}">{ $t('common.test.team-pi_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_7') }</p>
+        <p>{ $t('common.test.deployment-risk-is_15') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-rho') }}">{ $t('common.test.team-rho_1') }</h2>
+        <p>{ $t('common.test.velocity-is-improving_1') }</p>
+        <p>{ $t('common.test.deployment-risk-is_16') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-sigma') }}">{ $t('common.test.team-sigma_1') }</h2>
+        <p>{ $t('common.test.velocity-is-unstable_1') }</p>
+        <p>{ $t('common.test.deployment-risk-is_17') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-tau') }}">{ $t('common.test.team-tau_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_8') }</p>
+        <p>{ $t('common.test.deployment-risk-is_18') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-upsilon') }}">{ $t('common.test.team-upsilon_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_9') }</p>
+        <p>{ $t('common.test.deployment-risk-is_19') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-phi') }}">{ $t('common.test.team-phi_1') }</h2>
+        <p>{ $t('common.test.velocity-is-above_2') }</p>
+        <p>{ $t('common.test.deployment-risk-is_20') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-chi') }}">{ $t('common.test.team-chi_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_10') }</p>
+        <p>{ $t('common.test.deployment-risk-is_21') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-psi') }}">{ $t('common.test.team-psi_1') }</h2>
+        <p>{ $t('common.test.velocity-is-recovering_2') }</p>
+        <p>{ $t('common.test.deployment-risk-is_22') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-omega') }}">{ $t('common.test.team-omega_1') }</h2>
+        <p>{ $t('common.test.velocity-is-below_2') }</p>
+        <p>{ $t('common.test.deployment-risk-is_23') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-north') }}">{ $t('common.test.team-north_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_11') }</p>
+        <p>{ $t('common.test.deployment-risk-is_24') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-south') }}">{ $t('common.test.team-south_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_12') }</p>
+        <p>{ $t('common.test.deployment-risk-is_25') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-east') }}">{ $t('common.test.team-east_1') }</h2>
+        <p>{ $t('common.test.velocity-is-improving_2') }</p>
+        <p>{ $t('common.test.deployment-risk-is_26') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-west') }}">{ $t('common.test.team-west_1') }</h2>
+        <p>{ $t('common.test.velocity-is-unstable_2') }</p>
+        <p>{ $t('common.test.deployment-risk-is_27') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-central') }}">{ $t('common.test.team-central_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_13') }</p>
+        <p>{ $t('common.test.deployment-risk-is_28') }</p>
+      </section>
+      <section>
+        <h2 title="{{ $t('common.test.team-support') }}">{ $t('common.test.team-support_1') }</h2>
+        <p>{ $t('common.test.velocity-is-stable_14') }</p>
+        <p>{ $t('common.test.deployment-risk-is_29') }</p>
+      </section>
+
+      <footer>
+        <small>{ $t('common.test.data-is-refreshed') }</small>
+      </footer>
+    </main>
+  )
+}
+
+export { API_SCHEMA, InternalStatus, ROUTE_SCHEMA }
+"
+`;
+
+exports[`FileProcessor regular files > processes large vue fixture and matches snapshot output 1`] = `
+"<template>
+  <main class={{ $t('common.test.settings-page') }}>
+    <!-- Must remain untouched: Plain commented string -->
+    <header>
+      <h1>{{ $t('common.test.application-settings') }}</h1>
+      <p>{{ $t('common.test.configure-your-workspace') }}</p>
+      <button :title="$t('common.test.save-all-changes')">{{ $t('common.test.save') }}</button>
+    </header>
+
+    <section>
+      <h2>{{ $t('common.test.general') }}</h2>
+      <label :title="$t('common.test.project-display-name')">{{ $t('common.test.project-name') }}</label>
+      <input :placeholder="$t('common.test.enter-project-name')" />
+      <label :title="$t('common.test.default-timezone')">{{ $t('common.test.timezone') }}</label>
+      <input :placeholder="$t('common.test.select-timezone')" />
+    </section>
+
+    <section>
+      <h2>{{ $t('common.test.localization') }}</h2>
+      <label :title="$t('common.test.default-locale')">{{ $t('common.test.locale') }}</label>
+      <input :placeholder="$t('common.test.choose-locale')" />
+      <label :title="$t('common.test.fallback-locale')">{{ $t('common.test.fallback-locale_2') }}</label>
+      <input :placeholder="$t('common.test.choose-fallback-locale')" />
+      <p>{{ $t('common.test.translations-can-be') }}</p>
+    </section>
+
+    <section>
+      <h2>{{ $t('common.test.notifications') }}</h2>
+      <label :title="$t('common.test.email-notifications')">{{ $t('common.test.email-updates') }}</label>
+      <input :placeholder="$t('common.test.type-email-address')" />
+      <label :title="$t('common.test.slack-integration')">{{ $t('common.test.slack-webhook') }}</label>
+      <input :placeholder="$t('common.test.paste-slack-url')" />
+      <p>{{ $t('common.test.critical-alerts-are') }}</p>
+    </section>
+
+    <section>
+      <h2>{{ $t('common.test.security') }}</h2>
+      <label :title="$t('common.test.session-timeout')">{{ $t('common.test.session-timeout_2') }}</label>
+      <input :placeholder="$t('common.test.set-timeout-in')" />
+      <label :title="$t('common.test.two-factor-auth')">{{ $t('common.test.two-factor-authentication') }}</label>
+      <input :placeholder="$t('common.test.enable-or-disable')" />
+      <p>{{ $t('common.test.security-events-are') }}</p>
+    </section>
+
+    <section>
+      <h2>{{ $t('common.test.billing') }}</h2>
+      <label :title="$t('common.test.billing-contact')">{{ $t('common.test.billing-email') }}</label>
+      <input :placeholder="$t('common.test.nameexample-com')" />
+      <label :title="$t('common.test.invoice-address')">{{ $t('common.test.invoice-address_2') }}</label>
+      <input :placeholder="$t('common.test.enter-company-address')" />
+      <p>{{ $t('common.test.invoices-are-generated') }}</p>
+    </section>
+
+    <section>
+      <h2>{{ $t('common.test.advanced') }}</h2>
+      <label :title="$t('common.test.ap-i-endpoint')">{{ $t('common.test.custom-ap-i-base') }}</label>
+      <input :placeholder="$t('common.test.https-api-example')" />
+      <label :title="$t('common.test.request-timeout')">{{ $t('common.test.request-timeout_2') }}</label>
+      <input :placeholder="$t('common.test.3000')" />
+      <p>{{ $t('common.test.use-advanced-settings') }}</p>
+    </section>
+
+    <footer>
+      <small>{{ $t('common.test.need-help-contact') }}</small>
+    </footer>
+  </main>
+</template>
+
+<script setup lang="ts">
+const schema = {
+  route: '/settings',
+  action: 'update_settings',
+}
+
+void schema
+</script>
+"
+`;
+
+exports[`FileProcessor regular files > translates user-facing strings in runtime const objects 1`] = `
+"const UI_LABELS = {
+  save: "{{ $t('common.test.save') }}",
+  cancel: "{{ $t('common.test.cancel') }}",
+} as const
+
+export function getActionLabel(kind: 'save' | 'cancel') {
+  return UI_LABELS[kind]
+}
+"
+`;

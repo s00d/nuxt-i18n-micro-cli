@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`components.extractKeys > matches snapshot for extracted keys from mega dashboard fixture 1`] = `
+[
+  "dashboard.actions.primary",
+  "dashboard.actions.refresh",
+  "dashboard.actions.refreshTooltip",
+  "dashboard.actions.secondary",
+  "dashboard.filters.period.aria",
+  "dashboard.filters.period.label",
+  "dashboard.filters.period.month",
+  "dashboard.filters.period.today",
+  "dashboard.filters.period.tooltip",
+  "dashboard.filters.period.week",
+  "dashboard.footer.copyright",
+  "dashboard.messages.info",
+  "dashboard.messages.notifications",
+  "dashboard.page.subtitle",
+  "dashboard.page.title",
+  "dashboard.panels.activity.empty",
+  "dashboard.panels.activity.title",
+  "dashboard.panels.alerts.empty",
+  "dashboard.panels.alerts.title",
+  "dashboard.panels.tasks.pending",
+  "dashboard.panels.tasks.title",
+  "dashboard.stats.orders.count",
+  "dashboard.stats.orders.title",
+  "dashboard.stats.revenue.title",
+  "dashboard.stats.revenue.value",
+  "dashboard.stats.tickets.count",
+  "dashboard.stats.tickets.title",
+  "dashboard.stats.users.count",
+  "dashboard.stats.users.title",
+]
+`;

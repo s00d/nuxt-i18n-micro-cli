@@ -1,0 +1,8 @@
+{
+  "loremA": {
+    "title": "Lorem A: Translation Stress Page",
+    "p1": "This translated paragraph exists to test long-form localized copy rendered from page-scoped locale files.",
+    "p2": "Layered projects often combine inherited dictionary entries with page-level overrides, and this fixture is intentionally verbose.",
+    "p3": "When extracting strings, this page should provide enough natural language volume for realistic parser and replacement checks."
+  }
+}

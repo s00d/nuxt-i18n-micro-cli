@@ -1,9 +1,16 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
+  extends: [
+    '../playground_base',
+    './layers/base',
+    './layers/marketing',
+  ],
   modules: [
     'nuxt-i18n-micro',
   ],
+  devtools: { enabled: true },
+  compatibilityDate: '2024-08-14',
   i18n: {
     locales: [
       { code: 'en', iso: 'en_EN' },
@@ -31,6 +38,4 @@ export default defineNuxtConfig({
       return (forms.length > 2 ? forms[2].trim() : forms[forms.length - 1].trim()).replace('{count}', count.toString())
     },
   },
-  devtools: { enabled: true },
-  compatibilityDate: '2024-08-14',
 })

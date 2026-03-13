@@ -1,0 +1,106 @@
+{
+  "title": "Split Test Page",
+  "common": {
+    "section_title": "Common Translations Section",
+    "description": "This section contains common translations that can be split by key count",
+    "features": {
+      "feature1": {
+        "title": "Feature 1",
+        "description": "Description of feature 1 with some details about its functionality"
+      },
+      "feature2": {
+        "title": "Feature 2",
+        "description": "Description of feature 2 with some details about its functionality"
+      },
+      "feature3": {
+        "title": "Feature 3",
+        "description": "Description of feature 3 with some details about its functionality"
+      },
+      "feature4": {
+        "title": "Feature 4",
+        "description": "Description of feature 4 with some details about its functionality"
+      },
+      "feature5": {
+        "title": "Feature 5",
+        "description": "Description of feature 5 with some details about its functionality"
+      }
+    }
+  },
+  "nested": {
+    "section_title": "Nested Translations Section",
+    "items": {
+      "item1": {
+        "title": "Nested Item 1",
+        "description": "Description of nested item 1",
+        "details": {
+          "detail1": "Detail 1 for nested item 1",
+          "detail2": "Detail 2 for nested item 1",
+          "detail3": "Detail 3 for nested item 1"
+        }
+      },
+      "item2": {
+        "title": "Nested Item 2",
+        "description": "Description of nested item 2",
+        "details": {
+          "detail1": "Detail 1 for nested item 2",
+          "detail2": "Detail 2 for nested item 2",
+          "detail3": "Detail 3 for nested item 2"
+        }
+      },
+      "item3": {
+        "title": "Nested Item 3",
+        "description": "Description of nested item 3",
+        "details": {
+          "detail1": "Detail 1 for nested item 3",
+          "detail2": "Detail 2 for nested item 3",
+          "detail3": "Detail 3 for nested item 3"
+        }
+      }
+    }
+  },
+  "prefixed": {
+    "section_title": "Prefixed Translations Section",
+    "header": {
+      "title": "Header Section",
+      "description": "Description of the header section",
+      "items": {
+        "item1": {
+          "title": "Header Item 1",
+          "description": "Description of header item 1"
+        },
+        "item2": {
+          "title": "Header Item 2",
+          "description": "Description of header item 2"
+        }
+      }
+    },
+    "footer": {
+      "title": "Footer Section",
+      "description": "Description of the footer section",
+      "items": {
+        "item1": {
+          "title": "Footer Item 1",
+          "description": "Description of footer item 1"
+        },
+        "item2": {
+          "title": "Footer Item 2",
+          "description": "Description of footer item 2"
+        }
+      }
+    },
+    "sidebar": {
+      "title": "Sidebar Section",
+      "description": "Description of the sidebar section",
+      "items": {
+        "item1": {
+          "title": "Sidebar Item 1",
+          "description": "Description of sidebar item 1"
+        },
+        "item2": {
+          "title": "Sidebar Item 2",
+          "description": "Description of sidebar item 2"
+        }
+      }
+    }
+  }
+} 

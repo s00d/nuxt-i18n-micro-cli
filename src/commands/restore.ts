@@ -1,11 +1,8 @@
 import path from 'node:path'
-import fs from 'node:fs'
 import { defineCommand } from 'citty'
-import { resolve } from 'pathe'
-import consola from 'consola'
-import { getI18nConfig } from '../utils/kit'
-import { extractBackupArchive, getBackupList, cleanupExtractedBackup } from '../utils/backup'
-import { sharedArgs } from './_shared'
+import { consola } from 'consola'
+import { listProjectBackups, restoreProjectFromBackup } from '../core/services/BackupRestoreService'
+import { resolveCommandContext, sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {
@@ -38,21 +35,10 @@ export default defineCommand({
       default: false,
     },
   },
-  async run(context) {
-    const args = context.args
-    const cwd = resolve((args.cwd || '.').toString())
-    const { translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
-    const translationDir = args.translationDir || defaultTranslationDir
+  async run({ args }) {
+    const { translationDir } = await resolveCommandContext(args)
     const backupDir = args.backupDir || path.join(translationDir, 'backups')
-
-    if (!fs.existsSync(backupDir)) {
-      throw new Error('Backup directory does not exist')
-    }
-
-    const availableBackups = getBackupList(backupDir)
-    if (availableBackups.length === 0) {
-      throw new Error('No backups found')
-    }
+    const availableBackups = listProjectBackups(backupDir)
 
     if (!args.backup) {
       consola.info('Available backups:')
@@ -72,51 +58,12 @@ export default defineCommand({
       }
     }
 
-    let extractPath: string | undefined
-    try {
-      extractPath = await extractBackupArchive({
-        translationDir,
-        backupDir,
-        backup: args.backup,
-        password: args.password,
-      })
-
-      if (!extractPath) {
-        throw new Error('Failed to extract backup: no path returned')
-      }
-
-      const restoredFiles = new Set<string>()
-      const processDirectory = (dir: string) => {
-        const entries = fs.readdirSync(dir, { withFileTypes: true })
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name)
-          const relativePath = path.relative(extractPath!, fullPath)
-          const targetPath = path.join(translationDir, relativePath)
-
-          if (entry.isDirectory()) {
-            if (!fs.existsSync(targetPath)) {
-              fs.mkdirSync(targetPath, { recursive: true })
-            }
-            processDirectory(fullPath)
-          }
-          else if (entry.isFile() && entry.name.endsWith('.json')) {
-            fs.copyFileSync(fullPath, targetPath)
-            restoredFiles.add(relativePath)
-          }
-        }
-      }
-
-      processDirectory(extractPath)
-      consola.success(`Restored ${restoredFiles.size} files from backup "${args.backup}"`)
-    }
-    catch (error) {
-      consola.error('Failed to restore backup:', error)
-      throw error
-    }
-    finally {
-      if (extractPath && fs.existsSync(extractPath)) {
-        cleanupExtractedBackup(extractPath)
-      }
-    }
+    const restoredFiles = await restoreProjectFromBackup({
+      translationDir,
+      backupDir,
+      backup: args.backup,
+      password: args.password,
+    })
+    consola.success(`Restored ${restoredFiles.length} files from backup "${args.backup}"`)
   },
 })

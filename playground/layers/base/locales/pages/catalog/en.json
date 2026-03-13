@@ -1,0 +1,10 @@
+{
+  "catalog": {
+    "hero": "Base catalog hero",
+    "description": "Base catalog description with operational details for logistics and assortment coverage.",
+    "details": {
+      "shipping": "Standard shipping in 2-5 business days",
+      "returns": "Returns are available within 30 days"
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "title": "Split-Testseite",
+  "common": {
+    "section_title": "Abschnitt für allgemeine Übersetzungen",
+    "description": "Dieser Abschnitt enthält allgemeine Übersetzungen, die nach Schlüsselanzahl aufgeteilt werden können",
+    "features": {
+      "feature1": {
+        "title": "Funktion 1",
+        "description": "Beschreibung der Funktion 1 mit einigen Details zu ihrer Funktionalität"
+      },
+      "feature2": {
+        "title": "Funktion 2",
+        "description": "Beschreibung der Funktion 2 mit einigen Details zu ihrer Funktionalität"
+      },
+      "feature3": {
+        "title": "Funktion 3",
+        "description": "Beschreibung der Funktion 3 mit einigen Details zu ihrer Funktionalität"
+      },
+      "feature4": {
+        "title": "Funktion 4",
+        "description": "Beschreibung der Funktion 4 mit einigen Details zu ihrer Funktionalität"
+      },
+      "feature5": {
+        "title": "Funktion 5",
+        "description": "Beschreibung der Funktion 5 mit einigen Details zu ihrer Funktionalität"
+      }
+    }
+  },
+  "nested": {
+    "section_title": "Abschnitt für verschachtelte Übersetzungen",
+    "items": {
+      "item1": {
+        "title": "Verschachteltes Element 1",
+        "description": "Beschreibung des verschachtelten Elements 1",
+        "details": {
+          "detail1": "Detail 1 für verschachteltes Element 1",
+          "detail2": "Detail 2 für verschachteltes Element 1",
+          "detail3": "Detail 3 für verschachteltes Element 1"
+        }
+      },
+      "item2": {
+        "title": "Verschachteltes Element 2",
+        "description": "Beschreibung des verschachtelten Elements 2",
+        "details": {
+          "detail1": "Detail 1 für verschachteltes Element 2",
+          "detail2": "Detail 2 für verschachteltes Element 2",
+          "detail3": "Detail 3 für verschachteltes Element 2"
+        }
+      },
+      "item3": {
+        "title": "Verschachteltes Element 3",
+        "description": "Beschreibung des verschachtelten Elements 3",
+        "details": {
+          "detail1": "Detail 1 für verschachteltes Element 3",
+          "detail2": "Detail 2 für verschachteltes Element 3",
+          "detail3": "Detail 3 für verschachteltes Element 3"
+        }
+      }
+    }
+  },
+  "prefixed": {
+    "section_title": "Abschnitt für präfixierte Übersetzungen",
+    "header": {
+      "title": "Header-Abschnitt",
+      "description": "Beschreibung des Header-Abschnitts",
+      "items": {
+        "item1": {
+          "title": "Header-Element 1",
+          "description": "Beschreibung des Header-Elements 1"
+        },
+        "item2": {
+          "title": "Header-Element 2",
+          "description": "Beschreibung des Header-Elements 2"
+        }
+      }
+    },
+    "footer": {
+      "title": "Footer-Abschnitt",
+      "description": "Beschreibung des Footer-Abschnitts",
+      "items": {
+        "item1": {
+          "title": "Footer-Element 1",
+          "description": "Beschreibung des Footer-Elements 1"
+        },
+        "item2": {
+          "title": "Footer-Element 2",
+          "description": "Beschreibung des Footer-Elements 2"
+        }
+      }
+    },
+    "sidebar": {
+      "title": "Seitenleisten-Abschnitt",
+      "description": "Beschreibung des Seitenleisten-Abschnitts",
+      "items": {
+        "item1": {
+          "title": "Seitenleisten-Element 1",
+          "description": "Beschreibung des Seitenleisten-Elements 1"
+        },
+        "item2": {
+          "title": "Seitenleisten-Element 2",
+          "description": "Beschreibung des Seitenleisten-Elements 2"
+        }
+      }
+    }
+  }
+} 

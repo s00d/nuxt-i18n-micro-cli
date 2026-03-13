@@ -1,5 +1,13 @@
 {
   "key3": "привет",
+  "layerMeta": {
+    "active": "root",
+    "rootOnly": "root-top-layer"
+  },
+  "landing": {
+    "title": "Заголовок root playground",
+    "subtitle": "Финальный текст верхнего слоя в playground текущего проекта."
+  },
   "key1": {
     "key1": {
       "key1": {

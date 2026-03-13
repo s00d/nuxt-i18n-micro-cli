@@ -1,11 +1,7 @@
-import fs from 'node:fs'
-import path from 'node:path'
 import { defineCommand } from 'citty'
-import { resolve } from 'pathe'
-import consola from 'consola'
-import { loadJsonFile, flattenTranslations } from '../utils/json'
-import { getI18nConfig } from '../utils/kit'
-import { sharedArgs } from './_shared'
+import { consola } from 'consola'
+import { normalizePageScope } from '../core/utils/page-file'
+import { resolveProjectContext, sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {
@@ -20,46 +16,29 @@ export default defineCommand({
       default: 'locales',
     },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string } }) {
-    const cwd = resolve((args.cwd || '.').toString())
-    const { locales, translationDir } = await getI18nConfig(cwd, args.logLevel)
+  async run({ args }) {
+    const { project } = await resolveProjectContext(args)
 
-    // Для каждого языка проверяем на дубликаты
-    for (const locale of locales) {
-      const { code } = locale
-      const translationValuesMap: Record<string, Set<string>> = {}
+    for (const code of project.getLocaleCodes()) {
+      const translationValuesMap = new Map<string, Set<string>>()
+      const localeSet = project.getLocale(code)
 
       consola.info(`Checking for duplicates in locale: ${code}`)
 
-      // Проверяем глобальные переводы
-      const globalTranslationsPath = path.join(translationDir, `${code}.json`)
-      if (fs.existsSync(globalTranslationsPath)) {
-        const globalTranslations = loadJsonFile(globalTranslationsPath)
-        const flatGlobalTranslations = flattenTranslations(globalTranslations)
-        storeTranslationValues(flatGlobalTranslations, 'global', translationValuesMap)
+      storeTranslationValues(localeSet.getFlatGlobalKeys(), 'global', translationValuesMap)
+
+      for (const pageScope of localeSet.getPageScopes()) {
+        const flatPageTranslations = localeSet.getFlatPageKeys(pageScope)
+        storeTranslationValues(flatPageTranslations, `pages/${normalizePageScope(pageScope)}`, translationValuesMap)
       }
 
-      // Проверяем переводы на страницах
-      const pagesDir = path.join(translationDir, 'pages')
-      if (fs.existsSync(pagesDir)) {
-        const pageDirs = fs.readdirSync(pagesDir)
-        for (const page of pageDirs) {
-          const pageTranslationPath = path.join(pagesDir, page, `${code}.json`)
-          if (fs.existsSync(pageTranslationPath)) {
-            const pageTranslations = loadJsonFile(pageTranslationPath)
-            const flatPageTranslations = flattenTranslations(pageTranslations)
-            storeTranslationValues(flatPageTranslations, `pages/${page}`, translationValuesMap)
-          }
-        }
-      }
-
-      // Выводим дубликаты для текущей локали
       let duplicatesFound = false
-      for (const [value, locations] of Object.entries(translationValuesMap)) {
+      for (const [value, locations] of translationValuesMap) {
         if (locations.size > 1) {
           duplicatesFound = true
           consola.warn(`Duplicate translation value "${value}" found in locale ${code}:`)
-          locations.forEach(location => consola.info(` - ${location}`))
+          const sortedLocations = [...locations].sort((a, b) => a.localeCompare(b))
+          sortedLocations.forEach(location => consola.info(` - ${location}`))
         }
       }
 
@@ -76,16 +55,16 @@ export default defineCommand({
 function storeTranslationValues(
   translations: Record<string, string>,
   scope: string,
-  translationValuesMap: Record<string, Set<string>>,
+  translationValuesMap: Map<string, Set<string>>,
 ) {
   for (const key in translations) {
     const value = translations[key]
     const location = `${scope} - ${key}`
 
-    if (!translationValuesMap[value]) {
-      translationValuesMap[value] = new Set()
+    if (!translationValuesMap.has(value)) {
+      translationValuesMap.set(value, new Set())
     }
 
-    translationValuesMap[value].add(location)
+    translationValuesMap.get(value)?.add(location)
   }
 }

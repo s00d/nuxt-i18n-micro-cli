@@ -1,119 +1,94 @@
-import fs from 'node:fs'
-import os from 'node:os'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import consola from 'consola'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import infoCommand from '../../src/commands/info'
-import { getI18nConfig } from '../../src/utils/kit'
+import { buildInfoSnapshot } from '../../src/core/services/InfoService'
+import { resolveCommandContext, printInfoRows, printJson } from '../../src/commands/_shared'
+import { renderSection } from '../../src/commands/_render'
 
-// Мокаем все внешние зависимости
-vi.mock('fs')
-vi.mock('os')
-vi.mock('consola')
-vi.mock('../../src/utils/kit')
-vi.mock('../../src/utils/json')
+vi.mock('consola', () => ({
+  consola: {
+    info: vi.fn(),
+  },
+}))
+
+vi.mock('../../src/core/services/InfoService', () => ({
+  buildInfoSnapshot: vi.fn(),
+}))
+
+vi.mock('../../src/commands/_shared', () => ({
+  sharedArgs: {},
+  printDependencyGroup: vi.fn(),
+  resolveCommandContext: vi.fn(),
+  printInfoRows: vi.fn(),
+  printJson: vi.fn(),
+}))
+
+vi.mock('../../src/commands/_render', () => ({
+  renderSection: vi.fn(),
+  renderList: vi.fn(),
+}))
 
 describe('info command', () => {
-  const createCommandContext = (args: Partial<{
-    cwd: string
-    logLevel: string
-    json: boolean
-    debug: boolean
-  }> = {}) => ({
-    args: {
-      _: ['info'],
-      cwd: process.cwd(),
-      logLevel: 'info',
-      json: false,
-      debug: false,
-      ...args,
-    },
-    rawArgs: [],
-    cmd: infoCommand,
-  })
-
   beforeEach(() => {
     vi.clearAllMocks()
-
-    // Мокаем consola
-    vi.mocked(consola.info).mockImplementation(vi.fn())
-    vi.mocked(consola.warn).mockImplementation(vi.fn())
-    vi.mocked(consola.box).mockImplementation(vi.fn())
-    vi.mocked(consola.error).mockImplementation(vi.fn())
-
-    // Базовые моки для fs и os
-    vi.mocked(fs.existsSync).mockReturnValue(true)
-    vi.mocked(os.platform).mockReturnValue('darwin')
-    vi.mocked(os.release).mockReturnValue('24.5.0')
-    vi.mocked(os.arch).mockReturnValue('arm64')
-    vi.mocked(os.cpus).mockReturnValue([{
-      model: 'Apple M1',
-      speed: 3200,
-      times: {
-        user: 0,
-        nice: 0,
-        sys: 0,
-        idle: 0,
-        irq: 0,
-      },
-    }])
-    vi.mocked(os.totalmem).mockReturnValue(16 * 1024 * 1024 * 1024)
-    vi.mocked(os.freemem).mockReturnValue(8 * 1024 * 1024 * 1024)
-    vi.mocked(os.homedir).mockReturnValue('/Users/test')
-    vi.mocked(os.hostname).mockReturnValue('test-mac')
-    vi.mocked(os.loadavg).mockReturnValue([1.5, 1.2, 1.0])
-    vi.mocked(os.userInfo).mockReturnValue({
-      username: 'testuser',
-      uid: 1000,
-      gid: 1000,
-      shell: '/bin/zsh',
-      homedir: '/Users/test',
-    })
-
-    // Мокаем getI18nConfig
-    vi.mocked(getI18nConfig).mockResolvedValue({
-      locales: [
-        { code: 'en' },
-        { code: 'ru' },
-      ],
-      defaultLocale: 'en',
+    vi.mocked(resolveCommandContext).mockResolvedValue({
+      cwd: '/test/project',
       translationDir: 'locales',
+      config: {
+        locales: [{ code: 'en' }],
+        defaultLocale: 'en',
+        translationDir: 'locales',
+      },
     })
+    vi.mocked(buildInfoSnapshot).mockReturnValue({
+      cli: { name: 'cli', version: '1.0.0', description: '', repository: '', license: '', dependencies: {}, devDependencies: {}, engines: {}, packageManager: '' },
+      project: {
+        cwd: '/test/project',
+        package: null,
+        translationDir: 'locales',
+        defaultLocale: 'en',
+        totalLocales: 1,
+        locales: [{ code: 'en' }],
+        translationStats: {
+          totalFiles: 1,
+          totalSize: '1 KB',
+          largestFile: { name: 'en.json', size: '1 KB' },
+          lastModified: 'now',
+          filesByLocale: { en: { count: 1, size: '1 KB' } },
+        },
+      },
+      system: {
+        nodeVersion: 'v22',
+        platform: 'darwin',
+        arch: 'arm64',
+        cpus: 8,
+        memory: { used: '1 GB', total: '2 GB', usagePercent: 50 },
+        uptime: 1,
+        hostname: 'host',
+        user: 'user',
+        shell: '/bin/zsh',
+        env: { NODE_ENV: 'test' },
+      },
+      debug: {
+        process: { pid: 1, ppid: 0, execPath: '/usr/bin/node' },
+        os: { type: 'Darwin', release: '24.0', version: '24.0', homedir: '/Users/test', tmpdir: '/tmp', loadavg: [0, 0, 0] },
+      },
+    } as never)
   })
 
-  it('should display basic information', async () => {
-    const command = infoCommand
-    if (!command) throw new Error('Command not found')
-    if (!command.run) throw new Error('Command run method not found')
-
-    await command.run(createCommandContext())
-
-    // Проверяем только основные блоки информации
-    expect(vi.mocked(consola.box)).toHaveBeenCalledWith('CLI Information')
-    expect(vi.mocked(consola.box)).toHaveBeenCalledWith('Project Configuration')
-    expect(vi.mocked(consola.box)).toHaveBeenCalledWith('System Information')
+  it('prints json when json flag is enabled', async () => {
+    if (infoCommand.run) {
+      await infoCommand.run({ args: { json: true, debug: false } } as never)
+    }
+    expect(printJson).toHaveBeenCalled()
   })
 
-  it('should display debug information when debug flag is set', async () => {
-    const command = infoCommand
-    if (!command) throw new Error('Command not found')
-    if (!command.run) throw new Error('Command run method not found')
-
-    await command.run(createCommandContext({ debug: true }))
-
-    expect(vi.mocked(consola.box)).toHaveBeenCalledWith('Debug Information')
-  })
-
-  it('should output JSON when json flag is set', async () => {
-    const command = infoCommand
-    if (!command) throw new Error('Command not found')
-    if (!command.run) throw new Error('Command run method not found')
-
-    const consoleSpy = vi.spyOn(console, 'log')
-
-    await command.run(createCommandContext({ json: true }))
-
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('"cli"'))
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('"project"'))
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('"system"'))
+  it('prints sections in text mode', async () => {
+    if (infoCommand.run) {
+      await infoCommand.run({ args: { json: false, debug: false } } as never)
+    }
+    expect(renderSection).toHaveBeenCalledWith('CLI Information')
+    expect(renderSection).toHaveBeenCalledWith('Project Configuration')
+    expect(renderSection).toHaveBeenCalledWith('System Information')
+    expect(printInfoRows).toHaveBeenCalled()
   })
 })

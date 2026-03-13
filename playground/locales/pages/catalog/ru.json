@@ -1,0 +1,9 @@
+{
+  "catalog": {
+    "hero": "Заголовок каталога из root",
+    "description": "Финальный текст каталога из root-слоя для локального playground.",
+    "details": {
+      "returns": "Root override: возврат возможен в течение 45 дней"
+    }
+  }
+}

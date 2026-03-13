@@ -1,0 +1,10 @@
+{
+  "layerMeta": {
+    "base": "basis-layer",
+    "active": "basis"
+  },
+  "landing": {
+    "title": "Landing-Titel aus dem Basis-Layer",
+    "subtitle": "Der Basis-Layer liefert Standardtexte fur alle Seiten."
+  }
+}

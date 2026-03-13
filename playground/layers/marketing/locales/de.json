@@ -1,0 +1,9 @@
+{
+  "layerMeta": {
+    "active": "marketing"
+  },
+  "landing": {
+    "title": "Landing-Titel aus dem Marketing-Layer",
+    "subtitle": "Der Marketing-Layer erweitert die Basistexte fur Kampagnen."
+  }
+}

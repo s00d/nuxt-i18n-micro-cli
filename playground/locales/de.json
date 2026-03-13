@@ -1,5 +1,13 @@
 {
   "key3": "Hallo",
+  "layerMeta": {
+    "active": "root",
+    "rootOnly": "root-top-layer"
+  },
+  "landing": {
+    "title": "Root-Playground-Titel",
+    "subtitle": "Finaler Top-Layer-Text im aktuellen Projekt-Playground."
+  },
   "key1": {
     "key1": {
       "key1": {

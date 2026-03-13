@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { resolve } from 'pathe'
 import type { CommandDef, CommandMeta } from 'citty'
-import glob from 'glob'
+import fastGlob from 'fast-glob'
 
 interface CommandWithMeta extends CommandDef {
   meta: CommandMeta
@@ -13,7 +13,7 @@ async function generateDocs() {
   const outputFile = resolve(process.cwd(), 'docs/cli.md')
 
   // Get list of command files
-  const commandFiles = glob.sync('*.ts', {
+  const commandFiles = fastGlob.sync('*.ts', {
     cwd: commandsDir,
     ignore: ['index.ts', '_shared.ts', '.DS_Store'],
   })

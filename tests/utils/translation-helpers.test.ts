@@ -5,7 +5,7 @@ import {
   generateTranslationKey,
   flattenTranslations,
   toSlug,
-} from '../../src/utils/text_converner/translation-helpers'
+} from '../../src/core/text_converner/translation-helpers'
 
 describe('Translation Helpers', () => {
   describe('normalizeText', () => {

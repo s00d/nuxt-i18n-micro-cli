@@ -1,5 +1,5 @@
 import { defineCommand } from 'citty'
-import consola from 'consola'
+import { consola } from 'consola'
 import pPkg from '../package.json' with { type: 'json' }
 import { commands } from './commands'
 

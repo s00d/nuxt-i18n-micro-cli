@@ -1,10 +1,7 @@
-import path from 'node:path'
 import { defineCommand } from 'citty'
-import { resolve } from 'pathe'
-import consola from 'consola'
-import { flattenTranslations, loadJsonFile } from '../utils/json'
-import { getI18nConfig } from '../utils/kit'
-import { sharedArgs } from './_shared'
+import { consola } from 'consola'
+import { validateProjectLocales } from '../core/services/ValidationService'
+import { resolveProjectContext, sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {
@@ -19,47 +16,21 @@ export default defineCommand({
       default: 'locales',
     },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, logLevel?: string } }) {
-    const cwd = resolve((args.cwd || '.').toString())
-
-    const { locales, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
-
-    const translationDir = args.translationDir || defaultTranslationDir
-
-    // Эталонная локаль
-    const referenceLocale = locales[0].code
-    const referenceTranslations = loadJsonFile(path.join(translationDir, `${referenceLocale}.json`))
-    const referenceKeys = Object.keys(flattenTranslations(referenceTranslations))
-
-    let hasErrors = false
-
-    for (const locale of locales) {
-      const { code } = locale
-      if (code === referenceLocale) continue
-
-      const translations = loadJsonFile(path.join(translationDir, `${code}.json`))
-      const keys = Object.keys(flattenTranslations(translations))
-
-      const missingKeys = referenceKeys.filter(key => !keys.includes(key))
-      const extraKeys = keys.filter(key => !referenceKeys.includes(key))
-
-      if (missingKeys.length > 0) {
-        hasErrors = true
-        consola.warn(`Locale ${code} is missing keys:\n${missingKeys.join('\n')}`)
+  async run({ args }) {
+    const { project } = await resolveProjectContext(args)
+    const issues = validateProjectLocales(project)
+    if (issues.length > 0) {
+      for (const issue of issues) {
+        if (issue.missingKeys.length > 0) {
+          consola.warn(`Locale ${issue.locale} is missing keys:\n${issue.missingKeys.join('\n')}`)
+        }
+        if (issue.extraKeys.length > 0) {
+          consola.warn(`Locale ${issue.locale} has extra keys:\n${issue.extraKeys.join('\n')}`)
+        }
       }
-
-      if (extraKeys.length > 0) {
-        hasErrors = true
-        consola.warn(`Locale ${code} has extra keys:\n${extraKeys.join('\n')}`)
-      }
+      throw new Error('Validation failed with errors.')
     }
 
-    if (hasErrors) {
-      consola.error('Validation failed with errors.')
-      process.exit(1)
-    }
-    else {
-      consola.success('All translation files are valid.')
-    }
+    consola.success('All translation files are valid.')
   },
 })

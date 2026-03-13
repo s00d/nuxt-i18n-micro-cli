@@ -1,0 +1,10 @@
+{
+  "catalog": {
+    "hero": "Basis-Katalogtitel",
+    "description": "Basisbeschreibung des Katalogs mit operativen Details zu Logistik und Sortiment.",
+    "details": {
+      "shipping": "Standardversand in 2-5 Werktagen",
+      "returns": "Ruckgaben sind innerhalb von 30 Tagen moglich"
+    }
+  }
+}

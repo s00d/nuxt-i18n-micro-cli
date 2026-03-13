@@ -1,5 +1,42 @@
 # Changelog
 
+## v2.0.0
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.3.0...v2.0.0)
+
+### 💥 Breaking Changes
+
+- **architecture:** Migrate command/business logic to a Domain-Oriented Core (`src/core/**`) with thin CLI commands delegating to services.
+- **build:** Replace `unbuild` flow with `vite` + `tsc` build pipeline and update runtime output expectations.
+- **paths/imports:** Move and consolidate legacy `src/utils/**` modules into new core-oriented namespaces.
+
+### 🚀 Enhancements
+
+- **new commands:** Add `search`, `rename`, `pseudo`, `estimate`, and `glossary` commands.
+- **search:** Implement deep cross-layer search (key/value/usages/hardcoded), relevance ranking, `--onlyUnused`, `--preferUnused`, `--scope`, `--limit`, `--hardcodedOnly`, and `--onlyVue`.
+- **sync-remote:** Rework remote sync with a unified provider protocol and registry/factory architecture.
+- **remote providers:** Upgrade GitHub/GitLab integrations to official SDKs (`octokit`, `@gitbeaker/rest`).
+- **tms providers:** Implement native Crowdin/Lokalise import/export flows with polling, zip handling, and language mapping.
+- **layers support:** Add robust Nuxt Layers support for project config discovery, storage merging, watcher behavior, and command execution.
+- **stats:** Improve layered key accounting and add git baseline comparison support (`--baseRef`).
+- **text processing:** Expand AST-based extraction/rewrite workflows for `extract` and `text-to-i18n`.
+- **translation pipeline:** Add placeholder/plural handling improvements and richer translator option support.
+- **playground:** Add multi-layer playground structure (including upper `playground_base` layer), more pages, and richer fixtures for stress testing.
+- **cli ux:** Improve console rendering via shared render helpers, cleaner sections, and machine-readable `--json` support across core diagnostics commands.
+
+### 🩹 Fixes
+
+- **search:** Fix locale coverage collection so matches retain full locale value context.
+- **search:** Fix mixed-line hardcoded detection (plain text next to `$t(...)`).
+- **project loading:** Fix layered source selection when `translationDir` is explicitly provided but equals configured default.
+- **typing:** Resolve strict TypeScript issues around Nuxt `_layers` access and SDK response typing.
+
+### 🏗️ Internal / Tooling
+
+- **dependencies:** Standardize and modernize dependency set (`ufo`, `defu`, `p-limit`, `p-retry`, `p-timeout`, `pretty-bytes`, `pretty-ms`, `flat`, `dset`, `dlv`, `@inquirer/prompts`, and provider SDKs).
+- **tests:** Add/expand tests for layered config/storage/project behavior, search command/service, translator policies/drivers, and command outputs.
+- **docs:** Refresh README command reference and remote sync configuration documentation (GitHub/GitLab/Crowdin/Lokalise examples).
+
 ## v1.3.0
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.2.0...v1.3.0)

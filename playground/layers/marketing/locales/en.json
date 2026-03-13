@@ -1,0 +1,9 @@
+{
+  "layerMeta": {
+    "active": "marketing"
+  },
+  "landing": {
+    "title": "Marketing layer landing title",
+    "subtitle": "Marketing layer enriches base texts with campaign-ready phrasing."
+  }
+}

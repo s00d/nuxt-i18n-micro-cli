@@ -1,10 +1,9 @@
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
-import consola from 'consola'
-import { ensureDirectoryExists } from '../utils/dir'
-import { convertPoToJson } from '../utils/po'
-import { getI18nConfig } from '../utils/kit'
-import { sharedArgs } from './_shared'
+import { consola } from 'consola'
+import { ensureDirectoryExists } from '../core/utils/dir'
+import { convertPoToJson } from '../core/utils/po'
+import { resolveCommandContext, sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {
@@ -24,12 +23,8 @@ export default defineCommand({
       default: 'locales',
     },
   },
-  async run({ args }: { args: { cwd?: string, potsDir: string, translationDir: string, logLevel?: string } }) {
-    const cwd = resolve((args.cwd || '.').toString())
-
-    const { translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
-
-    const translationDir = args.translationDir || defaultTranslationDir
+  async run({ args }) {
+    const { translationDir } = await resolveCommandContext(args)
 
     const potsDir = resolve(args.potsDir)
 

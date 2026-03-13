@@ -1,0 +1,10 @@
+{
+  "docs": {
+    "title": "Dynamische Docs-Seite",
+    "p1": "Diese verschachtelte dynamische Route testet die Lokalisierung fur Dokumentationspfade mit mehreren Parametern und großen Seiten-Dictionaries.",
+    "p2": "Dokumentationsseiten enthalten meist dichte technische Texte, daher bildet diese Fixture mehrere langere Absatze nach.",
+    "p3": "Layer-basierte Projekte profitieren davon, weil Docs-Texte nach Produkt-Layern getrennt werden konnen, ohne globale Terminologie zu verlieren.",
+    "p4": "Verwenden Sie verschiedene section/page-Kombinationen, um Routing, Locale-Prafixe und Dictionary-Laden konsistent zu prufen.",
+    "p5": "Die Seite kombiniert ubersetzte und rohe Textblocke fur Extraction-, Replacement- und Mixed-Content-Render-Szenarien."
+  }
+}

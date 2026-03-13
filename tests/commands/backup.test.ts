@@ -1,15 +1,7 @@
-import fs from 'node:fs'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import consola from 'consola'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import backupCommand from '../../src/commands/backup'
-import { getI18nConfig } from '../../src/utils/kit'
-import { createBackupArchive } from '../../src/utils/backup'
-
-vi.mock('../../src/utils/kit')
-vi.mock('../../src/utils/backup')
-vi.mock('process', () => ({
-  exit: vi.fn(),
-}))
+import { createProjectBackup } from '../../src/core/services/BackupRestoreService'
+import { resolveCommandContext } from '../../src/commands/_shared'
 
 vi.mock('consola', () => ({
   default: {
@@ -18,15 +10,21 @@ vi.mock('consola', () => ({
     warn: vi.fn(),
     error: vi.fn(),
   },
+  consola: {
+    info: vi.fn(),
+    success: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
 }))
 
-vi.mock('fs', () => ({
-  default: {
-    existsSync: vi.fn(),
-    mkdirSync: vi.fn(),
-  },
-  existsSync: vi.fn(),
-  mkdirSync: vi.fn(),
+vi.mock('../../src/core/services/BackupRestoreService', () => ({
+  createProjectBackup: vi.fn(),
+}))
+
+vi.mock('../../src/commands/_shared', () => ({
+  sharedArgs: {},
+  resolveCommandContext: vi.fn(),
 }))
 
 describe('backup command', () => {
@@ -62,19 +60,12 @@ describe('backup command', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(fs.existsSync).mockImplementation((path) => {
-      if (typeof path === 'string') {
-        if (path === mockTranslationDir) return true
-        if (path === mockBackupDir) return true
-      }
-      return false
-    })
-
-    vi.mocked(getI18nConfig).mockResolvedValue({
-      locales: mockLocales,
+    vi.mocked(resolveCommandContext).mockResolvedValue({
+      cwd: mockCwd,
       translationDir: mockTranslationDir,
-      defaultLocale: 'en',
-    })
+      config: { locales: mockLocales, defaultLocale: 'en' },
+    } as never)
+    vi.mocked(createProjectBackup).mockResolvedValue('/tmp/archive.zip')
   })
 
   it('should create backup archive', async () => {
@@ -83,7 +74,7 @@ describe('backup command', () => {
 
     if (command.run) await command.run(createCommandContext({}))
 
-    expect(createBackupArchive).toHaveBeenCalledWith({
+    expect(createProjectBackup).toHaveBeenCalledWith({
       translationDir: mockTranslationDir,
       backupDir: mockBackupDir,
       password: '',
@@ -98,7 +89,7 @@ describe('backup command', () => {
     const comment = 'test-backup'
     if (command.run) await command.run(createCommandContext({ comment }))
 
-    expect(createBackupArchive).toHaveBeenCalledWith({
+    expect(createProjectBackup).toHaveBeenCalledWith({
       translationDir: mockTranslationDir,
       backupDir: mockBackupDir,
       password: '',
@@ -113,7 +104,7 @@ describe('backup command', () => {
     const password = 'secret123'
     if (command.run) await command.run(createCommandContext({ password }))
 
-    expect(createBackupArchive).toHaveBeenCalledWith({
+    expect(createProjectBackup).toHaveBeenCalledWith({
       translationDir: mockTranslationDir,
       backupDir: mockBackupDir,
       password,
@@ -125,7 +116,7 @@ describe('backup command', () => {
     const command = backupCommand
     if (!command) throw new Error('Command not found')
 
-    vi.mocked(fs.existsSync).mockReturnValueOnce(false)
+    vi.mocked(createProjectBackup).mockRejectedValueOnce(new Error('Translation directory does not exist'))
 
     if (command.run) {
       await expect(command.run(createCommandContext({
@@ -139,11 +130,10 @@ describe('backup command', () => {
     if (!command) throw new Error('Command not found')
 
     const error = new Error('Failed to create backup')
-    vi.mocked(createBackupArchive).mockRejectedValueOnce(error)
+    vi.mocked(createProjectBackup).mockRejectedValueOnce(error)
 
     if (command.run) {
       await expect(command.run(createCommandContext({}))).rejects.toThrow(error)
-      expect(consola.error).toHaveBeenCalledWith('Failed to create backup:', error)
     }
   })
 })

@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { TEXT_PATTERNS, TEMPLATE_EXPRESSIONS } from '../../src/utils/text_converner/text-patterns'
+import { TEXT_PATTERNS, TEMPLATE_EXPRESSIONS } from '../../src/core/text_converner/text-patterns'
 
 describe('Text Patterns', () => {
   describe('QUOTED_TEXT', () => {

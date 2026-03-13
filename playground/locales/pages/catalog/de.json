@@ -1,0 +1,9 @@
+{
+  "catalog": {
+    "hero": "Root-Katalogtitel",
+    "description": "Finaler Katalogtext aus dem Root-Layer fur die lokale Playground-Demo.",
+    "details": {
+      "returns": "Root-Override: Ruckgaben innerhalb von 45 Tagen"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest'
-import { toSlug } from '../../src/utils/text_converner/translation-helpers'
+import { toSlug } from '../../src/core/text_converner/translation-helpers'
 
 describe('String Helpers', () => {
   describe('toSlug', () => {

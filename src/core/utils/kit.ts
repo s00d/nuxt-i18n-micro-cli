@@ -39,16 +39,37 @@ async function tryResolveNuxt() {
 
 export async function getI18nConfig(cwd: string, logLevel?: string): Promise<{ locales: Array<{ code: string }>, translationDir: string, translationDirs: string[], defaultLocale: string }> {
   const kit = await loadKit(cwd)
-  const nuxt = await kit.loadNuxt({
-    cwd,
-    dotenv: { cwd },
-    overrides: {
-      logLevel: logLevel as 'silent' | 'info' | 'verbose' | undefined ?? 'silent',
-      vite: {
-        clearScreen: false,
-      },
+  const baseOverrides = {
+    logLevel: logLevel as 'silent' | 'info' | 'verbose' | undefined ?? 'silent',
+    vite: {
+      clearScreen: false,
     },
-  })
+  }
+  let nuxt: Awaited<ReturnType<typeof kit.loadNuxt>>
+  try {
+    nuxt = await kit.loadNuxt({
+      cwd,
+      dotenv: { cwd },
+      overrides: baseOverrides,
+    })
+  }
+  catch (error) {
+    const message = String(error)
+    // In CI/tests the playground module package might not be installed in the root workspace.
+    // For i18n config discovery we only need resolved Nuxt options/layers, so retry without modules.
+    if (!message.includes('Could not load `nuxt-i18n-micro`')) {
+      throw error
+    }
+
+    nuxt = await kit.loadNuxt({
+      cwd,
+      dotenv: { cwd },
+      overrides: {
+        ...baseOverrides,
+        modules: [],
+      },
+    })
+  }
 
   const nuxtOptions = nuxt.options as { i18n?: { locales?: Array<{ code: string }>, translationDir?: string, defaultLocale?: string } }
   const i18n = nuxtOptions.i18n

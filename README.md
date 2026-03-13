@@ -30,34 +30,243 @@ For detailed documentation and further configuration options, visit the [nuxt-i1
 
 ## 🗂️ Commands and Usage
 
-`nuxt-i18n-micro-cli` provides several commands to help manage your translations:
+All commands use this format:
 
-- [`extract`](#extract): Extract translation keys from your codebase.
-- [`translate`](#translate): Automatically translate missing keys using external translation services.
-- [`sync`](#sync): Synchronize translation files across locales.
-- [`validate`](#validate): Validate translation files for missing or extra keys.
-- [`stats`](#stats): Display translation statistics for each locale.
-- [`clean`](#clean): Remove unused translation keys from translation files.
-- [`import`](#import): Convert PO files back to JSON format.
-- [`export`](#export): Export translations to PO files for external translation management.
-- [`text-to-i18n`](#text-to-i18n): Replace text in files with translation references.
-- [`format`](#format): Format translation files by sorting keys and applying consistent indentation.
-- [`backup`](#backup): Creates password-protected zip archives of translation files for backup purposes.
-- [`restore`](#restore): Restores translation files from a backup archive.
-- [`optimize`](#optimize): Optimize translation file structure for performance and maintainability.
+```bash
+i18n-micro <command> [options]
+```
 
-Each command can be run using `i18n-micro <command>`.
+### 📄 Common Global Options
 
-### 📄 Common Arguments
+- `--cwd`: Current working directory.
+- `--logLevel`: Log level (`silent`, `info`, `verbose`).
 
-- `--cwd`: Specify the current working directory (defaults to `.`).
-- `--logLevel`: Set the log level (`silent`, `info`, `verbose`).
+### 🧭 Command Catalog
 
-### 📋 Commands
+#### Project Setup & Diagnostics
+
+- `init`: Bootstrap a Nuxt project with i18n wiring.
+- `info`: Print CLI/project/environment diagnostics (`--json`, `--debug`).
+
+#### Core Translation Workflow
+
+- `extract`: Extract i18n keys from source files.
+- `translate`: Fill missing translations via configured service providers.
+- `sync`: Align locale files to reference structure.
+- `sync-remote`: Pull/push translations with remote providers.
+- `validate`: Check missing/extra keys against reference locale.
+- `stats`: Completion metrics, optional git baseline diff (`--baseRef`).
+- `lint`: Translation-quality linting with optional autofix.
+- `clean`: Remove unused/empty keys with include/exclude filters.
+- `search`: Find keys/values/usages/hardcoded text across all Nuxt layers.
+
+#### Refactor & Content Transform
+
+- `text-to-i18n`: Replace hardcoded text with `$t(...)` references.
+- `rename`: Safely rename translation keys in locales and source files.
+- `replace-values`: Bulk replace values (plain text or regex).
+- `pseudo`: Generate pseudo-locale from source locale.
+- `optimize`: Optimize dictionaries and optionally update key paths.
+- `format`: Normalize/sort translation files.
+- `split`: Split large dictionaries by size/depth/prefix.
+
+#### Import / Export / Audit
+
+- `export`: JSON -> PO.
+- `import`: PO -> JSON.
+- `export-csv`: JSON -> CSV (supports nested/page files).
+- `import-csv`: CSV -> JSON.
+- `diff`: Show missing keys and baseline values across locales.
+- `check-duplicates`: Find duplicate values per locale.
+
+#### Backup, Recovery, Planning
+
+- `backup`: Create encrypted zip backups of translation files.
+- `restore`: Restore translations from backup archives.
+- `estimate`: Estimate tokens/cost before running `translate`.
+- `glossary`: Manage glossary terms (`list`, `add`, `remove`).
+
+### 📋 Command Reference
+
+#### init
+
+**Description**: Initialize a new Nuxt project with `nuxt-i18n-micro`.
+
+**Usage**:
+
+```bash
+i18n-micro init
+```
+
+#### info
+
+**Description**: Show CLI, project, and environment details.
+
+**Usage**:
+
+```bash
+i18n-micro info [--json] [--debug]
+```
+
+#### extract
+
+**Description**: Extract translations and organize by scope.
+
+**Usage**:
+
+```bash
+i18n-micro extract [--translationDir locales] [--prod]
+```
+
+#### translate
+
+**Description**: Automatically translate missing (or all) keys.
+
+**Usage**:
+
+```bash
+i18n-micro translate --service <service> --token <token> [options]
+```
+
+**Key options**:
+
+- `--translationDir`: Translation root directory.
+- `--options`: Service-specific options as `key:value,key:value`.
+- `--replace`: Re-translate existing values.
+- `--chunkSize`: Batch size for requests.
+- `--pluralSeparator`: Plural separator (default `|`).
+- `--glossaryFile`: Path to glossary JSON file.
+
+#### sync
+
+**Description**: Synchronize locale files with the reference locale shape.
+
+**Usage**:
+
+```bash
+i18n-micro sync [--translationDir locales]
+```
+
+#### sync-remote
+
+**Description**: Synchronize with remote storage providers.
+
+**Usage**:
+
+```bash
+i18n-micro sync-remote [--pull] [--push] [--force] [--dryRun]
+```
+
+#### validate
+
+**Description**: Validate missing and extra keys.
+
+**Usage**:
+
+```bash
+i18n-micro validate [--translationDir locales]
+```
+
+#### stats
+
+**Description**: Show coverage stats per locale and overall completion.
+
+**Usage**:
+
+```bash
+i18n-micro stats [--full] [--json] [--html] [--baseRef <git-ref>]
+```
+
+#### lint
+
+**Description**: Run translation-quality checks.
+
+**Usage**:
+
+```bash
+i18n-micro lint [--rules key1,key2] [--fix] [--json]
+```
+
+#### clean
+
+**Description**: Remove unused and empty keys.
+
+**Usage**:
+
+```bash
+i18n-micro clean [--include <regex>] [--exclude <regex>]
+```
+
+#### search
+
+**Description**: Deep search in translations and source code with layer awareness.
+
+**Usage**:
+
+```bash
+i18n-micro search [query] [options]
+```
+
+**Key options**:
+
+- `--caseSensitive`: Case-sensitive matching.
+- `--scope`: `global | pages | all`.
+- `--onlyUnused`: Show only keys without code usages.
+- `--preferUnused`: Rank unused keys above used keys.
+- `--hardcodedOnly`: Find source text not present in translations (query optional in this mode).
+- `--onlyVue`: Scan only `.vue` files for source-side checks.
+- `--limit`: Return top-N ranked matches.
+- `--json`: Machine-readable output.
+
+#### rename
+
+**Description**: Safely rename translation key in locale files and source usages.
+
+**Usage**:
+
+```bash
+i18n-micro rename --from <old.key> --to <new.key> [--dryRun]
+```
+
+#### pseudo
+
+**Description**: Generate pseudo-localized target locale.
+
+**Usage**:
+
+```bash
+i18n-micro pseudo --targetLocale <locale> [--sourceLocale <locale>] [--replace]
+```
+
+#### estimate
+
+**Description**: Estimate tokens and translation costs.
+
+**Usage**:
+
+```bash
+i18n-micro estimate [--replace] [--json]
+```
+
+**Key options**:
+
+- `--inputCostPer1kTokens`
+- `--outputCostPer1kTokens`
+- `--outputTokenRatio`
+
+#### glossary
+
+**Description**: Manage glossary terms used by translation workflows.
+
+**Usage**:
+
+```bash
+i18n-micro glossary --action <list|add|remove> [--source ...] [--target ...]
+```
 
 #### text-to-i18n
 
-**Description**: Replace text in files with translation references
+**Description**: Replace hardcoded text in files with translation keys.
 
 **Usage**:
 
@@ -65,478 +274,152 @@ Each command can be run using `i18n-micro <command>`.
 i18n-micro text-to-i18n [options]
 ```
 
-#### extract
-
-**Description**: Extracts translation keys from your codebase and organizes them by scope.
-
-**Usage**:
-
-```bash
-i18n-micro extract [options]
-```
-
-**Options**:
-
-- `--prod, -p`: Run in production mode.
-
-**Example**:
-
-```bash
-i18n-micro extract
-```
-
-This command scans your project files, extracts translation keys used in components, pages, layouts, etc., and generates translation files in the specified translation directory (default is `locales`).
-
-#### translate
-
-**Description**: Automatically translates missing or all keys using external translation services.
-
-**Usage**:
-
-```bash
-i18n-micro translate [options]
-```
-
-**Options**:
-
-- `--translationDir`: Directory containing JSON translation files (default: `locales`).
-- `--service`: Translation service to use (e.g., `google`, `deepl`, `yandex`, etc.) (default: `google`).
-- `--token`: API key corresponding to the translation service.
-- `--options`: Additional options for the translation service in `key:value` pairs, separated by commas.
-- `--replace`: Translate all keys, replacing existing translations (default: `false`).
-
-**Example**:
-
-```bash
-i18n-micro translate --service deepl --token YOUR_DEEPL_API_KEY
-```
-
-This command translates missing keys in your translation files using the specified translation service and saves the translations in the corresponding files.
-
-#### sync
-
-**Description**: Synchronizes translation files across locales, ensuring all locales have the same keys.
-
-**Usage**:
-
-```bash
-i18n-micro sync [options]
-```
-
-**Options**:
-
-- `--translationDir`: Directory containing JSON translation files (default: `locales`).
-
-**Example**:
-
-```bash
-i18n-micro sync
-```
-
-This command synchronizes the translation files based on the reference locale (the first locale specified in your `nuxt.config.js`), adding missing keys and ensuring consistency.
-
-#### validate
-
-**Description**: Validates translation files for missing or extra keys compared to the reference locale.
-
-**Usage**:
-
-```bash
-i18n-micro validate [options]
-```
-
-**Options**:
-
-- `--translationDir`: Directory containing JSON translation files (default: `locales`).
-
-**Example**:
-
-```bash
-i18n-micro validate
-```
-
-This command checks for missing or extra keys in your translation files and reports any discrepancies.
-
-#### stats
-
-**Description**: Displays translation statistics for each locale.
-
-**Usage**:
-
-```bash
-i18n-micro stats [options]
-```
-
-**Options**:
-
-- `--translationDir`: Directory containing JSON translation files (default: `locales`).
-
-**Example**:
-
-```bash
-i18n-micro stats
-```
-
-This command shows the number of translated keys and the completion percentage for each locale compared to the reference locale.
-
-#### clean
-
-**Description**: Removes unused translation keys from translation files.
-
-**Usage**:
-
-```bash
-i18n-micro clean [options]
-```
-
-**Options**:
-
-- `--translationDir`: Directory containing JSON translation files (default: `locales`).
-
-**Example**:
-
-```bash
-i18n-micro clean
-```
-
-This command removes translation keys that are no longer used in your codebase from the translation files.
-
-#### import
-
-**Description**: Converts PO files back to JSON format and saves them in the translation directory.
-
-**Usage**:
-
-```bash
-i18n-micro import [options]
-```
-
-**Options**:
-
-- `--potsDir`: Directory containing PO files (default: `pots`).
-- `--translationDir`: Directory to save JSON translation files (default: `locales`).
-
-**Example**:
-
-```bash
-i18n-micro import --potsDir pots --translationDir locales
-```
-
-This command converts PO files to JSON and saves them in the specified translation directory.
-
-#### export
-
-**Description**: Exports translations to PO files for external translation management.
-
-**Usage**:
-
-```bash
-i18n-micro export [options]
-```
-
-**Options**:
-
-- `--potsDir`: Directory to save PO files (default: `pots`).
-- `--translationDir`: Directory containing JSON translation files (default: `locales`).
-
-**Example**:
-
-```bash
-i18n-micro export --potsDir pots
-```
-
-This command converts your JSON translation files to PO files, which can be used with external translation tools.
-
-#### split
-
-**Description**: Splits large translation files into smaller ones based on various criteria.
-
-**Usage**:
-
-```bash
-i18n-micro split [options]
-```
-
-**Options**:
-
-- `--translationDir <dir>`: Directory containing translation files (default: 'locales')
-- `--maxKeys <number>`: Maximum number of keys per file when splitting by key count
-- `--maxDepth <number>`: Maximum nesting depth when splitting by depth
-- `--splitByPrefix`: Split translations by their prefix (e.g., 'common', 'header', etc.)
-- `--outputDir <dir>`: Directory where split files will be saved (default: 'locales/split')
-- `--backup`: Create backup of original files before splitting
-- `--cwd <dir>`: Current working directory
-- `--logLevel <level>`: Logging level (default: 'info')
-
-**Features**:
-
-1. **Split by Key Count**: Divides translations into smaller files based on the maximum number of keys
-2. **Split by Depth**: Separates translations based on their nesting depth
-3. **Split by Prefix**: Groups translations by their prefix (e.g., 'common', 'header', etc.)
-4. **Combined Splitting**: Can combine multiple splitting strategies
-5. **Backup Support**: Creates backup of original files before splitting
-
-**Examples**:
-
-1. Split translations into files with maximum 50 keys each:
-```bash
-i18n-micro split --maxKeys 50
-```
-
-2. Split translations by depth, keeping maximum 2 levels of nesting:
-```bash
-i18n-micro split --maxDepth 2
-```
-
-3. Split translations by their prefixes (e.g., 'common', 'header', etc.):
-```bash
-i18n-micro split --splitByPrefix
-```
-
-4. Combine multiple splitting strategies with backup:
-```bash
-i18n-micro split --maxKeys 50 --maxDepth 2 --splitByPrefix --backup
-```
-
-5. Specify custom output directory:
-```bash
-i18n-micro split --outputDir locales/modules
-```
+**Key options**:
+
+- `--translationFile`
+- `--path`
+- `--context`
+- `--dryRun`
+- `--verbose`
+- `--extractOnlyDirs`
+- `--extractOnlyPatterns` (supports `!pattern` exclusions)
+- `--interactive`
 
 #### format
 
-**Description**: Formats translation files by sorting keys and applying consistent indentation.
+**Description**: Format JSON translation files.
 
 **Usage**:
 
 ```bash
-i18n-micro format [options]
+i18n-micro format [--indent 2] [--sortKeys]
 ```
 
-**Options**:
+#### split
 
-- `--translationDir <dir>`: Directory containing translation files (default: 'locales')
-- `--indent <number>`: Number of spaces for indentation (default: 2)
-- `--sortKeys`: Sort translation keys alphabetically (default: true)
-- `--backup`: Create backup before formatting
-- `--cwd <dir>`: Current working directory
-- `--logLevel <level>`: Logging level (default: 'info')
-
-**Features**:
-
-1. **Sort by Key**: Sorts translation keys alphabetically
-2. **Indentation**: Applies consistent indentation
-3. **Backup**: Creates backup before formatting
-4. **Multiple Locales**: Supports multiple locales
-5. **Nested Structure**: Preserves nested translation structures
-
-**Examples**:
-
-1. Format all translation files with default settings:
-```bash
-i18n-micro format
-```
-
-2. Format with custom indentation and create backup:
-```bash
-i18n-micro format --indent 4 --backup
-```
-
-3. Format without sorting keys:
-```bash
-i18n-micro format --sortKeys false
-```
-
-4. Format specific translation directory:
-```bash
-i18n-micro format --translationDir locales/custom
-```
-
-#### backup
-
-**Description**: Creates password-protected zip archives of translation files for backup purposes.
+**Description**: Split large translation files into smaller chunks.
 
 **Usage**:
 
 ```bash
-i18n-micro backup [options]
-```
-
-**Options**:
-
-- `--translationDir <dir>`: Directory containing JSON translation files (default: 'locales')
-- `--backupDir <dir>`: Directory to save backup archives (default: 'locales/backups')
-- `--password <string>`: Password for encrypting the backup archive
-- `--comment <string>`: Optional comment to add to backup name
-- `--cwd <dir>`: Current working directory
-- `--logLevel <level>`: Logging level (default: 'info')
-
-**Features**:
-
-1. **Password Protection**: Creates encrypted zip archives for secure backups
-2. **Automatic Naming**: Generates unique backup names using timestamps
-3. **Custom Comments**: Allows adding descriptive comments to backup names
-4. **Directory Structure**: Preserves the complete directory structure of translations
-5. **Compression**: Uses maximum compression to minimize backup size
-
-**Examples**:
-
-1. Create a basic backup:
-```bash
-i18n-micro backup
-```
-
-2. Create an encrypted backup with password:
-```bash
-i18n-micro backup --password "your-secure-password"
-```
-
-3. Create a backup with a descriptive comment:
-```bash
-i18n-micro backup --comment "before-major-update"
-```
-
-4. Specify custom backup directory:
-```bash
-i18n-micro backup --backupDir "backups/translations"
-```
-
-#### restore
-
-**Description**: Restores translation files from a backup archive.
-
-**Usage**:
-
-```bash
-i18n-micro restore [options]
-```
-
-**Options**:
-
-- `--translationDir <dir>`: Directory to restore translation files to (default: 'locales')
-- `--backupDir <dir>`: Directory containing backup archives (default: 'locales/backups')
-- `--backup <name>`: Name of the backup to restore (optional)
-- `--password <string>`: Password for decrypting the backup archive
-- `--force`: Skip confirmation prompt
-- `--cwd <dir>`: Current working directory
-- `--logLevel <level>`: Logging level (default: 'info')
-
-**Features**:
-
-1. **Password Protection**: Supports restoring from encrypted backups
-2. **Interactive Selection**: Lists available backups if none specified
-3. **Confirmation**: Requires confirmation before restoring (can be skipped with --force)
-4. **Directory Structure**: Preserves the complete directory structure of translations
-5. **Cleanup**: Automatically cleans up temporary files after restoration
-
-**Examples**:
-
-1. List available backups:
-```bash
-i18n-micro restore
-```
-
-2. Restore from a specific backup:
-```bash
-i18n-micro restore --backup "2024-03-20T12-00-00"
-```
-
-3. Restore from an encrypted backup:
-```bash
-i18n-micro restore --backup "2024-03-20T12-00-00" --password "your-secure-password"
-```
-
-4. Restore without confirmation:
-```bash
-i18n-micro restore --backup "2024-03-20T12-00-00" --force
+i18n-micro split [--maxKeys 100] [--maxDepth 2] [--splitByPrefix] [--outputDir locales/split]
 ```
 
 #### optimize
 
-**Description**: Optimizes translation file structure for performance and maintainability.
+**Description**: Analyze and optimize translation structure.
 
 **Usage**:
 
 ```bash
-i18n-micro optimize [options]
+i18n-micro optimize [--dryRun] [--json] [--updatePaths]
 ```
 
-**Options**:
+#### import
 
-- `--translationDir`: Directory containing JSON translation files (default: 'locales')
-- `--minSize`: Minimum file size in bytes for optimization (default: 1024)
-- `--maxDepth`: Maximum nesting depth for optimization (default: 3)
-- `--dryRun`: Show recommendations without making changes
-- `--updatePaths`: Update translation paths in Vue and JS files (default: true)
-- `--cwd`: Current working directory
-- `--logLevel`: Logging level
+**Description**: Import PO files into JSON locale files.
 
-**Features**:
-
-- Analyzes file sizes and splits large files into smaller ones
-- Optimizes deeply nested keys
-- Removes duplicate keys
-- Updates translation paths in Vue and JS files
-- Preserves translation structure
-- Interactive mode with confirmation of changes
-- Dry run mode for preview
-
-**Examples**:
+**Usage**:
 
 ```bash
-# Analyze files without making changes
-i18n-micro optimize --dryRun
-
-# Optimize with minimum file size of 2KB
-i18n-micro optimize --minSize 2048
-
-# Optimize with maximum nesting depth of 2
-i18n-micro optimize --maxDepth 2
-
-# Optimize files in specified directory
-i18n-micro optimize --translationDir custom/locales
-
-# Optimize without updating paths in Vue and JS files
-i18n-micro optimize --updatePaths false
+i18n-micro import [--potsDir pots] [--translationDir locales]
 ```
 
-### 🛠 Examples
+#### export
 
-- **Extracting translations**:
+**Description**: Export JSON locale files to PO.
 
-  ```bash
-  i18n-micro extract
-  ```
+**Usage**:
 
-- **Translating missing keys using Google Translate**:
+```bash
+i18n-micro export [--potsDir pots] [--translationDir locales]
+```
 
-  ```bash
-  i18n-micro translate --service google --token YOUR_GOOGLE_API_KEY
-  ```
+#### import-csv
 
-- **Translating all keys, replacing existing translations**:
+**Description**: Import CSV files into JSON locale files.
 
-  ```bash
-  i18n-micro translate --service deepl --token YOUR_DEEPL_API_KEY --replace
-  ```
+**Usage**:
 
-- **Validating translation files**:
+```bash
+i18n-micro import-csv [--csvDir csv_exports] [--translationDir locales]
+```
 
-  ```bash
-  i18n-micro validate
-  ```
+#### export-csv
 
-- **Cleaning unused translation keys**:
+**Description**: Export JSON locale files to CSV.
 
-  ```bash
-  i18n-micro clean
-  ```
+**Usage**:
 
-- **Synchronizing translation files**:
+```bash
+i18n-micro export-csv [--csvDir csv_exports] [--translationDir locales]
+```
 
-  ```bash
-  i18n-micro sync
-  ```
+#### diff
+
+**Description**: Show locale differences against the default locale.
+
+**Usage**:
+
+```bash
+i18n-micro diff [--translationDir locales] [--json]
+```
+
+#### check-duplicates
+
+**Description**: Detect duplicate values in translation files.
+
+**Usage**:
+
+```bash
+i18n-micro check-duplicates [--translationDir locales]
+```
+
+#### replace-values
+
+**Description**: Bulk replace values across all locale files.
+
+**Usage**:
+
+```bash
+i18n-micro replace-values --search <pattern> --replace <value> [--useRegex]
+```
+
+#### backup
+
+**Description**: Create translation backups (`.zip`) with optional password.
+
+**Usage**:
+
+```bash
+i18n-micro backup [--backupDir locales/backups] [--password <password>] [--comment <text>]
+```
+
+#### restore
+
+**Description**: Restore locale files from backup archive.
+
+**Usage**:
+
+```bash
+i18n-micro restore [--backup <name>] [--backupDir locales/backups] [--password <password>] [--force]
+```
+
+### 🛠 Quick Examples
+
+```bash
+# Extract keys and sync locale structure
+i18n-micro extract && i18n-micro sync
+
+# Translate missing keys via provider
+i18n-micro translate --service deepl --token "$DEEPL_TOKEN"
+
+# Find hardcoded UI text in layered project
+i18n-micro search "Layer active" --scope all
+
+# Check quality and get machine-readable report
+i18n-micro lint --json
+```
 
 ## ⚙️ Configuration Guide
 
@@ -566,32 +449,151 @@ export default {
 
 Ensure that the `translationDir` matches the directory used by `nuxt-i18n-micro-cli` (default is `locales`).
 
+### 🌍 Remote Sync Configuration (`sync-remote`)
+
+`sync-remote` reads provider config from:
+
+```text
+.i18n-remote.json
+```
+
+Common fields:
+
+- `type`: provider id (`github`, `gitlab`, `crowdin`, `lokalise`, `tolgee`, `weblate`, `custom`)
+- `url`: provider base/project URL
+- `token`: access token (for token-based providers)
+- `path`: remote translations path (for git providers) or fallback project id
+- `projectId`: explicit project id (recommended for Crowdin/Lokalise/Tolgee/Weblate)
+- `branch`: git branch (`main` by default for git providers)
+- `languageMapping`: maps local locale code to remote locale code
+- `pollIntervalMs`: polling interval for async processes (Crowdin/Lokalise)
+- `pollMaxAttempts`: max polling attempts before timeout (Crowdin/Lokalise)
+
+#### GitHub example
+
+```json
+{
+  "type": "github",
+  "url": "https://github.com/acme/my-repo",
+  "token": "${GITHUB_TOKEN}",
+  "branch": "main",
+  "path": "locales",
+  "languageMapping": {
+    "pt-BR": "pt_BR",
+    "zh-CN": "zh_CN"
+  }
+}
+```
+
+#### GitLab example
+
+```json
+{
+  "type": "gitlab",
+  "url": "https://gitlab.com/acme/my-repo",
+  "token": "${GITLAB_TOKEN}",
+  "branch": "main",
+  "path": "locales",
+  "languageMapping": {
+    "pt-BR": "pt_BR",
+    "zh-CN": "zh_CN"
+  }
+}
+```
+
+#### Crowdin example (native build/import with polling)
+
+```json
+{
+  "type": "crowdin",
+  "url": "https://api.crowdin.com",
+  "token": "${CROWDIN_TOKEN}",
+  "projectId": "123456",
+  "languageMapping": {
+    "pt-BR": "pt-BR",
+    "zh-CN": "zh-CN"
+  },
+  "pollIntervalMs": 1500,
+  "pollMaxAttempts": 120
+}
+```
+
+#### Lokalise example (native async export/upload with polling)
+
+```json
+{
+  "type": "lokalise",
+  "url": "https://api.lokalise.com/api2",
+  "token": "${LOKALISE_TOKEN}",
+  "projectId": "123.abc",
+  "languageMapping": {
+    "pt-BR": "pt_BR",
+    "zh-CN": "zh_Hans"
+  },
+  "pollIntervalMs": 1500,
+  "pollMaxAttempts": 120
+}
+```
+
+Notes:
+
+- `languageMapping` is optional; if omitted, locale codes are used as-is.
+- For CI, keep tokens in environment variables/secrets and generate `.i18n-remote.json` during pipeline runtime.
+- `pollIntervalMs` and `pollMaxAttempts` are especially useful for large Crowdin/Lokalise projects.
+
 ## 🌐 Supported Translation Services
 
-The `translate` command supports multiple translation services. Some of the supported services are:
+The `translate` command supports the following services (`--service` values):
 
-- **Google Translate** (`google`)
-- **DeepL** (`deepl`)
-- **Yandex Translate** (`yandex`)
-- **OpenAI** (`openai`)
-- **Azure Translator** (`azure`)
-- **IBM Watson** (`ibm`)
-- **Baidu Translate** (`baidu`)
-- **LibreTranslate** (`libretranslate`)
-- **MyMemory** (`mymemory`)
-- **Lingva Translate** (`lingvatranslate`)
-- **Papago** (`papago`)
-- **Tencent Translate** (`tencent`)
-- **Systran Translate** (`systran`)
-- **Yandex Cloud Translate** (`yandexcloud`)
-- **ModernMT** (`modernmt`)
-- **Lilt** (`lilt`)
-- **Unbabel** (`unbabel`)
-- **Reverso Translate** (`reverso`)
+| Service ID | Provider | `--token` | Important `--options` |
+| --- | --- | --- | --- |
+| `google` | Google Cloud Translate | required | `projectId`, `googleProjectId`, `apiEndpoint`, `googleApiEndpoint`, `format`, `model` |
+| `deepl` | DeepL | required | `formality`, `glossary_id`, `glossary`, `context`, `modelType`, `model_type`, `deeplServerUrl` |
+| `yandex` | Yandex Translate (legacy API) | required | passed as request params |
+| `openai` | OpenAI | required | `openaiModel`, `model`, `max_tokens`, `temperature`, `top_p`, `n`, `stop`, `maxRetries`, `timeoutMs` |
+| `anthropic` | Anthropic Claude | required | `anthropicModel`, `model`, `max_tokens`, `temperature`, `maxRetries`, `timeoutMs` |
+| `mistral` | Mistral AI | required | `mistralModel`, `model`, `max_tokens`, `temperature`, `timeoutMs` |
+| `cohere` | Cohere | required | `cohereModel`, `model`, `max_tokens`, `temperature`, `timeoutMs` |
+| `groq` | Groq | required | `groqModel`, `model`, `max_tokens`, `temperature`, `top_p`, `maxRetries`, `timeoutMs` |
+| `azure` | Azure AI Translator | required | `endpoint`, `azureEndpoint`, `region`, `azureRegion` |
+| `ibm` | IBM Watson Language Translator | required | `url`, `serviceUrl`, `ibmUrl`, `version`, `ibmVersion` |
+| `baidu` | Baidu | required | `appId` (or legacy token format `appId:apiKey`) |
+| `googlefree` | Google Free (`@vitalets/google-translate-api`) | optional | `host`, `timeout`, `timeoutMs` |
+| `libretranslate` | LibreTranslate | optional/required (depends on instance) | `baseUrl` |
+| `mymemory` | MyMemory | optional | no required extra options |
+| `lingvatranslate` | Lingva Translate (public API) | not used | no required extra options |
+| `papago` | Naver Papago | required | `clientId` (or legacy token format `clientId:clientSecret`) |
+| `tencent` | Tencent Cloud TMT | required | `secretId`, `region` (or legacy token format `secretId:secretKey`) |
+| `systran` | Systran | required | no required extra options |
+| `yandexcloud` | Yandex Cloud Translate | required | `folderId` (required), optional `model` |
+| `modernmt` | ModernMT | required | no required extra options |
+| `lilt` | Lilt | required | `baseUrl` |
+| `unbabel` | Unbabel | required | `username` (required), optional `baseUrl` |
+| `reverso` | Reverso | not used | no required extra options |
 
 ### ⚙️ Service Configuration
 
-Some services require specific configurations or API keys. When using the `translate` command, you can specify the service and provide the required `--token` (API key) and additional `--options` if needed.
+Use `--options` as comma-separated `key:value` pairs:
+
+```bash
+--options key1:value1,key2:value2
+```
+
+Examples:
+
+```bash
+# OpenAI
+i18n-micro translate --service openai --token "$OPENAI_API_KEY" --options openaiModel:gpt-4o-mini,max_tokens:1000
+
+# Anthropic
+i18n-micro translate --service anthropic --token "$ANTHROPIC_API_KEY" --options anthropicModel:claude-3-5-sonnet-latest
+
+# Yandex Cloud (requires folderId)
+i18n-micro translate --service yandexcloud --token "$YANDEX_IAM_TOKEN" --options folderId:YOUR_FOLDER_ID
+
+# Tencent (recommended format)
+i18n-micro translate --service tencent --token "$TENCENT_SECRET_KEY" --options secretId:YOUR_SECRET_ID,region:ap-guangzhou
+```
 
 For example:
 
@@ -616,6 +618,60 @@ Integrate `nuxt-i18n-micro-cli` commands into your development workflow or CI/CD
 ### 🛡️ Secure API Keys
 
 When using translation services that require API keys, ensure your keys are kept secure and not committed to version control systems. Consider using environment variables or secure key management solutions.
+
+## 🧪 Development, Build & Release
+
+The project is built with `vite` and TypeScript declarations are generated with `tsc`.
+
+### Local development checks
+
+```bash
+pnpm lint
+pnpm test:types
+pnpm build
+pnpm test:dist
+pnpm vitest run
+```
+
+### Interactive CLI behavior
+
+- `translate` asks for `--service` and `--token` interactively when flags are omitted.
+- `init` asks for project name interactively.
+- For CI/non-interactive usage, pass these flags explicitly to avoid prompts.
+
+### CLI output modes
+
+- Default mode is pretty output for humans (sections, status marks, compact tables/lists).
+- Use `--json` when output is consumed by scripts/CI parsers (supported in `info`, `diff`, `stats`, `lint`, `optimize`, `search`, `estimate`, `glossary`).
+- Prefer pretty mode during local diagnostics, and `--json` for machine-to-machine automation.
+
+### URL building conventions (core services/drivers)
+
+- Use `ufo` for HTTP URLs only (`withoutTrailingSlash` -> `joinURL` -> `withQuery` -> `encodeParam`).
+- Keep `pathe` for filesystem paths.
+- Prefer explicit URL helpers over manual string concatenation for endpoints/query parts.
+
+### Filesystem conventions (core utils)
+
+- Use `fast-glob` for project file matching (`glob` is removed).
+- Use `fs-extra` in shared FS helpers for write/copy/remove operations to reduce manual directory boilerplate.
+- Keep `pathe` as the standard for cross-platform filesystem path composition.
+
+### Build output
+
+- Runtime bundle: `dist/index.mjs` (generated by `vite build`)
+- Type declarations: `dist/**/*.d.ts` (generated by `tsc -p tsconfig.build.json`)
+- CLI entrypoint: `bin/i18n.mjs` (loads `dist/index.mjs`)
+
+### Release flow
+
+Before publishing, run:
+
+```bash
+pnpm test
+```
+
+`pnpm test` already includes linting, type-checking, build, dist smoke-test, and unit tests.
 
 ## 📞 Support and Contributions
 

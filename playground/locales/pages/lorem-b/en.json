@@ -1,0 +1,9 @@
+{
+  "loremB": {
+    "title": "Lorem B: Extended Translation Dataset",
+    "p1": "Another page with long translated blocks helps reveal edge-cases in fallback behavior and merged locale trees.",
+    "p2": "It also gives better sample data for command outputs such as stats, estimate, lint, and optimize in the playground.",
+    "p3": "Keeping this content verbose mirrors real-world landing pages where localization quality and consistency matter.",
+    "p4": "Use this route to manually inspect rendering, locale switching, and the interaction between global and page dictionaries."
+  }
+}

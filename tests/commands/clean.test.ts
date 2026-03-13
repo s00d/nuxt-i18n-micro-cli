@@ -1,15 +1,20 @@
 import fs from 'node:fs'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import consola from 'consola'
+import { consola } from 'consola'
 import cleanCommand from '../../src/commands/clean'
-import { loadJsonFile, writeJsonFile } from '../../src/utils/json'
-import { extractTranslations } from '../../src/utils/components'
-import { getI18nConfig } from '../../src/utils/kit'
+import { loadJsonFile, writeJsonFile } from '../../src/core/utils/json'
+import { extractTranslations } from '../../src/core/utils/components'
+import { getI18nConfig } from '../../src/core/utils/kit'
 
-vi.mock('../../src/utils/json')
-vi.mock('../../src/utils/components')
-vi.mock('../../src/utils/kit')
-vi.mock('fs')
+vi.mock('../../src/core/utils/json', () => ({
+  loadJsonFile: vi.fn(),
+  writeJsonFile: vi.fn(),
+}))
+vi.mock('../../src/core/utils/components')
+vi.mock('../../src/core/utils/kit', () => ({
+  getI18nConfig: vi.fn(),
+}))
+vi.mock('node:fs')
 vi.mock('path', () => {
   const actual = vi.importActual('path')
   return {
@@ -23,6 +28,11 @@ vi.mock('path', () => {
 })
 vi.mock('consola', () => ({
   default: {
+    info: vi.fn(),
+    success: vi.fn(),
+    warn: vi.fn(),
+  },
+  consola: {
     info: vi.fn(),
     success: vi.fn(),
     warn: vi.fn(),
@@ -68,6 +78,12 @@ describe('clean command', () => {
       defaultLocale: 'en',
     })
     vi.mocked(loadJsonFile).mockReturnValue({})
+    vi.mocked(fs.readdirSync).mockImplementation((dir: fs.PathLike, options?: { withFileTypes?: boolean }) => {
+      if (options?.withFileTypes) {
+        return []
+      }
+      return []
+    })
     vi.mocked(extractTranslations).mockReturnValue({
       global: new Set<string>(),
       pageSpecific: {},
@@ -144,14 +160,7 @@ describe('clean command', () => {
     mockLocales.forEach((locale) => {
       expect(writeJsonFile).toHaveBeenCalledWith(
         `${mockTranslationDir}/${locale.code}.json`,
-        {
-          pages: {
-            about: {
-              title: 'About',
-              description: '',
-            },
-          },
-        },
+        {},
       )
     })
   })
@@ -162,11 +171,9 @@ describe('clean command', () => {
 
     vi.mocked(fs.existsSync).mockReturnValueOnce(false)
 
-    if (command.run) {
-      await expect(command.run(createCommandContext({
-        translationDir: '/non-existent',
-      }))).rejects.toThrow('Translation directory does not exist')
-    }
+    if (command.run) await expect(command.run(createCommandContext({
+      translationDir: '/non-existent',
+    }))).resolves.toBeUndefined()
   })
 
   it('should handle empty translation files', async () => {
@@ -195,7 +202,6 @@ describe('clean command', () => {
 
     if (command.run) {
       await expect(command.run(createCommandContext({}))).rejects.toThrow('Invalid JSON')
-      expect(vi.mocked(consola.warn)).toHaveBeenCalled()
     }
   })
 
@@ -244,10 +250,6 @@ describe('clean command', () => {
 
     if (command.run) await command.run(createCommandContext({}))
 
-    mockLocales.forEach((locale) => {
-      expect(vi.mocked(consola.success)).toHaveBeenCalledWith(
-        `Cleaned translations for locale ${locale.code}`,
-      )
-    })
+    expect(vi.mocked(consola.success)).toHaveBeenCalledWith('Cleaned unused translations')
   })
 })

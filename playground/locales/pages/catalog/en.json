@@ -1,0 +1,9 @@
+{
+  "catalog": {
+    "hero": "Root catalog hero",
+    "description": "Root layer final catalog text for the local playground demonstration.",
+    "details": {
+      "returns": "Root override: returns accepted for 45 days"
+    }
+  }
+}

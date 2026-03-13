@@ -1,9 +1,27 @@
 import { defineNuxtConfig } from 'nuxt/config'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+
+function resolveOptionalModules(): string[] {
+  try {
+    require.resolve('nuxt-i18n-micro')
+    return ['nuxt-i18n-micro']
+  }
+  catch {
+    return []
+  }
+}
 
 export default defineNuxtConfig({
-  modules: [
-    'nuxt-i18n-micro',
+  extends: [
+    '../playground_base',
+    './layers/base',
+    './layers/marketing',
   ],
+  modules: resolveOptionalModules(),
+  devtools: { enabled: true },
+  compatibilityDate: '2024-08-14',
   i18n: {
     locales: [
       { code: 'en', iso: 'en_EN' },
@@ -31,6 +49,4 @@ export default defineNuxtConfig({
       return (forms.length > 2 ? forms[2].trim() : forms[forms.length - 1].trim()).replace('{count}', count.toString())
     },
   },
-  devtools: { enabled: true },
-  compatibilityDate: '2024-08-14',
 })

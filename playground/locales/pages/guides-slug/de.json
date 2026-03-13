@@ -1,0 +1,9 @@
+{
+  "guides": {
+    "title": "Dynamische Guide-Seite",
+    "p1": "Diese dynamische Guide-Route dient zur Validierung des i18n-Ladens fur parametrisierte Seiten mit großeren Ubersetzungsdaten.",
+    "p2": "In realen Szenarien enthalten Guide-Seiten oft langere Erklarungen, kontextuelle Hinweise und Onboarding-Texte.",
+    "p3": "Die Fixture enthalt bewusst mehrere mittelgroße Absatze, um Extraktions- und Merge-Grenzfalle fruher sichtbar zu machen.",
+    "p4": "Nutzen Sie verschiedene Slugs, um zu prufen, dass Route-Parameter und lokalisierte Inhalte die Schlusselauflosung nicht storen."
+  }
+}

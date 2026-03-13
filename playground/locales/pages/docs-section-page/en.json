@@ -1,0 +1,10 @@
+{
+  "docs": {
+    "title": "Dynamic Docs Page",
+    "p1": "This nested dynamic route exercises localization for multi-parameter documentation paths and large page dictionaries.",
+    "p2": "Documentation pages usually contain dense technical prose, so this fixture mimics that shape with several long paragraphs.",
+    "p3": "Layered projects benefit from this setup because docs text can be split by product layers while preserving global terminology.",
+    "p4": "Use section/page combinations to ensure route matching, locale prefixes, and dictionary loading stay consistent.",
+    "p5": "The page combines translated and raw text blocks to cover extraction, replacement, and mixed-content rendering scenarios."
+  }
+}

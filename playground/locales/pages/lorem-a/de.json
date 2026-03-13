@@ -1,0 +1,8 @@
+{
+  "loremA": {
+    "title": "Lorem A: Seite fur Ubersetzungs-Lasttests",
+    "p1": "Dieser ubersetzte Absatz dient dazu, lange lokalisierte Texte aus seitenbezogenen Locale-Dateien zu testen.",
+    "p2": "In Layer-Projekten werden geerbte Dictionary-Eintrage oft mit seitenbezogenen Overrides kombiniert, daher ist dieser Text bewusst umfangreich.",
+    "p3": "Beim Extrahieren von Zeichenketten liefert diese Seite genug naturliche Sprache fur realistische Parser- und Ersetzungs-Checks."
+  }
+}

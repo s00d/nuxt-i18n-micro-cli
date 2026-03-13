@@ -1,0 +1,9 @@
+{
+  "guides": {
+    "title": "Dynamic Guide Page",
+    "p1": "This dynamic guide route is designed to validate i18n loading for parameterized pages with larger translation payloads.",
+    "p2": "In production-like scenarios, guide pages often include long explanatory blocks, contextual hints, and onboarding copy.",
+    "p3": "The fixture intentionally keeps several medium-sized paragraphs to surface extraction and merge edge-cases sooner.",
+    "p4": "Use different slugs to verify that route params and localized content coexist without affecting translation key resolution."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "longRead": {
+    "title": "Long Read: Layered i18n Architecture",
+    "p1": "This page intentionally contains long text blocks to stress extraction and text-to-i18n workflows against more realistic content.",
+    "p2": "At runtime, translation keys are resolved after layer merge, fallback merge, and page-scope merge, which makes fixture quality important for regression testing.",
+    "p3": "In practical projects, localization teams often keep brand wording in one layer and campaign wording in another, while product teams override only narrow page keys.",
+    "p4": "The root application layer should remain concise and hold only final overrides or environment-specific copy to keep maintenance predictable."
+  }
+}

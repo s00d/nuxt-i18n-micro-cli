@@ -1,0 +1,8 @@
+{
+  "layerPage": {
+    "marketing": {
+      "title": "Marketing layer page",
+      "description": "Page content supplied by the marketing layer to validate layer route and locale handling."
+    }
+  }
+}

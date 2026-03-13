@@ -1,0 +1,9 @@
+{
+  "faq": {
+    "title": "Haufig gestellte Fragen",
+    "intro": "Eine kompakte FAQ-Seite mit expliziten Locale-Texten zum Testen statischer Page-Scopes.",
+    "q1": "Wie funktioniert das Layer-Merging in diesem Playground?",
+    "q2": "Welcher Layer gewinnt bei uberlappenden Schlusseln?",
+    "q3": "Konnen page-spezifische Schlussel globale Schlussel uberschreiben?"
+  }
+}

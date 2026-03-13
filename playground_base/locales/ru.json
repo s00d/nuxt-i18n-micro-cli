@@ -1,0 +1,9 @@
+{
+  "baseRoot": {
+    "title": "Базовый слой playground",
+    "description": "Текст из самого верхнего базового слоя, который должен быть доступен во всех расширенных слоях playground."
+  },
+  "layerMeta": {
+    "fromPlaygroundBase": "да"
+  }
+}

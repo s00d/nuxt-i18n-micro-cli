@@ -1,0 +1,10 @@
+{
+  "layerMeta": {
+    "base": "base-layer",
+    "active": "base"
+  },
+  "landing": {
+    "title": "Base layer landing title",
+    "subtitle": "Base layer provides stable default copy for all pages."
+  }
+}

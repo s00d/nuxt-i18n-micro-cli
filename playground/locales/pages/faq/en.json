@@ -1,0 +1,9 @@
+{
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "intro": "A compact FAQ page with explicit locale content for testing static page scopes.",
+    "q1": "How does layer merging work in this playground?",
+    "q2": "Which layer wins for overlapping keys?",
+    "q3": "Can page-level keys override global keys?"
+  }
+}

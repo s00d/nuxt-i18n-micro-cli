@@ -1,0 +1,9 @@
+{
+  "loremB": {
+    "title": "Lorem B: Erweiterter Ubersetzungsdatensatz",
+    "p1": "Eine weitere Seite mit langen ubersetzten Textblocken hilft, Grenzfalle im Fallback-Verhalten und in zusammengefuhrten Locale-Baumen sichtbar zu machen.",
+    "p2": "Sie liefert auch bessere Beispieldaten fur Kommandoausgaben wie stats, estimate, lint und optimize im Playground.",
+    "p3": "Die bewusste Textlange ahmt reale Landingpages nach, bei denen Lokalisierungsqualitat und Konsistenz entscheidend sind.",
+    "p4": "Nutzen Sie diese Route, um Rendering, Locale-Wechsel und das Zusammenspiel von globalen und seitenbezogenen Dictionaries manuell zu prufen."
+  }
+}

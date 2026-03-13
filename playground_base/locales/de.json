@@ -1,0 +1,9 @@
+{
+  "baseRoot": {
+    "title": "Playground Basis-Layer",
+    "description": "Text aus dem obersten Basis-Layer, der in allen erweiterten Playground-Layern verfugbar sein soll."
+  },
+  "layerMeta": {
+    "fromPlaygroundBase": "ja"
+  }
+}

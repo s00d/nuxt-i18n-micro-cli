@@ -1,0 +1,16 @@
+{
+  "name": "nuxt-cli-playground-layer-base",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@9.9.0",
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "prepare": "nuxt prepare",
+    "generate": "nuxi generate"
+  },
+  "dependencies": {
+    "nuxt": "latest",
+    "nuxt-i18n-micro": "^1.51.0"
+  }
+}

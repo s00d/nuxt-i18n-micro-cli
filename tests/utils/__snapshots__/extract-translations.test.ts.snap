@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`extractTranslations fixture project > matches snapshot for global and page-specific keys 1`] = `
+{
+  "global": [
+    "components.userCard.description",
+    "components.userCard.title",
+    "composables.greeting",
+    "layouts.default.nav",
+    "plugins.nuxtNotify.alerts",
+    "plugins.nuxtNotify.body",
+    "plugins.nuxtNotify.title",
+    "plugins.welcome",
+  ],
+  "pageSpecific": {
+    "admin_users": [
+      "admin.users.cta",
+      "admin.users.description",
+      "admin.users.title",
+    ],
+    "home": [
+      "home.items",
+      "home.script.label",
+      "home.subtitle",
+      "home.title",
+    ],
+  },
+  "warnings": [],
+}
+`;

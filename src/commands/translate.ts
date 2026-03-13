@@ -1,14 +1,12 @@
-import fs from 'node:fs'
-import path from 'node:path'
 import { defineCommand } from 'citty'
 import { resolve } from 'pathe'
-import consola from 'consola'
-import prompts from 'prompts'
-import { getNestedValue, loadJsonFile, parseOptions, setNestedValue, writeJsonFile } from '../utils/json'
-import { translateText } from '../utils/translate'
-import { getI18nConfig } from '../utils/kit'
-import translatorRegistry from '../utils/translate/TranslatorRegistry'
-import { sharedArgs } from './_shared'
+import { consola } from 'consola'
+import { input, select } from '@inquirer/prompts'
+import { parseOptions } from '../core/utils/json'
+import translatorRegistry from '../core/translate/TranslatorRegistry'
+import { loadGlossaryCatalog } from '../core/services/GlossaryService'
+import { translateMissing } from '../core/services/TranslationService'
+import { parsePositiveIntArg, resolveProjectContext, sharedArgs } from './_shared'
 
 export default defineCommand({
   meta: {
@@ -41,213 +39,63 @@ export default defineCommand({
       description: 'Translate all keys, replacing existing translations',
       default: false,
     },
+    chunkSize: {
+      type: 'string',
+      description: 'Batch size for translation requests',
+      required: false,
+    },
+    pluralSeparator: {
+      type: 'string',
+      description: 'Plural forms separator used in messages',
+      default: '|',
+      required: false,
+    },
+    glossaryFile: {
+      type: 'string',
+      description: 'Path to glossary file for terminology guidance',
+      required: false,
+    },
   },
-  async run({ args }: { args: { cwd?: string, translationDir?: string, service: string, token: string, options?: string, replace?: boolean, logLevel?: string } }) {
-    const cwd = resolve((args.cwd || '.').toString())
-
+  async run({ args }) {
     let service = args.service
     if (!service) {
-      const response = await prompts({
-        type: 'select',
-        name: 'service',
+      service = await select({
         message: 'Choose a translation service',
-        choices: Object.keys(translatorRegistry).map(key => ({ title: key, value: key })),
+        choices: Object.keys(translatorRegistry).map(key => ({ name: key, value: key })),
       })
-      service = response.service
+    }
+    if (!service) {
+      throw new Error('Translation service is required')
     }
 
-    let token = args.token
+    let token = args.token || ''
     if (!token) {
-      const response = await prompts({
-        type: 'text',
-        name: 'token',
-        message: `Enter API key for ${service}`,
-        validate: value => value ? true : 'API key is required',
+      token = await input({
+        message: `Enter API key for ${service} (leave empty if not required)`,
       })
-      token = response.token
+      token ||= ''
     }
 
-    const { locales, defaultLocale, translationDir: defaultTranslationDir } = await getI18nConfig(cwd, args.logLevel)
-
-    const translationDir = args.translationDir || defaultTranslationDir
-
-    const options = args.options ? parseOptions(args.options) : {}
-
-    // Получаем список страниц, сканируя директорию translationDir/pages
-    const pagesDir = path.join(translationDir, 'pages')
-    const pagePaths: string[] = []
-
-    function getAllPagePaths(dir: string, basePath = '') {
-      if (fs.existsSync(dir)) {
-        const entries = fs.readdirSync(dir, { withFileTypes: true })
-        entries.forEach((entry) => {
-          const fullPath = path.join(dir, entry.name)
-          const relativePath = path.join(basePath, entry.name)
-          if (entry.isDirectory()) {
-            getAllPagePaths(fullPath, relativePath)
-          }
-          else if (entry.isFile() && path.extname(entry.name) === '.json') {
-            pagePaths.push(relativePath)
-          }
-        })
-      }
+    const options = (args.options ? parseOptions(args.options) : {}) as Record<string, unknown>
+    if (args.pluralSeparator) {
+      options.pluralSeparator = args.pluralSeparator
     }
+    const chunkSize = parsePositiveIntArg(args.chunkSize, 'chunkSize', 50)
 
-    getAllPagePaths(pagesDir)
-
-    // Загружаем глобальные переводы для defaultLocale
-    const defaultGlobalTranslations = loadJsonFile(path.join(translationDir, `${defaultLocale}.json`))
-
-    // Загружаем страницы и их переводы для defaultLocale
-    const defaultPageTranslations: { [pagePath: string]: Record<string, unknown> } = {}
-    pagePaths.forEach((relativePath) => {
-      const fullPath = path.join(translationDir, 'pages', relativePath)
-      const translations = loadJsonFile(fullPath)
-      defaultPageTranslations[relativePath] = translations
+    const { project, cwd } = await resolveProjectContext(args)
+    if (args.glossaryFile) {
+      const glossaryPath = resolve(cwd, args.glossaryFile)
+      options.glossaryCatalog = loadGlossaryCatalog(glossaryPath)
+    }
+    await translateMissing(project, {
+      service,
+      token,
+      options,
+      replace: args.replace,
+      chunkSize,
     })
-
-    for (const locale of locales) {
-      const { code } = locale
-      if (code === defaultLocale) continue
-
-      // Загружаем глобальные переводы для текущей локали
-      const globalTranslationsPath = path.join(translationDir, `${code}.json`)
-      let globalTranslations: Record<string, unknown> = {}
-      if (fs.existsSync(globalTranslationsPath)) {
-        globalTranslations = loadJsonFile(globalTranslationsPath)
-      }
-
-      consola.info(`Processing file: ${globalTranslationsPath}`)
-
-      // Ищем и переводим ключи для глобальных переводов
-      await processTranslations(
-        defaultGlobalTranslations,
-        globalTranslations,
-        defaultLocale,
-        code,
-        service,
-        token,
-        options,
-        globalTranslationsPath,
-        args.replace ?? false,
-      )
-
-      // Обрабатываем страницы
-      for (const relativePath of pagePaths) {
-        const defaultTranslations = defaultPageTranslations[relativePath]
-        const targetTranslationPath = path.join(translationDir, 'pages', relativePath.replace(`${defaultLocale}.json`, `${code}.json`))
-
-        let targetTranslations: Record<string, unknown> = {}
-        if (fs.existsSync(targetTranslationPath)) {
-          targetTranslations = loadJsonFile(targetTranslationPath)
-        }
-
-        consola.info(`Processing file: ${targetTranslationPath}`)
-
-        // Ищем и переводим ключи для текущей страницы
-        await processTranslations(
-          defaultTranslations,
-          targetTranslations,
-          defaultLocale,
-          code,
-          args.service,
-          args.token,
-          options,
-          targetTranslationPath,
-          args.replace ?? false,
-        )
-      }
-    }
+    await project.save()
 
     consola.success('Translations have been automatically processed.')
   },
 })
-
-async function processTranslations(
-  defaultTranslations: Record<string, unknown>,
-  targetTranslations: Record<string, unknown>,
-  defaultLocale: string,
-  targetLocale: string,
-  service: string,
-  token: string,
-  options: { [key: string]: any },
-  savePath: string,
-  replace: boolean,
-) {
-  const keysToTranslate = getKeysToTranslate(defaultTranslations, targetTranslations, replace)
-
-  if (keysToTranslate.length === 0) {
-    consola.info(`No translations needed for locale ${targetLocale} in ${savePath}`)
-    return
-  }
-
-  for (const key of keysToTranslate) {
-    const textToTranslate = getNestedValue(defaultTranslations, key) as string
-
-    let translatedText: string | null = null
-
-    try {
-      consola.info(`Translating key ${key} for locale ${targetLocale}...`)
-
-      translatedText = await translateText(
-        textToTranslate,
-        defaultLocale,
-        targetLocale,
-        service,
-        token,
-        options,
-      )
-
-      if (!translatedText) {
-        consola.error(`Failed to translate key ${key} using ${service}`)
-      }
-      else {
-        consola.info(`Translated key ${key} for locale ${targetLocale} using ${service}, value: ${translatedText}`)
-        setNestedValue(targetTranslations, key, translatedText)
-      }
-    }
-    catch (error) {
-      consola.error(`Failed to translate key ${key} using ${service}: ${(error as Error).message}`)
-    }
-  }
-
-  // Сохраняем обновленные переводы
-  writeJsonFile(savePath, targetTranslations)
-}
-
-function getKeysToTranslate(
-  defaultTranslations: Record<string, unknown>,
-  targetTranslations: Record<string, unknown>,
-  replace: boolean,
-  prefix = '',
-): string[] {
-  let keys: string[] = []
-  for (const key in defaultTranslations) {
-    const defaultValue = defaultTranslations[key]
-    const targetValue = targetTranslations[key]
-    const newPrefix = prefix ? `${prefix}.${key}` : key
-
-    if (typeof defaultValue === 'object' && defaultValue !== null) {
-      const nestedTargetValue = (typeof targetValue === 'object' && targetValue !== null) ? targetValue as Record<string, unknown> : {}
-      keys = keys.concat(
-        getKeysToTranslate(
-          defaultValue as Record<string, unknown>,
-          nestedTargetValue,
-          replace,
-          newPrefix,
-        ),
-      )
-    }
-    else {
-      if (replace) {
-        keys.push(newPrefix)
-      }
-      else {
-        if (targetValue === undefined || targetValue === '') {
-          keys.push(newPrefix)
-        }
-      }
-    }
-  }
-  return keys
-}

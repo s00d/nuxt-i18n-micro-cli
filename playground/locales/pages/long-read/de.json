@@ -1,0 +1,9 @@
+{
+  "longRead": {
+    "title": "Long Read: Geschichtete i18n-Architektur",
+    "p1": "Diese Seite enthalt bewusst lange Textblöcke, um Extract- und text-to-i18n-Workflows gegen realistischere Inhalte zu testen.",
+    "p2": "Zur Laufzeit werden Schlussel nach Layer-Merge, Fallback-Merge und Page-Scope-Merge aufgelost; deshalb sind hochwertige Fixtures wichtig fur Regressionstests.",
+    "p3": "In realen Projekten liegt Brand-Wording oft in einem Layer und Kampagnen-Wording in einem anderen, wahrend Produktteams nur gezielte Page-Schlussel uberschreiben.",
+    "p4": "Der Root-Layer der Anwendung sollte knapp bleiben und nur finale Overrides oder umgebungsspezifische Texte enthalten."
+  }
+}

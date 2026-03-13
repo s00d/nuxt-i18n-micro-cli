@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
-import { VueProcessor } from '../../src/utils/text_converner/vue-processor'
-import { KeyGenerator } from '../../src/utils/text_converner/key-generator'
-import type { ProcessorContext } from '../../src/utils/text_converner/types'
+import { VueProcessor } from '../../src/core/text_converner/vue-processor'
+import { KeyGenerator } from '../../src/core/text_converner/key-generator'
+import type { ProcessorContext } from '../../src/core/text_converner/types'
 
 /**
  * Creates a mock processor context for testing with realistic translation key generation
@@ -27,13 +27,13 @@ describe('Vue Processor', () => {
     test('processes text nodes', () => {
       const template = '<div>Hello, World!</div>'
       const result = processor.processTemplate(template, 'test.vue')
-      expect(result).toBe('<div>{{ $t(\'common.test.helloworld\') }}</div>')
+      expect(result).toBe('<div>{{ $t(\'common.test.hello-world\') }}</div>')
     })
 
     test('processes attributes', () => {
       const template = '<button title="Click me">Button</button>'
       const result = processor.processTemplate(template, 'test.vue')
-      expect(result).toBe('<button :title="$t(\'common.test.clickme\')">{{ $t(\'common.test.button\') }}</button>')
+      expect(result).toBe('<button :title="$t(\'common.test.click-me\')">{{ $t(\'common.test.button\') }}</button>')
     })
 
     test('skips already translated text', () => {
@@ -52,6 +52,17 @@ describe('Vue Processor', () => {
       const result = processor.processTemplate(template, 'test.vue')
       expect(result).toContain('$t(\'common.test.title\')')
       expect(result).toContain('$t(\'common.test.description\')')
+    })
+
+    test('does not translate text inside HTML comments', () => {
+      const template = `
+        <!-- Hidden comment text -->
+        <div>Visible text</div>
+      `
+      const result = processor.processTemplate(template, 'test.vue')
+      expect(result).toContain('<!-- Hidden comment text -->')
+      expect(result).toContain('$t(\'common.test.visible-text\')')
+      expect(result).not.toContain('$t(\'common.test.hidden-comment-text\')')
     })
   })
 })

@@ -1,4 +1,17 @@
 import { defineNuxtConfig } from 'nuxt/config'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+
+function resolveOptionalModules(): string[] {
+  try {
+    require.resolve('nuxt-i18n-micro')
+    return ['nuxt-i18n-micro']
+  }
+  catch {
+    return []
+  }
+}
 
 export default defineNuxtConfig({
   extends: [
@@ -6,9 +19,7 @@ export default defineNuxtConfig({
     './layers/base',
     './layers/marketing',
   ],
-  modules: [
-    'nuxt-i18n-micro',
-  ],
+  modules: resolveOptionalModules(),
   devtools: { enabled: true },
   compatibilityDate: '2024-08-14',
   i18n: {

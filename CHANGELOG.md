@@ -1,5 +1,31 @@
 # Changelog
 
+## v2.1.0
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v2.0.1...v2.1.0)
+
+### 💥 Breaking Changes
+
+- **translate / AI:** Remove dedicated `--service` values `openai`, `anthropic`, `mistral`, `cohere`, and `groq`. Use `--service ai` with Vercel AI SDK options (`provider`, `model`, `providerPackage`, `providerFactory`) instead.
+- **dependencies:** Upgrade `archiver` to v8 (`ZipArchive` API) for remote TMS zip handling.
+
+### 🚀 Enhancements
+
+- **translate / AI:** Add unified `ai` translator on top of Vercel AI SDK (`ai` + `zod`) with structured output, dynamic loading of any `@ai-sdk/*` provider package, and AI Gateway support via `provider:gateway`.
+- **translate / HTTP drivers:** Replace legacy SDK wrappers with direct REST clients (`axios`) for Google Cloud Translate, Tencent TMT (TC3 signing), Papago, Baidu, Lilt, and Reverso — same CLI options, smaller install footprint, no deprecated production transitive dependencies.
+- **text-to-i18n:** Scan Nuxt 4 `app/` source roots (`app/pages`, `app/components`, etc.) and generate keys relative to `app/*` paths.
+- **dependencies:** Refresh core toolchain and provider packages (Nuxt 4.4.5, Vitest 4.1.6, `oxc-parser`, Crowdin/Lokalise SDKs, DeepL, and others).
+
+### 🩹 Fixes
+
+- **yandexcloud:** Keep `@yandex-cloud/nodejs-sdk` on v2 API compatible with current `moduleResolution`.
+- **build:** Externalize `ai`, `zod`, and `@ai-sdk/*` in Vite bundle; add runtime `mlly` dependency for dynamic provider imports.
+
+### 🏗️ Internal / Tooling
+
+- **dependencies:** Remove `@google-cloud/translate`, `tencentcloud-sdk-nodejs-tmt`, `papago`, `baidu-translate-service`, `lilt-node`, `reverso-api`, and vendor LLM SDKs (`openai`, `@anthropic-ai/sdk`, `@mistralai/mistralai`, `cohere-ai`, `groq-sdk`, `@babel/runtime`).
+- **tests:** Add coverage for AI config, HTTP translator drivers, Tencent TC3 signing, Nuxt 4 `app/` key generation, and expanded `source-files` scanning.
+
 ## v2.0.0
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v1.3.0...v2.0.0)

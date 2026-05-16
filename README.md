@@ -550,11 +550,7 @@ The `translate` command supports the following services (`--service` values):
 | `google` | Google Cloud Translate | required | `projectId`, `googleProjectId`, `apiEndpoint`, `googleApiEndpoint`, `format`, `model` |
 | `deepl` | DeepL | required | `formality`, `glossary_id`, `glossary`, `context`, `modelType`, `model_type`, `deeplServerUrl` |
 | `yandex` | Yandex Translate (legacy API) | required | passed as request params |
-| `openai` | OpenAI | required | `openaiModel`, `model`, `max_tokens`, `temperature`, `top_p`, `n`, `stop`, `maxRetries`, `timeoutMs` |
-| `anthropic` | Anthropic Claude | required | `anthropicModel`, `model`, `max_tokens`, `temperature`, `maxRetries`, `timeoutMs` |
-| `mistral` | Mistral AI | required | `mistralModel`, `model`, `max_tokens`, `temperature`, `timeoutMs` |
-| `cohere` | Cohere | required | `cohereModel`, `model`, `max_tokens`, `temperature`, `timeoutMs` |
-| `groq` | Groq | required | `groqModel`, `model`, `max_tokens`, `temperature`, `top_p`, `maxRetries`, `timeoutMs` |
+| `ai` | Vercel AI SDK (gateway or any `@ai-sdk/*` provider package) | required (or provider env var) | `provider` (default `gateway`), `model`, `providerPackage`, `providerFactory`, `maxTokens`/`max_tokens`, `temperature`, `topP`/`top_p`, `timeoutMs`, `retries` |
 | `azure` | Azure AI Translator | required | `endpoint`, `azureEndpoint`, `region`, `azureRegion` |
 | `ibm` | IBM Watson Language Translator | required | `url`, `serviceUrl`, `ibmUrl`, `version`, `ibmVersion` |
 | `baidu` | Baidu | required | `appId` (or legacy token format `appId:apiKey`) |
@@ -582,11 +578,14 @@ Use `--options` as comma-separated `key:value` pairs:
 Examples:
 
 ```bash
-# OpenAI
-i18n-micro translate --service openai --token "$OPENAI_API_KEY" --options openaiModel:gpt-4o-mini,max_tokens:1000
+# AI SDK (Vercel AI Gateway — default provider)
+i18n-micro translate --service ai --token "$AI_GATEWAY_API_KEY" --options model:anthropic/claude-sonnet-4.5
 
-# Anthropic
-i18n-micro translate --service anthropic --token "$ANTHROPIC_API_KEY" --options anthropicModel:claude-3-5-sonnet-latest
+# AI SDK (direct provider — install @ai-sdk/openai in your project)
+i18n-micro translate --service ai --token "$OPENAI_API_KEY" --options provider:openai,model:gpt-4o-mini,maxTokens:1000
+
+# Custom provider package
+i18n-micro translate --service ai --token "$API_KEY" --options providerPackage:@ai-sdk/google,providerFactory:createGoogleGenerativeAI,model:gemini-2.0-flash
 
 # Yandex Cloud (requires folderId)
 i18n-micro translate --service yandexcloud --token "$YANDEX_IAM_TOKEN" --options folderId:YOUR_FOLDER_ID
@@ -598,7 +597,7 @@ i18n-micro translate --service tencent --token "$TENCENT_SECRET_KEY" --options s
 For example:
 
 ```bash
-i18n-micro translate --service openai --token YOUR_OPENAI_API_KEY --options openaiModel:gpt-3.5-turbo,max_tokens:1000
+i18n-micro translate --service ai --token YOUR_OPENAI_API_KEY --options provider:openai,model:gpt-3.5-turbo,maxTokens:1000
 ```
 
 ## 📝 Best Practices

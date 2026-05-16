@@ -1,0 +1,37 @@
+tests/services/text-to-i18n-service.test.ts
+  s_43f7072b0cae73::t_696577dbd8f47e 108-127,130-132
+  s_15e35333a9036c::t_8ee1458b4b9fd1 128-129
+tests/utils/source-files.test.ts
+  s_15e35333a9036c::t_8ee1458b4b9fd1 29,44
+  s_43f7072b0cae73::t_2fa8128e46ca43 1-28,30-43,45-51
+src/core/utils/source-files.ts
+  s_43f7072b0cae73::t_cbe838656172ff 3-14
+  s_15e35333a9036c::t_8ee1458b4b9fd1 18
+src/core/text_converner/key-generator.ts
+  s_15e35333a9036c::t_8ee1458b4b9fd1 62-63,65,69-70
+  s_43f7072b0cae73::t_af2e5215ca6419 59-61,64,66,72,77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "05717ec4d4f2b1ec41e2fd5332b21c33d68d0845",
+  "prompts": {},
+  "sessions": {
+    "s_15e35333a9036c": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "16a947fa-1283-4306-8f63-f25f43fb01fd",
+        "model": "default"
+      },
+      "human_author": "Pavel Kuzmin <Virus191288@gmail.com>"
+    },
+    "s_43f7072b0cae73": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "20569882-ab4e-4b2f-a5bf-0b0988b64fcc",
+        "model": "default"
+      },
+      "human_author": "Pavel Kuzmin <Virus191288@gmail.com>"
+    }
+  }
+}

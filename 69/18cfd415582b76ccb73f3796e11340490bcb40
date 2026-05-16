@@ -1,0 +1,58 @@
+src/core/translate/TranslatorRegistry.ts
+  s_15e35333a9036c::t_1d9e5e903bad4f 25
+  s_15e35333a9036c::t_4d07d4ec2e87a6 19
+tests/core/translate-drivers.test.ts
+  s_15e35333a9036c::t_5593608ed86dd3 4
+  s_15e35333a9036c::t_b24b531865bd31 10,17-23,49-52,55-57,60-61,74-77,81-84,86-89
+  s_15e35333a9036c::t_843c8eb3ccc68d 5,11,25-28,48,66-69,71
+src/core/translate/ai/provider-loader.ts
+  s_15e35333a9036c::t_f92cb95db4157e 130
+  s_15e35333a9036c::t_9b03542db4178b 1,3-129,131-138
+  s_15e35333a9036c::t_f8b02bf3a84b83 2
+src/core/services/TranslationService.ts
+  s_15e35333a9036c::t_5d0c2d315ee4f5 55
+  s_15e35333a9036c::t_74119e5582dea9 4
+  s_15e35333a9036c::t_ac12024777d7ff 144
+tests/services/translation-service.test.ts
+  s_15e35333a9036c::t_e6fb940d247624 176,180
+  s_15e35333a9036c::t_67c72b81bd700d 115,118-119
+  s_15e35333a9036c::t_8d54d690b43e58 152,154
+  s_15e35333a9036c::t_00358c69d6c6ae 134
+  s_15e35333a9036c::t_1de06c3db711f8 86,88,97
+vite.config.ts
+  s_15e35333a9036c::t_7f82eba3426607 104
+  s_15e35333a9036c::t_f9ae1152a94821 83-86
+  s_15e35333a9036c::t_87383981e7d806 54-56
+  s_15e35333a9036c::t_5ce76eac726767 41,45
+src/core/translate/ai/index.ts
+  s_15e35333a9036c::t_41685871d6c154 10-11
+  s_15e35333a9036c::t_fa64787d689769 1-9
+src/core/translate/ai/prompts.ts
+  s_15e35333a9036c::t_fe7a0ede6a31c3 1-31
+tests/core/ai-config.test.ts
+  s_15e35333a9036c::t_227fdc16f3dbb8 1-7,9,11-13,16-20,22,27,32-34,37-38
+  s_15e35333a9036c::t_f15a7fb97fded4 8,10,14-15,21,23-26,28-31,35-36
+src/core/translate/ai/config.ts
+  s_15e35333a9036c::t_affa41730a1a3f 104-105,111
+  s_15e35333a9036c::t_3106664401b088 3,12,19-20,23,46-47,50,56-57,60-62,66,68,71,84-87,90,94-101,106-107,110,112
+  s_15e35333a9036c::t_01a6b16ea0f012 1-2,4-11,13-16,22,24,26-30,32-40,43,48-49,51-55,58-59,63-65,67,69-70,72-83,88-89,91-93,102-103
+src/core/translate/ai/translator.ts
+  s_15e35333a9036c::t_15fd1d5dfd0e96 10,14,22,26
+  s_15e35333a9036c::t_b08aaae456a749 1-9,11,13,20,23-24,27-37,40-43,45-48,50-51,54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "6918cfd415582b76ccb73f3796e11340490bcb40",
+  "prompts": {},
+  "sessions": {
+    "s_15e35333a9036c": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "16a947fa-1283-4306-8f63-f25f43fb01fd",
+        "model": "default"
+      },
+      "human_author": "Pavel Kuzmin <Virus191288@gmail.com>"
+    }
+  }
+}

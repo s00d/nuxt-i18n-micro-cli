@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.1
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v2.1.0...v2.1.1)
+
+### 🩹 Fixes
+
+- **dependencies:** Pin `@lokalise/node-api` to v15, `@yandex-cloud/nodejs-sdk` to `>=2.8.0 <2.9.0`, and `p-retry` to v7 so installs on Node 20 no longer trigger `EBADENGINE` warnings.
+
 ## v2.1.0
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v2.0.1...v2.1.0)

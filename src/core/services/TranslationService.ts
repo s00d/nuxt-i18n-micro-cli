@@ -1,6 +1,7 @@
 import { consola } from 'consola'
 import type { I18nProject } from '../Project'
 import { translateBatchTexts } from '../translate'
+import { isLlmTranslationService } from '../translate/ai'
 import {
   buildGlossaryContext,
   getGlossaryEntriesForPair,
@@ -47,15 +48,11 @@ function getNumericOption(options: Record<string, unknown> | undefined, keys: st
   return undefined
 }
 
-function isLlmService(service: string): boolean {
-  return ['openai', 'anthropic', 'mistral', 'cohere', 'groq'].includes(service.toLowerCase())
-}
-
 function resolveChunkSize(service: string, configuredChunkSize: number | undefined): number {
   if (typeof configuredChunkSize === 'number' && Number.isFinite(configuredChunkSize)) {
     return Math.max(1, configuredChunkSize)
   }
-  if (isLlmService(service)) {
+  if (isLlmTranslationService(service)) {
     return 20
   }
   return 50
@@ -144,7 +141,7 @@ export async function translateMissing(project: I18nProject, config: TranslateMi
         const optionsWithContext: Record<string, unknown> = {
           ...(config.options ?? {}),
         }
-        if (isLlmService(config.service)) {
+        if (isLlmTranslationService(config.service)) {
           optionsWithContext.translationContext = buildTranslationContext(scope, chunk)
           if (glossaryCatalog) {
             const glossaryEntries = getGlossaryEntriesForPair(glossaryCatalog, defaultLocale, locale.code)

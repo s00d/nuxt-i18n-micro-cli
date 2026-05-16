@@ -32,22 +32,17 @@ function isBareImport(id: string): boolean {
 // Keep this explicit list for high-cost SDKs used by translators.
 // Even if they are present in dependencies, this documents intent.
 const translatorSdkExternals = new Set([
-  '@anthropic-ai/sdk',
   '@azure-rest/ai-translation-text',
   '@crowdin/crowdin-api-client',
   '@gitbeaker/rest',
-  '@google-cloud/translate',
   '@lokalise/node-api',
-  '@mistralai/mistralai',
   '@vitalets/google-translate-api',
   '@yandex-cloud/nodejs-sdk',
-  'cohere-ai',
+  'ai',
   'deepl-node',
-  'groq-sdk',
   'modernmt',
-  'tencentcloud-sdk-nodejs-tmt',
-  'openai',
   'octokit',
+  'zod',
 ])
 
 // Keep empty by default: runtime deps stay external unless explicitly bundled.
@@ -56,6 +51,9 @@ const forceBundlePackages = new Set<string>([])
 // Escape hatch: always externalize specific packages.
 const forceExternalPackages = new Set<string>([
   ...translatorSdkExternals,
+  '@nuxt/kit',
+  '@nuxt/schema',
+  'nuxt',
 ])
 
 function isExternal(id: string): boolean {
@@ -82,6 +80,10 @@ function isExternal(id: string): boolean {
     return true
   }
 
+  if (packageName.startsWith('@ai-sdk/')) {
+    return true
+  }
+
   return runtimeDeps.has(packageName)
 }
 
@@ -99,7 +101,7 @@ export default defineConfig({
     },
     rollupOptions: {
       external: isExternal,
-      treeshake: 'smallest',
+      treeshake: true,
       onwarn(warning, warn) {
         if (
           warning.message.includes('chokidar/index.js')

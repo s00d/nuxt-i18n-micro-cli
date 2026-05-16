@@ -83,9 +83,9 @@ describe('TranslationService batching and llm context', () => {
     })
 
     await translateMissing(project as never, {
-      service: 'openai',
+      service: 'ai',
       token: 'token',
-      options: { temperature: 0.1 },
+      options: { provider: 'openai', model: 'gpt-4o-mini', temperature: 0.1 },
       replace: false,
     })
 
@@ -94,7 +94,7 @@ describe('TranslationService batching and llm context', () => {
       ['Welcome', 'Fast translations'],
       'en',
       'ru',
-      'openai',
+      'ai',
       'token',
       expect.objectContaining({
         temperature: 0.1,
@@ -112,9 +112,11 @@ describe('TranslationService batching and llm context', () => {
     })
 
     await translateMissing(project as never, {
-      service: 'openai',
+      service: 'ai',
       token: 'token',
       options: {
+        provider: 'openai',
+        model: 'gpt-4o-mini',
         glossaryCatalog: {
           entries: [
             { source: 'Save', target: 'Сохранить', from: 'en', to: 'ru' },
@@ -129,7 +131,7 @@ describe('TranslationService batching and llm context', () => {
       ['Save'],
       'en',
       'ru',
-      'openai',
+      'ai',
       'token',
       expect.objectContaining({
         glossaryContext: expect.stringContaining('Save => Сохранить'),
@@ -147,8 +149,9 @@ describe('TranslationService batching and llm context', () => {
     })
 
     await translateMissing(project as never, {
-      service: 'mistral',
+      service: 'ai',
       token: 'token',
+      options: { provider: 'mistral', model: 'mistral-small-latest' },
       replace: false,
     })
 
@@ -170,11 +173,11 @@ describe('TranslationService batching and llm context', () => {
     })
 
     await translateMissing(project as never, {
-      service: 'openai',
+      service: 'ai',
       token: 'token',
       replace: false,
       chunkSize: 10,
-      options: { batchMaxChars: 15 },
+      options: { provider: 'openai', model: 'gpt-4o-mini', batchMaxChars: 15 },
     })
 
     const calls = vi.mocked(translateBatchTexts).mock.calls

@@ -1,31 +1,31 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const {
-  openAIChatCreateMock,
-  openAIConstructorSpy,
+  generateTextMock,
+  resolveLanguageModelMock,
   deepLTranslateTextMock,
   deepLConstructorSpy,
   googleTranslateMock,
 } = vi.hoisted(() => ({
-  openAIChatCreateMock: vi.fn(),
-  openAIConstructorSpy: vi.fn(),
+  generateTextMock: vi.fn(),
+  resolveLanguageModelMock: vi.fn(),
   deepLTranslateTextMock: vi.fn(),
   deepLConstructorSpy: vi.fn(),
   googleTranslateMock: vi.fn(),
 }))
 
-vi.mock('openai', () => ({
-  default: class {
-    chat = {
-      completions: {
-        create: openAIChatCreateMock,
-      },
-    }
+vi.mock('ai', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('ai')>()
+  return {
+    ...actual,
+    generateText: generateTextMock,
+  }
+})
 
-    constructor(config: unknown) {
-      openAIConstructorSpy(config)
-    }
-  },
+vi.mock('../../src/core/translate/ai/provider-loader', () => ({
+  resolveLanguageModel: resolveLanguageModelMock,
+  GATEWAY_PROVIDER_ID: 'gateway',
+  listKnownProviderIds: () => ['gateway', 'openai'],
 }))
 
 vi.mock('deepl-node', () => ({
@@ -45,46 +45,48 @@ vi.mock('@vitalets/google-translate-api', () => ({
 describe('translator drivers sdk integration', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    resolveLanguageModelMock.mockResolvedValue({ modelId: 'test-model' })
+    generateTextMock.mockResolvedValue({
+      output: { translation: ' translated text ' },
+      text: ' translated text ',
+    })
   })
 
-  it('OpenAITranslator uses unified retry and timeout options', async () => {
-    const { OpenAITranslator } = await import('../../src/core/translate/drivers/OpenAITranslator')
-    openAIChatCreateMock.mockResolvedValue({
-      choices: [{ message: { content: ' translated text ' } }],
-    })
+  it('AiTranslator uses structured output and translation context', async () => {
+    const { AiTranslator } = await import('../../src/core/translate/ai/translator')
+    const translator = new AiTranslator('ai-key')
 
-    const translator = new OpenAITranslator('openai-key', {
-      maxRetries: '4',
-      timeoutMs: '1200',
-    })
     const translated = await translator.translate('Hello', 'en', 'ru', {
+      provider: 'openai',
+      model: 'gpt-4o-mini',
       translationContext: 'scope=global; keys=home.title',
     })
 
     expect(translated).toBe('translated text')
-    expect(openAIConstructorSpy).toHaveBeenCalledWith(
+    expect(resolveLanguageModelMock).toHaveBeenCalledWith(
+      'openai',
+      'gpt-4o-mini',
+      'ai-key',
       expect.objectContaining({
-        apiKey: 'openai-key',
-        maxRetries: 4,
-        timeout: 1200,
+        translationContext: 'scope=global; keys=home.title',
       }),
     )
-    expect(openAIChatCreateMock).toHaveBeenCalledWith(expect.objectContaining({
-      messages: expect.arrayContaining([
-        expect.objectContaining({
-          role: 'system',
-          content: expect.stringContaining('CONTEXT: scope=global; keys=home.title'),
-        }),
-      ]),
+    expect(generateTextMock).toHaveBeenCalledWith(expect.objectContaining({
+      system: expect.stringContaining('CONTEXT: scope=global; keys=home.title'),
+      prompt: 'Hello',
+      maxOutputTokens: 1024,
     }))
   })
 
-  it('OpenAITranslator wraps SDK errors in unified format', async () => {
-    const { OpenAITranslator } = await import('../../src/core/translate/drivers/OpenAITranslator')
-    openAIChatCreateMock.mockRejectedValue(new Error('rate limit'))
-    const translator = new OpenAITranslator('openai-key')
+  it('AiTranslator wraps SDK errors in unified format', async () => {
+    const { AiTranslator } = await import('../../src/core/translate/ai/translator')
+    generateTextMock.mockRejectedValue(new Error('rate limit'))
+    const translator = new AiTranslator('ai-key')
 
-    await expect(translator.translate('Hello', 'en', 'ru')).rejects.toThrow('OpenAI API error: rate limit')
+    await expect(translator.translate('Hello', 'en', 'ru', {
+      provider: 'openai',
+      model: 'gpt-4o-mini',
+    })).rejects.toThrow('AI API error: rate limit')
   })
 
   it('DeepLTranslator uses SDK and maps batch options', async () => {

@@ -1,0 +1,182 @@
+src/core/utils/cli-error.ts
+  s_15e35333a9036c::t_2d1003f17881a6 3-9,15,19,28,30-34,37-43,47-53,58-59,63
+  s_15e35333a9036c::t_9e63e30ba8743f 29,61,64-66
+  s_15e35333a9036c::t_a1a5a91312e45b 11-14,16-18,20-23,27,35-36,44-46,55-57,60,62
+  s_15e35333a9036c::t_4c04eac29c9252 2
+src/commands/search.ts
+  s_15e35333a9036c::t_9e9d834caaf155 76-79
+  s_15e35333a9036c::t_e9860ebe68a363 3
+  s_15e35333a9036c::t_958a42d6ec31be 84-86
+src/core/errors/I18nConfigError.ts
+  s_15e35333a9036c::t_6024b63cec0244 3-9
+  s_15e35333a9036c::t_a615ffb95ca4fe 1-2,11,23-36
+  s_15e35333a9036c::t_03d578ba1c5f2f 10,12-22,37-45
+tests/utils/cli-error.test.ts
+  s_15e35333a9036c::t_f73b604f048132 16-17,21-30
+  s_15e35333a9036c::t_26e50646453100 3,5-10,12-15,18-20,31-49,83,107
+  s_15e35333a9036c::t_60ceb7ee54c50d 102-103
+  s_15e35333a9036c::t_b54a67e9b723f7 84-101,104-106
+  s_15e35333a9036c::t_5e9348b411e80b 1
+  s_15e35333a9036c::t_22f1e07e2a6a68 2,4,50-82
+  s_15e35333a9036c::t_bb6364d43758ca 11
+src/commands/translate.ts
+  s_15e35333a9036c::t_03e41634301f1b 69-72
+  s_15e35333a9036c::t_283ff6aca0e8c7 2
+src/commands/index.ts
+  s_15e35333a9036c::t_32e602a5ad46c0 2-6,9-36
+src/main.ts
+  s_15e35333a9036c::t_6f99fdef87e084 2,7-9
+src/core/utils/terminal-colors.ts
+  s_15e35333a9036c::t_ea4fc2ae727ae2 16-19,22
+  s_15e35333a9036c::t_8ba423c6d6e7ec 1-8,15,20-21,34,42,50,58
+  s_15e35333a9036c::t_19272f083faf64 9-14,23-33,35-41,43-49,51-57,59
+src/commands/estimate.ts
+  s_15e35333a9036c::t_7ecd1fe54c9997 3
+  s_15e35333a9036c::t_c5fd8dfc7a85f8 10
+src/core/services/TextToI18nService.ts
+  s_15e35333a9036c::t_95405a24cbf056 53-55
+  s_15e35333a9036c::t_800de921cb0536 2
+  s_15e35333a9036c::t_239d1335604578 16
+  s_15e35333a9036c::t_0a27248b66c656 28-30
+src/core/translate/ai/provider-loader.ts
+  s_15e35333a9036c::t_95a06925423554 3
+  s_15e35333a9036c::t_e7df1e80b985e0 113-118
+  s_15e35333a9036c::t_4dace23b077505 87-93
+tests/utils/terminal-colors.test.ts
+  s_15e35333a9036c::t_55630e7d8fbeba 96
+  s_15e35333a9036c::t_81cc5959951e11 1
+  s_15e35333a9036c::t_17d17c7d20f777 30,33-42
+  s_15e35333a9036c::t_fff0d9b1ca978a 92
+  s_15e35333a9036c::t_13f39e309c36f8 88
+  s_15e35333a9036c::t_c21ff82d2547c8 2-29,31-32,43-87,89-91,93-95,97-106
+src/core/Project.ts
+  s_15e35333a9036c::t_5ad10caf91fb57 24-25
+  s_15e35333a9036c::t_cf33cb83f5e498 39
+  s_15e35333a9036c::t_231c92182905e2 2
+  s_15e35333a9036c::t_d61520e49045e0 53-55
+src/core/translate/drivers/TencentTranslator.ts
+  s_15e35333a9036c::t_dd2b7f307eb692 2
+  s_15e35333a9036c::t_91b5b8006fde47 41-44
+src/commands/glossary.ts
+  s_15e35333a9036c::t_22679a360b1ca4 2
+  s_15e35333a9036c::t_65ac1799929b18 81-83
+  s_15e35333a9036c::t_3bc63107f4a278 98-100
+  s_15e35333a9036c::t_cd2c7ceb64e308 117-119
+src/index.ts
+  s_15e35333a9036c::t_0f736eebc0f1b1 4,11-13,15-21,23-26,30-38,40-51
+  s_15e35333a9036c::t_9c40daacbec39c 1,7-9
+  s_15e35333a9036c::t_62f286641d5e65 3
+  s_15e35333a9036c::t_a97128d93568ca 22
+  s_15e35333a9036c::t_7dde32b6e1c6c6 29
+CHANGELOG.md
+  s_15e35333a9036c::t_e97f47eaa93dbc 3-21
+src/core/services/BackupRestoreService.ts
+  s_15e35333a9036c::t_b49fd0f9145598 65-67
+  s_15e35333a9036c::t_22b5f9a8286daf 2
+  s_15e35333a9036c::t_7a2162e4f5e7a9 39-41
+  s_15e35333a9036c::t_b54fe093f796bc 19-21
+  s_15e35333a9036c::t_cb366dbcc3497a 34
+src/core/errors/CliError.ts
+  s_15e35333a9036c::t_f91b7098bdc961 1-26
+src/core/translate/drivers/_shared.ts
+  s_15e35333a9036c::t_87af30a5967169 1
+  s_15e35333a9036c::t_01045362c0e1cb 30-31,34-35
+src/core/utils/nuxt-root.ts
+  s_15e35333a9036c::t_e7c5f79b5349fb 1-32
+src/core/translate/drivers/PapagoTranslator.ts
+  s_15e35333a9036c::t_26f123b9d58d2b 35-38
+  s_15e35333a9036c::t_7082531ecc7388 2
+tests/commands/clean.test.ts
+  s_15e35333a9036c::t_77d586096b12c3 78,80
+src/core/services/RemoteSyncService.ts
+  s_15e35333a9036c::t_5b7d910eddcb5a 2
+  s_15e35333a9036c::t_481f64318f7481 44-49,53-57
+  s_15e35333a9036c::t_3e54e66438b45e 78-80
+  s_15e35333a9036c::t_89da750c32f357 120-123
+  s_15e35333a9036c::t_290ae6e398e829 89-93
+  s_15e35333a9036c::t_54427e9f0eeb5d 71-73
+src/core/utils/safe-command.ts
+  s_15e35333a9036c::t_51b3aeb585911e 1-25
+src/core/errors/normalize-error.ts
+  s_15e35333a9036c::t_4ce11b8485a1c3 2-19,21-37,56-86,88-146
+  s_15e35333a9036c::t_54a6c67394792d 87
+  s_15e35333a9036c::t_7c5525d55fdfae 1,20,38-55
+src/core/errors/index.ts
+  s_15e35333a9036c::t_67422e2b44df55 1-11
+src/commands/_shared.ts
+  s_15e35333a9036c::t_102eb758032de5 4
+  s_15e35333a9036c::t_7255e147323fdc 64-66
+  s_15e35333a9036c::t_4cf55841adf155 73-77
+  s_15e35333a9036c::t_6f03efabcf319b 26-28
+src/commands/validate.ts
+  s_15e35333a9036c::t_7e8b25653999b1 2
+  s_15e35333a9036c::t_ae86e02b624cfd 32-35
+src/core/services/RenameService.ts
+  s_15e35333a9036c::t_b6e6e0e84e33bf 39
+  s_15e35333a9036c::t_6c258721257ded 168-172
+  s_15e35333a9036c::t_fff65c2dc395a1 105-107,110
+  s_15e35333a9036c::t_8b443311b4e0c5 2
+src/core/translate/index.ts
+  s_15e35333a9036c::t_4b22bc5bf46dbf 4
+  s_15e35333a9036c::t_307776bd1f3540 17-20
+src/core/translate/ai/config.ts
+  s_15e35333a9036c::t_892d206711a5ab 2
+  s_15e35333a9036c::t_b12355645dd378 74-76
+  s_15e35333a9036c::t_7618d5e23a68a6 114-117
+  s_15e35333a9036c::t_fa426ab48cdd0a 61-64
+  s_15e35333a9036c::t_2b3cc18e884fc5 103-105
+src/core/translate/drivers/LiltTranslator.ts
+  s_15e35333a9036c::t_2d2e16065e496d 16-18
+  s_15e35333a9036c::t_85ee11ade06d77 2
+src/core/translate/drivers/YandexCloudTranslator.ts
+  s_15e35333a9036c::t_87d911385037dc 2
+  s_15e35333a9036c::t_969fcdce9b85e2 17-19
+src/commands/lint.ts
+  s_15e35333a9036c::t_56819f2ad6a473 2
+  s_15e35333a9036c::t_2fa569806b73b7 132-135
+src/package-meta.ts
+  s_15e35333a9036c::t_8d4c923e0ea313 1-6
+src/core/services/InitService.ts
+  s_15e35333a9036c::t_f1f42d50d4898b 2
+  s_15e35333a9036c::t_836f40b435a639 190-194
+src/commands/info.ts
+  s_15e35333a9036c::t_c15e1ecf884ed2 38
+  s_15e35333a9036c::t_d9c8f2d799ae2f 5
+src/core/services/PseudoService.ts
+  s_15e35333a9036c::t_86fd9b0eb8cff6 107
+  s_15e35333a9036c::t_9962a50285b47a 2
+bin/i18n.mjs
+  s_15e35333a9036c::t_674a9bd24c59a3 11-12
+  s_15e35333a9036c::t_7615b9432c8da5 13
+tests/utils/nuxt-root.test.ts
+  s_15e35333a9036c::t_065955e40eaa74 1
+  s_15e35333a9036c::t_3a1a19f0f69a9f 2-17,19-48
+  s_15e35333a9036c::t_8e2f550bff1354 18
+src/core/errors/factories.ts
+  s_15e35333a9036c::t_374e08da6f2dc3 76,82
+  s_15e35333a9036c::t_c08fa73b940f97 1-75,77-81,83-84
+src/core/utils/kit.ts
+  s_15e35333a9036c::t_f6983dd0f1790f 2
+  s_15e35333a9036c::t_845cf0c39bf8dd 4,31-41,57-130,137,141-142,151-161,164-186,189-192,196,201,210,215-223,227-235,240
+src/core/translate/drivers/BaiduTranslator.ts
+  s_15e35333a9036c::t_2999f639c99a13 3
+  s_15e35333a9036c::t_8a1f1c01122284 29-32
+package.json
+  ai_agent 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "fe35cc0bad9588f43d6d6ee22c37294179382a44",
+  "prompts": {},
+  "sessions": {
+    "s_15e35333a9036c": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "16a947fa-1283-4306-8f63-f25f43fb01fd",
+        "model": "default"
+      },
+      "human_author": "Pavel Kuzmin <Virus191288@gmail.com>"
+    }
+  }
+}

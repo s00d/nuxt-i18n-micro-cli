@@ -1,0 +1,21 @@
+src/core/utils/terminal-colors.ts
+  s_15e35333a9036c::t_21ee4fbe8624b8 22-26
+tests/utils/terminal-colors.test.ts
+  s_15e35333a9036c::t_e8da5dad450288 58-61,68-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "813e9650ed0a18d1ea9ee819a6f31cf86e8fea54",
+  "prompts": {},
+  "sessions": {
+    "s_15e35333a9036c": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "16a947fa-1283-4306-8f63-f25f43fb01fd",
+        "model": "default"
+      },
+      "human_author": "Pavel Kuzmin <Virus191288@gmail.com>"
+    }
+  }
+}

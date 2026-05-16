@@ -1,0 +1,25 @@
+CHANGELOG.md
+  ai_agent 3-10
+pnpm-lock.yaml
+  ai_agent 27-28,39-40,117-118,1065-1067,2645-2647,2787-2789,4611-4613,6726,8334,8338,8501-8508,10648
+package.json
+  s_15e35333a9036c::t_22d6c849ca7ad3 105
+  s_15e35333a9036c::t_1375fd8e4914c5 75
+  s_15e35333a9036c::t_ee2c6716790d73 79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "492f008f6e2413557e6a24b11c49f1ad7787100e",
+  "prompts": {},
+  "sessions": {
+    "s_15e35333a9036c": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "16a947fa-1283-4306-8f63-f25f43fb01fd",
+        "model": "default"
+      },
+      "human_author": "Pavel Kuzmin <Virus191288@gmail.com>"
+    }
+  }
+}

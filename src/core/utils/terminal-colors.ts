@@ -19,7 +19,11 @@ export function supportsTerminalColors(
     return false
   }
 
-  if (process.env.CI) {
+  const isKnownCi = Boolean(
+    process.env.CI
+    && (process.env.GITHUB_ACTIONS || process.env.GITLAB_CI || process.env.CIRCLECI),
+  )
+  if (isKnownCi) {
     return true
   }
 

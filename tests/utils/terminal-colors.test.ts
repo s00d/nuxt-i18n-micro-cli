@@ -55,11 +55,27 @@ describe('supportsTerminalColors', () => {
   it('returns false for non-tty stdout without FORCE_COLOR', () => {
     delete process.env.NO_COLOR
     delete process.env.FORCE_COLOR
+    delete process.env.CI
+    delete process.env.GITHUB_ACTIONS
+    delete process.env.GITLAB_CI
+    delete process.env.CIRCLECI
     Object.defineProperty(process.stdout, 'isTTY', {
       configurable: true,
       value: false,
     })
     expect(supportsTerminalColors()).toBe(false)
+  })
+
+  it('returns true on known CI providers without TTY', () => {
+    delete process.env.NO_COLOR
+    delete process.env.FORCE_COLOR
+    process.env.CI = 'true'
+    process.env.GITHUB_ACTIONS = 'true'
+    Object.defineProperty(process.stdout, 'isTTY', {
+      configurable: true,
+      value: false,
+    })
+    expect(supportsTerminalColors()).toBe(true)
   })
 })
 

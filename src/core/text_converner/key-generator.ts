@@ -56,16 +56,24 @@ export class KeyGenerator {
     const parsed = path.parse(filePath)
     const segments = parsed.dir.split('/')
 
-    const baseDir = segments.find(s => ['pages', 'components', 'plugins', 'layouts'].includes(s))
+    const knownRoots = ['pages', 'components', 'plugins', 'layouts'] as const
+    const appIndex = segments.indexOf('app')
+    const rootAfterApp = appIndex >= 0 ? segments[appIndex + 1] : undefined
+    const baseDir
+      = rootAfterApp && (knownRoots as readonly string[]).includes(rootAfterApp)
+        ? rootAfterApp
+        : segments.find(s => (knownRoots as readonly string[]).includes(s))
+
     if (!baseDir) return 'common'
 
-    const startIndex = segments.indexOf(baseDir)
+    const startIndex
+      = rootAfterApp === baseDir && appIndex >= 0 ? appIndex + 2 : segments.indexOf(baseDir) + 1
     const remainingPath = segments
-      .slice(startIndex + 1)
+      .slice(startIndex)
       .concat(parsed.name)
       .map(part => toSlug(part))
       .join('.')
 
-    return toSlug(`${baseDir}`) + '.' + remainingPath
+    return `${toSlug(baseDir)}.${remainingPath}`
   }
 }

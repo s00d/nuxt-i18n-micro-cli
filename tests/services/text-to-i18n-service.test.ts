@@ -105,6 +105,31 @@ describe('runTextToI18n extract-only precedence', () => {
     expect(extractedValues).not.toContain('Outside scope')
   })
 
+  test('processes Nuxt 4 app/pages when run from project root', () => {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'i18n-service-nuxt4-'))
+    const translationFile = path.join(tempRoot, 'locales', 'en.json')
+    const pageFile = path.join(tempRoot, 'app', 'pages', 'index.vue')
+
+    writeFile(translationFile, '{}')
+    writeFile(pageFile, '<template><h1>Hello Nuxt 4</h1></template>\n')
+
+    const result = runTextToI18n({
+      cwd: tempRoot,
+      translationFile,
+      dryRun: false,
+      verbose: false,
+    })
+
+    const pageOutput = fs.readFileSync(pageFile, 'utf8')
+    const flat = flattenTranslations(
+      JSON.parse(fs.readFileSync(translationFile, 'utf8')) as Record<string, unknown>,
+    )
+
+    expect(result.files.some(f => f.endsWith('app/pages/index.vue'))).toBe(true)
+    expect(pageOutput).toContain('$t(\'pages.index.')
+    expect(Object.values(flat)).toContain('Hello Nuxt 4')
+  })
+
   test('applies key overrides and skipped keys', () => {
     const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'i18n-service-interactive-'))
     const translationFile = path.join(tempRoot, 'locales', 'en.json')

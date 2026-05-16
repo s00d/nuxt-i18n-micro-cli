@@ -1,4 +1,5 @@
 import { defineCommand } from 'citty'
+import { cliCommandFailedError } from '../core/errors'
 import { consola } from 'consola'
 import { validateProjectLocales } from '../core/services/ValidationService'
 import { resolveProjectContext, sharedArgs } from './_shared'
@@ -28,7 +29,10 @@ export default defineCommand({
           consola.warn(`Locale ${issue.locale} has extra keys:\n${issue.extraKeys.join('\n')}`)
         }
       }
-      throw new Error('Validation failed with errors.')
+      throw cliCommandFailedError('Validation failed with errors.', [
+        'Review missing/extra keys listed above and sync locales.',
+        'Run i18n-micro sync to align locale files.',
+      ])
     }
 
     consola.success('All translation files are valid.')

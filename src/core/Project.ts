@@ -1,4 +1,5 @@
 import { resolve } from 'pathe'
+import { cliNotFoundError } from './errors'
 import { FileSystemStorage } from './adapters/FileSystemStorage'
 import { getI18nConfig } from './utils/kit'
 import { TranslationSet } from './TranslationSet'
@@ -20,7 +21,8 @@ export class I18nProject {
   static async load(cwd: string, options: ProjectLoadOptions = {}): Promise<I18nProject> {
     const resolvedCwd = resolve(cwd)
     const i18nConfig = await getI18nConfig(resolvedCwd, options.logLevel)
-    const requestedTranslationDir = options.translationDir ? resolve(resolvedCwd, options.translationDir) : undefined
+    const projectRoot = i18nConfig.nuxtRoot
+    const requestedTranslationDir = options.translationDir ? resolve(projectRoot, options.translationDir) : undefined
     const translationDir = requestedTranslationDir || i18nConfig.translationDir
     const useLayeredSources = !requestedTranslationDir || requestedTranslationDir === i18nConfig.translationDir
     const translationDirs = useLayeredSources ? i18nConfig.translationDirs : [translationDir]
@@ -34,7 +36,7 @@ export class I18nProject {
 
     return new I18nProject(
       {
-        cwd: resolvedCwd,
+        cwd: projectRoot,
         defaultLocale: i18nConfig.defaultLocale,
         locales: i18nConfig.locales,
         translationDir,
@@ -48,7 +50,9 @@ export class I18nProject {
   getLocale(code: string): TranslationSet {
     const locale = this.translations[code]
     if (!locale) {
-      throw new Error(`Locale ${code} not found`)
+      throw cliNotFoundError(`Locale ${code} not found`, [
+        'Check configured locales in nuxt.config i18n.locales.',
+      ], { Locale: code })
     }
     return locale
   }

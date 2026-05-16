@@ -1,4 +1,5 @@
 import { defineCommand } from 'citty'
+import { cliCommandFailedError } from '../core/errors'
 import { consola } from 'consola'
 import {
   applyLintFixes,
@@ -128,7 +129,10 @@ export default defineCommand({
     }
 
     if (results.length > 0 && !args.fix) {
-      throw new Error(`Found ${results.length} issues that need to be fixed`)
+      throw cliCommandFailedError(`Found ${results.length} issues that need to be fixed`, [
+        'Review issues listed above or run with --json for machine-readable output.',
+        'Apply automatic fixes where available: i18n-micro lint --fix',
+      ])
     }
   },
 })

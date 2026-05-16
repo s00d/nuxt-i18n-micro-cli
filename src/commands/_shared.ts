@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'pathe'
 import { consola } from 'consola'
+import { cliNotFoundError, cliValidationError } from '../core/errors'
 import { I18nProject } from '../core/Project'
 import { getI18nConfig } from '../core/utils/kit'
 
@@ -22,8 +23,9 @@ interface SharedRunArgs {
 }
 
 export async function resolveCommandContext(args: SharedRunArgs) {
-  const cwd = resolve((args.cwd || '.').toString())
-  const config = await getI18nConfig(cwd, args.logLevel)
+  const requestedCwd = resolve((args.cwd || '.').toString())
+  const config = await getI18nConfig(requestedCwd, args.logLevel)
+  const cwd = config.nuxtRoot
   const translationDir = args.translationDir || config.translationDir
   return {
     cwd,
@@ -59,14 +61,20 @@ export function parsePositiveIntArg(
 ): number {
   const parsed = value ? Number.parseInt(value, 10) : defaultValue
   if (Number.isNaN(parsed) || parsed <= 0) {
-    throw new Error(`${argName} must be a positive integer`)
+    throw cliValidationError(`${argName} must be a positive integer`, [
+      `Example: --${argName} 10`,
+    ])
   }
   return parsed
 }
 
 export function ensureTranslationDirExists(translationDir: string): void {
   if (!existsSync(translationDir)) {
-    throw new Error(`Translation directory "${translationDir}" does not exist`)
+    throw cliNotFoundError(`Translation directory "${translationDir}" does not exist`, [
+      'Create the directory or set translationDir in nuxt.config / --translationDir.',
+    ], {
+      Path: translationDir,
+    })
   }
 }
 

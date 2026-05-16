@@ -1,4 +1,5 @@
 import { join } from 'pathe'
+import { cliCommandFailedError } from '../errors'
 import { spawn } from 'node:child_process'
 import { parseJsonFile, writeJsonFile } from '../utils/json'
 import { ensureDirectoryExists, pathExists } from '../utils/dir'
@@ -186,7 +187,11 @@ export async function initializeProjectScaffold(params: {
 }): Promise<{ projectPath: string, packageManager: 'npm' | 'yarn' | 'pnpm' }> {
   const projectPath = join(params.targetDir, params.projectName)
   if (pathExists(projectPath)) {
-    throw new Error(`Directory ${params.projectName} already exists`)
+    throw cliCommandFailedError(`Directory ${params.projectName} already exists`, [
+      'Choose another project name or remove the existing directory.',
+    ], {
+      Path: projectPath,
+    })
   }
 
   try {

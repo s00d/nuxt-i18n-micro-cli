@@ -75,7 +75,9 @@ describe('clean command', () => {
     vi.mocked(getI18nConfig).mockResolvedValue({
       locales: mockLocales,
       translationDir: mockTranslationDir,
+      translationDirs: [mockTranslationDir],
       defaultLocale: 'en',
+      nuxtRoot: '/test/project',
     })
     vi.mocked(loadJsonFile).mockReturnValue({})
     vi.mocked(fs.readdirSync).mockImplementation((dir: fs.PathLike, options?: { withFileTypes?: boolean }) => {

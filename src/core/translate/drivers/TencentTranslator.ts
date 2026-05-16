@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { cliUsageError } from '../../errors'
 import { signTencentCloudTc3 } from '../tencent/tc3-sign'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError } from './_shared'
@@ -37,7 +38,10 @@ export class TencentTranslator implements TranslatorDriver {
 
     const [legacySecretId, legacySecretKey] = apiKey.split(':')
     if (!legacySecretId || !legacySecretKey) {
-      throw new Error('Tencent Translator requires `apiKey` and `options.secretId` (legacy `secretId:secretKey` is also supported).')
+      throw cliUsageError('Tencent Translator requires `apiKey` and `options.secretId`.', [
+        'Legacy format: --token secretId:secretKey',
+        'Recommended: --token <secretKey> --options secretId:<id>,region:ap-guangzhou',
+      ])
     }
     this.secretId = legacySecretId
     this.secretKey = legacySecretKey

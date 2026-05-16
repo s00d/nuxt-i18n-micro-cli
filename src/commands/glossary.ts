@@ -1,4 +1,5 @@
 import { defineCommand } from 'citty'
+import { cliUsageError, cliValidationError } from '../core/errors'
 import { resolve } from 'pathe'
 import { consola } from 'consola'
 import {
@@ -77,7 +78,9 @@ export default defineCommand({
 
     if (action === 'add') {
       if (!args.source || !args.target) {
-        throw new Error('source and target are required for action=add')
+        throw cliValidationError('source and target are required for action=add', [
+          'Example: i18n-micro glossary --action add --source Hello --target Привет',
+        ])
       }
       addGlossaryEntry(catalog, {
         source: args.source,
@@ -92,7 +95,9 @@ export default defineCommand({
 
     if (action === 'remove') {
       if (!args.source) {
-        throw new Error('source is required for action=remove')
+        throw cliValidationError('source is required for action=remove', [
+          'Example: i18n-micro glossary --action remove --source Hello',
+        ])
       }
       const removed = removeGlossaryEntry(catalog, {
         source: args.source,
@@ -109,6 +114,8 @@ export default defineCommand({
       return
     }
 
-    throw new Error(`Unsupported glossary action: ${action}`)
+    throw cliUsageError(`Unsupported glossary action: ${action}`, [
+      'Supported actions: list, add, remove',
+    ])
   },
 })

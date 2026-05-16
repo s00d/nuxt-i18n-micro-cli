@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { cliUsageError } from '../../errors'
 import type { TranslateOptions } from '../drivers/TranslatorDriver'
 import { GATEWAY_PROVIDER_ID } from './provider-loader'
 
@@ -57,9 +58,10 @@ function resolveModel(provider: string, options: TranslateOptions | undefined): 
     return DEFAULT_GATEWAY_MODEL
   }
 
-  throw new Error(
-    `AI translation requires "model" in --options. For gateway use provider/model format (e.g. model:anthropic/claude-sonnet-4.5).`,
-  )
+  throw cliUsageError('AI translation requires "model" in --options.', [
+    'Gateway example: --options model:anthropic/claude-sonnet-4.5',
+    'OpenAI example: --options provider:openai,model:gpt-4o-mini',
+  ])
 }
 
 export function resolveAiTranslationConfig(
@@ -69,9 +71,9 @@ export function resolveAiTranslationConfig(
   const model = resolveModel(provider, options)
 
   if (provider === GATEWAY_PROVIDER_ID && !model.includes('/')) {
-    throw new Error(
-      'Gateway models must use the "provider/model" format (e.g. model:anthropic/claude-sonnet-4.5).',
-    )
+    throw cliUsageError('Gateway models must use the "provider/model" format.', [
+      'Example: --options model:anthropic/claude-sonnet-4.5',
+    ])
   }
 
   return {
@@ -98,7 +100,9 @@ export function resolveAiApiKey(provider: string, token: string): string {
     if (gatewayKey) {
       return gatewayKey
     }
-    throw new Error('AI gateway requires --token or AI_GATEWAY_API_KEY environment variable.')
+    throw cliUsageError('AI gateway requires --token or AI_GATEWAY_API_KEY environment variable.', [
+      'Example: export AI_GATEWAY_API_KEY=... && i18n-micro translate --service ai',
+    ])
   }
 
   const envName = `${provider.toUpperCase().replace(/[^A-Z0-9]/g, '_')}_API_KEY`
@@ -107,7 +111,8 @@ export function resolveAiApiKey(provider: string, token: string): string {
     return providerKey
   }
 
-  throw new Error(
-    `AI provider "${provider}" requires --token or ${envName} environment variable.`,
-  )
+  throw cliUsageError(`AI provider "${provider}" requires --token or ${envName} environment variable.`, [
+    `Install provider SDK: pnpm add @ai-sdk/${provider}`,
+    `Example: export ${envName}=... && i18n-micro translate --service ai --options provider:${provider},model:...`,
+  ], { Provider: provider })
 }

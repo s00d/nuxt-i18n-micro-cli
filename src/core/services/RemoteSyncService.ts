@@ -1,4 +1,5 @@
 import { defu } from 'defu'
+import { cliCommandFailedError, cliRemoteConfigError, cliValidationError } from '../errors'
 import { flattenTranslations, parseJsonFile, saveJsonFile } from '../utils/json'
 import { pathExists } from '../utils/dir'
 import { buildLocaleFilePath, buildRemoteConfigPath } from '../utils/translation-paths'
@@ -40,11 +41,20 @@ const DEFAULT_REMOTE_SYNC_OPTIONS: RemoteSyncOptions = {
 async function loadRemoteConfig(cwd: string): Promise<RemoteConfig> {
   const configPath = buildRemoteConfigPath(cwd)
   if (!pathExists(configPath)) {
-    throw new Error('Remote configuration file not found. Please run setup-remote first.')
+    throw cliRemoteConfigError('Remote configuration file not found.', [
+      'Create .i18n-remote.json in the project root (see README sync-remote section).',
+      'Example providers: github, gitlab, crowdin, lokalise, tolgee, weblate, custom',
+    ], {
+      Path: configPath,
+    })
   }
   const config = parseJsonFile(configPath) as RemoteConfig
   if (!config.type || !config.url) {
-    throw new Error('Invalid remote configuration')
+    throw cliRemoteConfigError('Invalid remote configuration.', [
+      'Ensure .i18n-remote.json includes "type" and "url" fields.',
+    ], {
+      Path: configPath,
+    })
   }
   return config
 }
@@ -58,12 +68,16 @@ function validateRemoteConfig(config: RemoteConfig): void {
     case 'tolgee':
     case 'weblate':
       if (!config.token) {
-        throw new Error(`${config.type} token is required`)
+        throw cliRemoteConfigError(`${config.type} token is required`, [
+          `Add "token" to .i18n-remote.json for provider "${config.type}".`,
+        ])
       }
       break
     case 'custom':
       if (!config.auth?.username || !config.auth?.password) {
-        throw new Error('Custom remote requires username and password')
+        throw cliRemoteConfigError('Custom remote requires username and password', [
+          'Add "auth": { "username": "...", "password": "..." } to .i18n-remote.json.',
+        ])
       }
       break
   }
@@ -72,7 +86,11 @@ function validateRemoteConfig(config: RemoteConfig): void {
     new URL(config.url)
   }
   catch {
-    throw new Error('Invalid remote URL')
+    throw cliValidationError('Invalid remote URL', [
+      'Set a valid absolute URL in .i18n-remote.json ("url" field).',
+    ], {
+      URL: config.url,
+    })
   }
 }
 
@@ -99,7 +117,10 @@ function resolveConflicts(
     if (options.dryRun) {
       return { merged: localTranslations, conflicts }
     }
-    throw new Error('Conflicts found. Use --force to overwrite local changes or resolve conflicts manually')
+    throw cliCommandFailedError('Conflicts found between local and remote translations.', [
+      'Resolve conflicts manually, or rerun with --force to prefer remote values.',
+      'Preview without writing: i18n-micro sync-remote --dry-run',
+    ])
   }
 
   return { merged: { ...localTranslations, ...remoteTranslations }, conflicts: [] }

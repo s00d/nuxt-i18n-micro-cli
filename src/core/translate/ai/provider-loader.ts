@@ -1,5 +1,6 @@
 import type { LanguageModelV3 } from '@ai-sdk/provider'
 import { createGateway } from 'ai'
+import { cliUsageError } from '../../errors'
 import type { TranslateOptions } from '../drivers/TranslatorDriver'
 import { getStringOption } from '../drivers/_shared'
 
@@ -83,8 +84,13 @@ async function loadProviderModule(packageName: string): Promise<ProviderModule> 
   }
   catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error)
-    throw new Error(
-      `Failed to load AI provider package "${packageName}". Install it in your project (e.g. pnpm add ${packageName}). ${message}`,
+    throw cliUsageError(
+      `Failed to load AI provider package "${packageName}".`,
+      [
+        `Install it in your project: pnpm add ${packageName}`,
+        'Or set providerPackage/providerFactory in --options for a custom package.',
+      ],
+      { Package: packageName, Reason: message },
     )
   }
 }
@@ -104,8 +110,12 @@ function resolveProviderFactoryFromModule(
     return defaultExport as AiProviderFactory
   }
 
-  throw new Error(
-    `Provider factory "${factoryName}" was not found in "${packageName}". Set providerFactory in --options.`,
+  throw cliUsageError(
+    `Provider factory "${factoryName}" was not found in "${packageName}".`,
+    [
+      'Set providerFactory in --options to the exported factory function name.',
+    ],
+    { Package: packageName, Factory: factoryName },
   )
 }
 

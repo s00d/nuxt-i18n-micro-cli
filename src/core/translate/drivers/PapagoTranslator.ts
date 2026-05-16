@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { cliUsageError } from '../../errors'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError } from './_shared'
 
@@ -31,7 +32,10 @@ export class PapagoTranslator implements TranslatorDriver {
 
     const [legacyClientId, legacyClientSecret] = apiKey.split(':')
     if (!legacyClientId || !legacyClientSecret) {
-      throw new Error('Papago Translator requires `apiKey` and `options.clientId` (legacy `clientId:clientSecret` is also supported).')
+      throw cliUsageError('Papago Translator requires `apiKey` and `options.clientId`.', [
+        'Legacy format: --token clientId:clientSecret',
+        'Recommended: --token <secret> --options clientId:<id>',
+      ])
     }
     this.clientId = legacyClientId
     this.clientSecret = legacyClientSecret

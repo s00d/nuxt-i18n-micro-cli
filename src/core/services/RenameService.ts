@@ -1,4 +1,5 @@
 import { flatten, unflatten } from 'flat'
+import { cliNotFoundError, cliValidationError } from '../errors'
 import type { I18nProject } from '../Project'
 import type { JsonObject } from '../types'
 import { collectProjectSourceFiles } from '../utils/source-files'
@@ -35,7 +36,7 @@ function renameFlatKey(
     return { found: false, updated: source }
   }
   if (to in flat) {
-    throw new Error(`Target key already exists: ${to}`)
+    throw cliValidationError(`Target key already exists: ${to}`, [], { Key: to })
   }
 
   const next = Object.fromEntries(
@@ -101,10 +102,12 @@ function replaceKeyInSource(content: string, from: string, to: string): { conten
 
 export function renameProjectKey(project: I18nProject, options: RenameProjectKeyOptions): RenameProjectKeyResult {
   if (!options.from || !options.to) {
-    throw new Error('Both source and target keys are required')
+    throw cliValidationError('Both source and target keys are required', [
+      'Example: i18n-micro rename --from old.key --to new.key',
+    ])
   }
   if (options.from === options.to) {
-    throw new Error('Source and target keys must be different')
+    throw cliValidationError('Source and target keys must be different')
   }
 
   const dryRun = Boolean(options.dryRun)
@@ -162,7 +165,11 @@ export function renameProjectKey(project: I18nProject, options: RenameProjectKey
   }
 
   if (localesUpdated === 0 && sourceFilesUpdated === 0 && localeReferencesUpdated === 0) {
-    throw new Error(`Key not found: ${options.from}`)
+    throw cliNotFoundError(`Key not found: ${options.from}`, [
+      'Search for the key first: i18n-micro search "<fragment>"',
+    ], {
+      Key: options.from,
+    })
   }
 
   return {

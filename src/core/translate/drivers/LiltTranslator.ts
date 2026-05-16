@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { cliUsageError } from '../../errors'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError, getNumericOption, getStringOption } from './_shared'
 
@@ -12,7 +13,9 @@ export class LiltTranslator implements TranslatorDriver {
 
   constructor(apiKey: string, options?: TranslateOptions) {
     if (!apiKey) {
-      throw new Error('Lilt Translator requires an apiKey.')
+      throw cliUsageError('Lilt Translator requires an apiKey.', [
+        'Example: --token <lilt-api-key> --options baseUrl:https://api.lilt.com',
+      ])
     }
     this.apiKey = apiKey
     const baseUrl = getStringOption(options, ['baseUrl']) ?? 'https://api.lilt.com'

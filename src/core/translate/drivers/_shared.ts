@@ -1,4 +1,4 @@
-import { getTranslatorErrorMessage } from '../error'
+import { cliTranslatorError } from '../../errors'
 import type { TranslateOptions } from './TranslatorDriver'
 
 export function getNumericOption(
@@ -27,10 +27,10 @@ export function getStringOption(
   return undefined
 }
 
-export function createDriverError(provider: string, error: unknown): Error {
-  return new Error(`${provider} API error: ${getTranslatorErrorMessage(error)}`)
+export function createDriverError(provider: string, error: unknown) {
+  return cliTranslatorError(provider, error)
 }
 
-export function createDriverTypeError(provider: string, message: string): TypeError {
-  return new TypeError(`${provider} API error: ${message}`)
+export function createDriverTypeError(provider: string, message: string) {
+  return cliTranslatorError(provider, new Error(message))
 }

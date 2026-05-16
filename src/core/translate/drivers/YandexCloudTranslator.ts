@@ -1,4 +1,5 @@
 import { Session, cloudApi, serviceClients } from '@yandex-cloud/nodejs-sdk'
+import { cliUsageError } from '../../errors'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError, getStringOption } from './_shared'
 
@@ -13,7 +14,9 @@ export class YandexCloudTranslator implements TranslatorDriver {
   constructor(apiKey: string, options?: TranslateOptions) {
     this.folderId = typeof options?.folderId === 'string' ? options.folderId : ''
     if (!this.folderId) {
-      throw new Error('Yandex Cloud Translator requires folderId in options.')
+      throw cliUsageError('Yandex Cloud Translator requires folderId in options.', [
+        'Example: --token <iam-token> --options folderId:<folder-id>',
+      ])
     }
     this.client = new Session({ iamToken: apiKey })
       .client(serviceClients.TranslationServiceClient) as unknown as YandexTranslateClient

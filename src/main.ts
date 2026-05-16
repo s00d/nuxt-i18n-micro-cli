@@ -1,19 +1,12 @@
 import { defineCommand } from 'citty'
-import { consola } from 'consola'
-import pPkg from '../package.json' with { type: 'json' }
+import { cliDescription, cliName, cliVersion } from './package-meta'
 import { commands } from './commands'
 
 export const main = defineCommand({
   meta: {
-    name: pPkg.name,
-    version: pPkg.version,
-    description: pPkg.description,
+    name: cliName,
+    version: cliVersion,
+    description: cliDescription,
   },
   subCommands: commands,
-  setup() {
-    consola.info('Setup')
-  },
-  cleanup() {
-    consola.info('Cleanup')
-  },
 })

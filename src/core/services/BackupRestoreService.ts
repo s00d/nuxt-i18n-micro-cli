@@ -1,4 +1,5 @@
 import { dirname, join, relative } from 'pathe'
+import { cliCommandFailedError, cliNotFoundError } from '../errors'
 import {
   cleanupExtractedBackup,
   createBackupArchive,
@@ -15,7 +16,9 @@ export async function createProjectBackup(options: {
   comment?: string
 }): Promise<string> {
   if (!pathExists(options.translationDir)) {
-    throw new Error('Translation directory does not exist')
+    throw cliNotFoundError('Translation directory does not exist', [], {
+      Path: options.translationDir,
+    })
   }
 
   return createBackupArchive({
@@ -28,12 +31,14 @@ export async function createProjectBackup(options: {
 
 export function listProjectBackups(backupDir: string): string[] {
   if (!pathExists(backupDir)) {
-    throw new Error('Backup directory does not exist')
+    throw cliNotFoundError('Backup directory does not exist', [], { Path: backupDir })
   }
 
   const backups = getBackupList(backupDir)
   if (backups.length === 0) {
-    throw new Error('No backups found')
+    throw cliNotFoundError('No backups found', [
+      'Create a backup first: i18n-micro backup',
+    ], { Directory: backupDir })
   }
 
   return backups
@@ -57,7 +62,9 @@ export async function restoreProjectFromBackup(options: {
     })
 
     if (!extractPath) {
-      throw new Error('Failed to extract backup: no path returned')
+      throw cliCommandFailedError('Failed to extract backup: no path returned', [
+        'Verify backup archive integrity and password (if encrypted).',
+      ])
     }
 
     const jsonFiles = collectFilesRecursive(

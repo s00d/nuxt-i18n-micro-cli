@@ -1,5 +1,6 @@
 import { defineCommand } from 'citty'
 import { consola } from 'consola'
+import { cliValidationError } from '../core/errors'
 import { searchProjectTranslations } from '../core/services/SearchService'
 import { printJson, resolveCommandContext, sharedArgs } from './_shared'
 import { renderKeyValueTable, renderSection, renderStatus } from './_render'
@@ -72,12 +73,17 @@ export default defineCommand({
     const { cwd, config } = await resolveCommandContext(args)
     const query = (args.query || '').toString().trim()
     if (!query && !args.hardcodedOnly) {
-      throw new Error('Search query cannot be empty unless --hardcodedOnly is enabled')
+      throw cliValidationError('Search query cannot be empty unless --hardcodedOnly is enabled', [
+        'Example: i18n-micro search "welcome"',
+        'Or scan hardcoded text: i18n-micro search --hardcodedOnly',
+      ])
     }
     const scope = ['global', 'pages', 'all'].includes(String(args.scope)) ? String(args.scope) as 'global' | 'pages' | 'all' : 'all'
     const limit = args.limit ? Number.parseInt(args.limit, 10) : undefined
     if (limit !== undefined && (!Number.isFinite(limit) || limit <= 0)) {
-      throw new Error('limit must be a positive integer')
+      throw cliValidationError('limit must be a positive integer', [
+        'Example: i18n-micro search "text" --limit 20',
+      ])
     }
 
     const translationDirs = (config as { translationDirs?: string[] }).translationDirs || [config.translationDir]

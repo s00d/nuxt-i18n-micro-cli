@@ -8,4 +8,6 @@ global.__nuxt_cli__ = {
   entry: fileURLToPath(import.meta.url),
 }
 
-runMain()
+runMain().catch(() => {
+  process.exit(process.exitCode || 1)
+})

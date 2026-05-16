@@ -1,6 +1,7 @@
 import pRetry from 'p-retry'
 import pLimit from 'p-limit'
 import pTimeout from 'p-timeout'
+import { cliUsageError } from '../errors'
 import type { TranslateOptions, TranslatorDriver } from './drivers/TranslatorDriver'
 import { I18nProtector, splitPluralForms } from './I18nProtector'
 import translatorRegistry from './TranslatorRegistry'
@@ -13,7 +14,10 @@ function createTranslator(
   const TranslatorClass = translatorRegistry[service.toLowerCase()]
 
   if (!TranslatorClass) {
-    throw new Error(`Unsupported translation service: ${service}`)
+    throw cliUsageError(`Unsupported translation service: ${service}`, [
+      'Run i18n-micro translate and pick a supported --service value.',
+      'See README "Supported Translation Services" for the full list.',
+    ], { Service: service })
   }
 
   return new TranslatorClass(apiKey, toStringOptions(options))

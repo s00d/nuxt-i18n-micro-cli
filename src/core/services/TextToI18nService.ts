@@ -1,4 +1,5 @@
 import { resolve } from 'pathe'
+import { cliNotFoundError, cliValidationError } from '../errors'
 import { isJsonObject } from '../types'
 import { isDirectoryPath, pathExists } from '../utils/dir'
 import { writeTextFile } from '../utils/file'
@@ -12,7 +13,7 @@ function getFilesToProcess(targetDir: string, customPath?: string) {
     const resolvedPath = resolve(targetDir, customPath)
 
     if (!pathExists(resolvedPath)) {
-      throw new Error(`Path does not exist: ${resolvedPath}`)
+      throw cliNotFoundError(`Path does not exist: ${resolvedPath}`, [], { Path: resolvedPath })
     }
 
     if (isDirectoryPath(resolvedPath)) {
@@ -24,7 +25,9 @@ function getFilesToProcess(targetDir: string, customPath?: string) {
       return [resolvedPath]
     }
 
-    throw new Error(`Unsupported file type: ${resolvedPath}`)
+    throw cliValidationError(`Unsupported file type: ${resolvedPath}`, [
+      'Supported extensions: .vue, .js, .ts',
+    ], { Path: resolvedPath })
   }
 
   return collectProjectSourceFiles(targetDir)
@@ -47,7 +50,9 @@ export function runTextToI18n(params: {
   const translations = loadJsonFile(translationFile)
 
   if (!isJsonObject(translations)) {
-    throw new Error('Invalid translation file. Please check the format.')
+    throw cliValidationError('Invalid translation file. Please check the format.', [
+      'Ensure the file contains a JSON object with translation keys.',
+    ], { File: translationFile })
   }
 
   const processor = new FileProcessor(translations, {

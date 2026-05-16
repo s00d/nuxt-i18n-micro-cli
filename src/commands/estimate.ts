@@ -1,12 +1,13 @@
 import { defineCommand } from 'citty'
 import { consola } from 'consola'
+import { cliValidationError } from '../core/errors'
 import { estimateTranslationCost } from '../core/services/EstimateService'
 import { printJson, resolveProjectContext, sharedArgs } from './_shared'
 
 function parsePositiveNumber(value: string | undefined, fallback: number, name: string): number {
   const parsed = value ? Number(value) : fallback
   if (!Number.isFinite(parsed) || parsed <= 0) {
-    throw new Error(`${name} must be a positive number`)
+    throw cliValidationError(`${name} must be a positive number`)
   }
   return parsed
 }

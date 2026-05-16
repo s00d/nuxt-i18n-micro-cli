@@ -1,8 +1,8 @@
 import { defineCommand } from 'citty'
 import { consola } from 'consola'
 import prettyMilliseconds from 'pretty-ms'
-import pPkg from '../../package.json' with { type: 'json' }
 import { buildInfoSnapshot } from '../core/services/InfoService'
+import { cliPackage } from '../package-meta'
 import {
   printDependencyGroup,
   printInfoRows,
@@ -35,7 +35,7 @@ export default defineCommand({
     const info = buildInfoSnapshot({
       cwd,
       config,
-      cliPackage: pPkg,
+      cliPackage,
       debug: Boolean(args.debug),
     })
 

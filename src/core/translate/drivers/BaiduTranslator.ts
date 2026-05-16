@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import axios from 'axios'
+import { cliUsageError } from '../../errors'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError } from './_shared'
 
@@ -25,7 +26,10 @@ export class BaiduTranslator implements TranslatorDriver {
 
     const [legacyAppId, legacyApiKey] = apiKey.split(':')
     if (!legacyAppId || !legacyApiKey) {
-      throw new Error('Baidu Translator requires `apiKey` and `options.appId` (legacy `appId:apiKey` is also supported).')
+      throw cliUsageError('Baidu Translator requires `apiKey` and `options.appId`.', [
+        'Legacy format: --token appId:apiKey',
+        'Recommended: --token <apiKey> --options appId:<appId>',
+      ])
     }
     this.appId = legacyAppId
     this.apiKey = legacyApiKey

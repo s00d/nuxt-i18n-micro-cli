@@ -1,4 +1,5 @@
 import { I18nProtector } from '../translate/I18nProtector'
+import { cliValidationError } from '../errors'
 import type { I18nProject } from '../Project'
 
 export interface GeneratePseudoLocaleOptions {
@@ -103,7 +104,7 @@ export function generatePseudoLocale(
   options: GeneratePseudoLocaleOptions,
 ): GeneratePseudoLocaleResult {
   if (options.sourceLocale === options.targetLocale) {
-    throw new Error('Source and target locale must be different')
+    throw cliValidationError('Source and target locale must be different')
   }
 
   const source = project.getLocale(options.sourceLocale)

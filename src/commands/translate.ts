@@ -1,4 +1,5 @@
 import { defineCommand } from 'citty'
+import { cliUsageError } from '../core/errors'
 import { resolve } from 'pathe'
 import { consola } from 'consola'
 import { input, select } from '@inquirer/prompts'
@@ -65,7 +66,10 @@ export default defineCommand({
       })
     }
     if (!service) {
-      throw new Error('Translation service is required')
+      throw cliUsageError('Translation service is required', [
+        'Pass --service <name> or choose one from the interactive prompt.',
+        'List providers: i18n-micro translate --help',
+      ])
     }
 
     let token = args.token || ''

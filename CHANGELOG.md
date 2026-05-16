@@ -1,5 +1,24 @@
 # Changelog
 
+## v2.1.2
+
+[compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v2.1.1...v2.1.2)
+
+### 🚀 Enhancements
+
+- **cli / errors:** Add a unified `CliError` layer with normalized Axios, filesystem, translator, and config failures — actionable hints instead of raw stack traces by default.
+- **cli / errors:** Detect Nuxt project root when loading i18n config and surface clear `NOT_NUXT_PROJECT`, `I18N_MODULE_MISSING`, and related messages with `--cwd` guidance.
+- **cli / ux:** Colorize error output in TTY/CI terminals (headline, details, hints); respect `NO_COLOR` and `FORCE_COLOR`.
+
+### 🩹 Fixes
+
+- **cli:** Stop citty from printing unformatted `I18nConfigError` dumps; route command failures through `handleCliError` and a custom `runMain`.
+- **build:** Centralize `package.json` metadata in `package-meta.ts` to remove Vite import-attribute warnings.
+
+### 🏗️ Internal / Tooling
+
+- **tests:** Add coverage for CLI error formatting, Nuxt root discovery, and terminal color helpers.
+
 ## v2.1.1
 
 [compare changes](https://github.com/s00d/nuxt-i18n-micro-cli/compare/v2.1.0...v2.1.1)

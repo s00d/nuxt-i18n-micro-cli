@@ -1,7 +1,7 @@
 import path from 'node:path'
 import fs from 'node:fs'
 import { createCipheriv, randomBytes } from 'node:crypto'
-import archiver from 'archiver'
+import { ZipArchive } from 'archiver'
 import extract from 'extract-zip'
 import { consola } from 'consola'
 import { ensureDirectoryExists } from './dir'
@@ -41,7 +41,7 @@ export async function createBackupArchive(options: BackupOptions): Promise<strin
   const backupPath = path.join(backupDir, `${backupName}.zip`)
 
   const output = fs.createWriteStream(backupPath)
-  const archive = archiver('zip', {
+  const archive = new ZipArchive({
     zlib: { level: 9 },
   })
 

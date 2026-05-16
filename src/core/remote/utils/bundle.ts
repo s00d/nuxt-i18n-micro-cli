@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import archiver from 'archiver'
+import { ZipArchive } from 'archiver'
 import extractZip from 'extract-zip'
 import { collectFilesRecursive } from '../../utils/dir'
 import { parseJsonFile } from '../../utils/json'
@@ -22,7 +22,7 @@ export async function createZipFromTranslations(
   try {
     await new Promise<void>((resolve, reject) => {
       const output = fs.createWriteStream(zipPath)
-      const archive = archiver('zip', { zlib: { level: 9 } })
+      const archive = new ZipArchive({ zlib: { level: 9 } })
       output.on('close', () => resolve())
       archive.on('error', reject)
       archive.pipe(output)

@@ -1,5 +1,4 @@
 import path from 'node:path'
-import { writeTypes as writeTypesLegacy } from '@nuxt/kit'
 import { importModule, tryResolveModule } from '../esm'
 
 export const loadKit = async (
@@ -12,8 +11,16 @@ export const loadKit = async (
       '@nuxt/kit',
       rootURL,
     )
-    if (!kit.writeTypes) {
-      kit = { ...kit, writeTypes: writeTypesLegacy }
+    if (typeof kit.writeTypes !== 'function') {
+      try {
+        const { writeTypes } = await import('@nuxt/kit')
+        if (typeof writeTypes === 'function') {
+          kit = { ...kit, writeTypes }
+        }
+      }
+      catch {
+        // @nuxt/kit is provided by the host Nuxt project when available
+      }
     }
     return kit
   }

@@ -1,55 +1,22 @@
-import * as LiltSdk from 'lilt-node'
+import axios from 'axios'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError, getNumericOption, getStringOption } from './_shared'
 
-interface LiltApiClientAuth {
-  username?: string
-  password?: string
-}
-
-interface LiltApiClientApiKeyAuth {
-  apiKey?: string
-}
-
-interface LiltApiClient {
-  basePath: string
-  authentications: {
-    BasicAuth: LiltApiClientAuth
-    ApiKeyAuth: LiltApiClientApiKeyAuth
-  }
-}
-
-interface LiltTranslateApi {
-  translateSegmentPost(options: {
-    body: {
-      source: string
-      source_lang: string
-      target_lang: string
-      memory_id: number
-    }
-  }): Promise<{
-    translation?: Array<{ target?: string }>
-  }>
+interface LiltTranslateResponse {
+  translation?: Array<{ target?: string }>
 }
 
 export class LiltTranslator implements TranslatorDriver {
-  private client: LiltTranslateApi
+  private apiKey: string
+  private baseUrl: string
 
   constructor(apiKey: string, options?: TranslateOptions) {
     if (!apiKey) {
       throw new Error('Lilt Translator requires an apiKey.')
     }
-    const sdk = LiltSdk as unknown as {
-      ApiClient: new () => LiltApiClient
-      TranslateApi: new (client: LiltApiClient) => LiltTranslateApi
-    }
-    const apiClient = new sdk.ApiClient()
+    this.apiKey = apiKey
     const baseUrl = getStringOption(options, ['baseUrl']) ?? 'https://api.lilt.com'
-    apiClient.basePath = baseUrl.replace(/\/+$/, '')
-    apiClient.authentications.BasicAuth.username = apiKey
-    apiClient.authentications.BasicAuth.password = apiKey
-    apiClient.authentications.ApiKeyAuth.apiKey = apiKey
-    this.client = new sdk.TranslateApi(apiClient)
+    this.baseUrl = baseUrl.replace(/\/+$/, '')
   }
 
   async translate(
@@ -58,17 +25,27 @@ export class LiltTranslator implements TranslatorDriver {
     toLang: string,
     options?: TranslateOptions,
   ): Promise<string> {
+    const memoryId = getNumericOption(options, ['memory_id', 'memoryId']) ?? 0
+    const auth = Buffer.from(`${this.apiKey}:${this.apiKey}`).toString('base64')
+
     try {
-      const memoryId = getNumericOption(options, ['memory_id', 'memoryId']) ?? 0
-      const response = await this.client.translateSegmentPost({
-        body: {
+      const response = await axios.post<LiltTranslateResponse>(
+        `${this.baseUrl}/v2/translate`,
+        {
           source: text,
           source_lang: fromLang,
           target_lang: toLang,
           memory_id: memoryId,
         },
-      })
-      const translated = response?.translation?.[0]?.target
+        {
+          headers: {
+            'Authorization': `Basic ${auth}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      const translated = response.data?.translation?.[0]?.target
       if (!translated || typeof translated !== 'string') {
         throw createDriverTypeError('Lilt', 'No translation found in response')
       }

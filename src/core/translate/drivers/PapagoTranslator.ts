@@ -1,14 +1,31 @@
-import PapagoClient from 'papago'
+import axios from 'axios'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError } from './_shared'
 
+const PAPAGO_API_URL = 'https://openapi.naver.com/v1/papago/n2mt'
+
+interface PapagoSuccessResponse {
+  message?: {
+    result?: {
+      translatedText?: string
+    }
+  }
+}
+
+interface PapagoErrorResponse {
+  errorCode?: string | number
+  errorMessage?: string
+}
+
 export class PapagoTranslator implements TranslatorDriver {
-  private client: InstanceType<typeof PapagoClient>
+  private clientId: string
+  private clientSecret: string
 
   constructor(apiKey: string, options?: TranslateOptions) {
     const clientId = typeof options?.clientId === 'string' ? options.clientId : undefined
     if (clientId) {
-      this.client = new PapagoClient(clientId, apiKey)
+      this.clientId = clientId
+      this.clientSecret = apiKey
       return
     }
 
@@ -16,7 +33,8 @@ export class PapagoTranslator implements TranslatorDriver {
     if (!legacyClientId || !legacyClientSecret) {
       throw new Error('Papago Translator requires `apiKey` and `options.clientId` (legacy `clientId:clientSecret` is also supported).')
     }
-    this.client = new PapagoClient(legacyClientId, legacyClientSecret)
+    this.clientId = legacyClientId
+    this.clientSecret = legacyClientSecret
   }
 
   async translate(
@@ -26,17 +44,34 @@ export class PapagoTranslator implements TranslatorDriver {
     _options?: TranslateOptions,
   ): Promise<string> {
     try {
-      const result = await this.client.translate(text, fromLang, toLang) as {
-        code: number | string
-        text: string
+      const response = await axios.post<PapagoSuccessResponse & PapagoErrorResponse>(
+        PAPAGO_API_URL,
+        new URLSearchParams({
+          text,
+          source: fromLang,
+          target: toLang,
+        }),
+        {
+          headers: {
+            'X-Naver-Client-Id': this.clientId,
+            'X-Naver-Client-Secret': this.clientSecret,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          },
+        },
+      )
+
+      const body = response.data
+      const translated = body.message?.result?.translatedText
+      if (translated) {
+        return translated
       }
-      if (result.code !== 0 && result.code !== '0') {
-        throw new Error(result.text || `Papago error code: ${result.code}`)
+
+      const errorCode = body.errorCode
+      if (errorCode !== undefined && errorCode !== 0 && errorCode !== '0') {
+        throw new Error(body.errorMessage || `Papago error code: ${errorCode}`)
       }
-      if (!result.text) {
-        throw createDriverTypeError('Papago', 'No translation found in response')
-      }
-      return result.text
+
+      throw createDriverTypeError('Papago', 'No translation found in response')
     }
     catch (error: unknown) {
       throw createDriverError('Papago', error)

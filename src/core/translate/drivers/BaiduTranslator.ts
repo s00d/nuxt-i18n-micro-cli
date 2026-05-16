@@ -1,6 +1,15 @@
-import baiduTranslateService from 'baidu-translate-service'
+import { createHash } from 'node:crypto'
+import axios from 'axios'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
 import { createDriverError, createDriverTypeError } from './_shared'
+
+const BAIDU_API_URL = 'http://api.fanyi.baidu.com/api/trans/vip/translate'
+
+interface BaiduTranslateResponse {
+  trans_result?: Array<{ dst?: string }>
+  error_code?: string
+  error_msg?: string
+}
 
 export class BaiduTranslator implements TranslatorDriver {
   private apiKey: string
@@ -28,25 +37,36 @@ export class BaiduTranslator implements TranslatorDriver {
     toLang: string,
     options?: { salt?: string },
   ): Promise<string> {
-    const query = {
+    const salt = options?.salt ?? `${Date.now()}${Math.random()}`
+    const sign = createHash('md5')
+      .update(`${this.appId}${text}${salt}${this.apiKey}`)
+      .digest('hex')
+
+    const body = new URLSearchParams({
       q: text,
       from: fromLang,
       to: toLang,
       appid: this.appId,
-      key: this.apiKey,
-      ...(options?.salt ? { salt: options.salt } : {}),
-    }
+      salt,
+      sign,
+    })
 
     try {
-      const response = await baiduTranslateService(query)
-      const data = await response.json() as {
-        trans_result?: Array<{ dst?: string }>
-        error_code?: string
-        error_msg?: string
-      }
+      const response = await axios.post<BaiduTranslateResponse>(
+        BAIDU_API_URL,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      )
+
+      const data = response.data
       if (data.error_code) {
         throw new Error(`${data.error_msg} (${data.error_code})`)
       }
+
       const translated = data.trans_result?.[0]?.dst
       if (!translated) {
         throw createDriverTypeError('Baidu Translate', 'No translation found in response')

@@ -1,31 +1,37 @@
-import { tmt } from 'tencentcloud-sdk-nodejs-tmt/tencentcloud/services/tmt/index.js'
+import axios from 'axios'
+import { signTencentCloudTc3 } from '../tencent/tc3-sign'
 import type { TranslateOptions, TranslatorDriver } from './TranslatorDriver'
-import { createDriverError } from './_shared'
+import { createDriverError, createDriverTypeError } from './_shared'
 
-interface TencentTmtClient {
-  TextTranslate(request: {
-    SourceText: string
-    Source: string
-    Target: string
-    ProjectId: number
-  }): Promise<{ TargetText?: string }>
+const TMT_ENDPOINT = 'https://tmt.tencentcloudapi.com/'
+const TMT_API_VERSION = '2018-03-21'
+const TMT_SERVICE = 'tmt'
+const TMT_ACTION = 'TextTranslate'
+
+interface TencentTranslateResponse {
+  Response?: {
+    TargetText?: string
+    Error?: {
+      Code?: string
+      Message?: string
+    }
+    RequestId?: string
+  }
 }
 
 export class TencentTranslator implements TranslatorDriver {
-  private client: TencentTmtClient
+  private secretId: string
+  private secretKey: string
+  private region: string
 
   constructor(apiKey: string, options?: TranslateOptions) {
     const secretId = typeof options?.secretId === 'string' ? options.secretId : undefined
     const region = typeof options?.region === 'string' ? options.region : 'ap-guangzhou'
 
     if (secretId) {
-      this.client = new tmt.v20180321.Client({
-        credential: {
-          secretId,
-          secretKey: apiKey,
-        },
-        region,
-      }) as unknown as TencentTmtClient
+      this.secretId = secretId
+      this.secretKey = apiKey
+      this.region = region
       return
     }
 
@@ -33,13 +39,9 @@ export class TencentTranslator implements TranslatorDriver {
     if (!legacySecretId || !legacySecretKey) {
       throw new Error('Tencent Translator requires `apiKey` and `options.secretId` (legacy `secretId:secretKey` is also supported).')
     }
-    this.client = new tmt.v20180321.Client({
-      credential: {
-        secretId: legacySecretId,
-        secretKey: legacySecretKey,
-      },
-      region,
-    }) as unknown as TencentTmtClient
+    this.secretId = legacySecretId
+    this.secretKey = legacySecretKey
+    this.region = region
   }
 
   async translate(
@@ -48,17 +50,49 @@ export class TencentTranslator implements TranslatorDriver {
     toLang: string,
     _options?: TranslateOptions,
   ): Promise<string> {
+    const payload = {
+      SourceText: text,
+      Source: fromLang,
+      Target: toLang,
+      ProjectId: 0,
+    }
+    const timestamp = Math.floor(Date.now() / 1000)
+    const authorization = signTencentCloudTc3({
+      url: TMT_ENDPOINT,
+      payload,
+      timestamp,
+      service: TMT_SERVICE,
+      secretId: this.secretId,
+      secretKey: this.secretKey,
+    })
+
     try {
-      const response = await this.client.TextTranslate({
-        SourceText: text,
-        Source: fromLang,
-        Target: toLang,
-        ProjectId: 0,
-      })
-      if (!response.TargetText) {
-        throw new TypeError('Tencent API error: No translation found in response')
+      const response = await axios.post<TencentTranslateResponse>(
+        TMT_ENDPOINT,
+        payload,
+        {
+          headers: {
+            'Authorization': authorization,
+            'Content-Type': 'application/json',
+            'Host': 'tmt.tencentcloudapi.com',
+            'X-TC-Action': TMT_ACTION,
+            'X-TC-Version': TMT_API_VERSION,
+            'X-TC-Timestamp': String(timestamp),
+            'X-TC-Region': this.region,
+          },
+        },
+      )
+
+      const responseBody = response.data?.Response
+      if (responseBody?.Error) {
+        throw new Error(`${responseBody.Error.Message} (${responseBody.Error.Code})`)
       }
-      return response.TargetText
+
+      const translated = responseBody?.TargetText
+      if (!translated) {
+        throw createDriverTypeError('Tencent', 'No translation found in response')
+      }
+      return translated
     }
     catch (error: unknown) {
       throw createDriverError('Tencent', error)
